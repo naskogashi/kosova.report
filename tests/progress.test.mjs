@@ -4,6 +4,68 @@ import { SourceTextModule, SyntheticModule } from "node:vm";
 import { createHash } from "node:crypto";
 import test from "node:test";
 const digest = (value) => createHash("sha256").update(value).digest("hex");
+async function brandingFixture(mode) {
+  const assets = [{ key: "civicus", fallback: "/logos/civicus.png" }];
+  return load("src/app/api/branding/[key]/route.js", {
+    "@aws-sdk/client-s3": {
+      GetObjectCommand: class {
+        constructor(input) {
+          this.input = input;
+        }
+      },
+    },
+    "../../../../lib/db": {
+      database: () => ({
+        execute: async () => {
+          if (mode === "database-down") throw new Error("Database unavailable");
+          return [
+            [{ object_key: "branding/civicus.png", mime_type: "image/png" }],
+          ];
+        },
+      }),
+    },
+    "../../../../lib/r2": {
+      bucketName: () => "kosova-report-images",
+      r2: () => ({
+        send: async () => {
+          if (mode === "r2-down") throw new Error("R2 unavailable");
+          return {
+            Body: {
+              transformToByteArray: async () =>
+                readFileSync("public/logos/civicus.png"),
+            },
+          };
+        },
+      }),
+    },
+    "../../../../lib/branding": { branding: assets },
+    "node:fs/promises": await import("node:fs/promises"),
+    "node:path": {
+      default: await import("node:path").then((module) => module.default),
+    },
+  });
+}
+for (const mode of ["r2-down", "database-down", "healthy"]) {
+  test(`branding returns image bytes without redirects when ${mode}`, async () => {
+    const route = await brandingFixture(mode);
+    const response = await route.GET(
+      new Request("http://internal-proxy/api/branding/civicus"),
+      { params: { key: "civicus" } },
+    );
+    assert.equal(response.status, 200);
+    assert.equal(response.headers.get("Content-Type"), "image/png");
+    assert.equal(response.headers.get("Location"), null);
+    assert.deepEqual(
+      Buffer.from(await response.arrayBuffer()),
+      readFileSync("public/logos/civicus.png"),
+    );
+    const rejected = await route.GET(
+      new Request("http://internal-proxy/api/branding/unknown"),
+      { params: { key: "../secrets" } },
+    );
+    assert.equal(rejected.status, 404);
+  });
+}
 async function load(file, mocks) {
   const module = new SourceTextModule(readFileSync(file, "utf8"));
   await module.link(async (name) => {

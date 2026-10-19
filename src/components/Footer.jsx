@@ -1,6 +1,7 @@
 "use client";
 import { branding } from "../lib/branding";
 import useLanguage from "./useLanguage";
+import BrandingImage from "./BrandingImage";
 export default function Footer() {
   const language = useLanguage();
   const disclaimer = {
@@ -30,16 +31,14 @@ export default function Footer() {
                       rel="noopener noreferrer"
                       aria-label="Sbunker (opens in a new tab)"
                     >
-                      <img
-                        src={`/api/branding/${asset.key}`}
-                        alt={asset.name}
+                      <BrandingImage
+                        asset={asset}
                         className="max-h-12 max-w-full object-contain"
                       />
                     </a>
                   ) : (
-                    <img
-                      src={`/api/branding/${asset.key}`}
-                      alt={asset.name}
+                    <BrandingImage
+                      asset={asset}
                       className="max-h-12 max-w-full object-contain"
                     />
                   )}
@@ -57,9 +56,8 @@ export default function Footer() {
             rel="noopener noreferrer"
             aria-label="CODON (opens in a new tab)"
           >
-            <img
-              src="/api/branding/codon"
-              alt="CODON"
+            <BrandingImage
+              asset={branding.find((asset) => asset.key === "codon")}
               className="h-9 w-auto max-w-28 object-contain"
             />
           </a>

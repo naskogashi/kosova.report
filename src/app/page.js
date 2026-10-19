@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 const copy = {
   sq: {
-    tag: "Zëri yt. Lagjja jote.",
+    tag: "Zëri yt. Një qytet më i mirë.",
     title: "Raporto problemin. Ndërto një Kosovë më të mirë.",
     intro:
       "Një mënyrë e thjeshtë për të dokumentuar problemet në komunitet dhe për t’i dërguar te departamenti përgjegjës.",
@@ -42,7 +42,7 @@ const copy = {
     anonymous: "Raportim anonim",
   },
   sr: {
-    tag: "Vaš glas. Vaš komšiluk.",
+    tag: "Vaš glas. Bolji grad.",
     title: "Prijavite problem. Izgradimo bolje Kosovo.",
     intro:
       "Jednostavan način da dokumentujete probleme u zajednici i pošaljete ih nadležnom odeljenju.",
@@ -73,7 +73,7 @@ const copy = {
     anonymous: "Anonimno prijavljivanje",
   },
   en: {
-    tag: "Your voice. Your neighborhood.",
+    tag: "Your voice. A better city.",
     title: "Report a problem. Build a better Kosovo.",
     intro:
       "A simple way to document issues in your community and send them to the responsible department.",

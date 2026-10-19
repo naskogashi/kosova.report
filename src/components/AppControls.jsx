@@ -1,5 +1,6 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { Cookie, ChevronDown, ShieldCheck, X } from "lucide-react";
 import useLanguage from "./useLanguage";
 const words = {
   sq: {
@@ -10,6 +11,13 @@ const words = {
     install: "Instalo aplikacionin",
     help: "Në iPhone/iPad: hapeni në Safari, zgjidhni Ndaj dhe Shto në ekranin kryesor. Në shfletues të tjerë, kërkoni Instalo aplikacionin në meny.",
     close: "Mbyll",
+    intro:
+      "Privatësia juaj ka rëndësi. Përdorim vetëm cookies të domosdoshme për sigurinë, pa gjurmim reklamash ose analitikë.",
+    necessary: "Vetëm të domosdoshmet",
+    customise: "Personalizo",
+    essential: "Siguria dhe preferencat",
+    always: "Gjithmonë aktive",
+    save: "Ruaj preferencat",
   },
   sr: {
     cookies: "Privatnost i kolačići",
@@ -19,6 +27,13 @@ const words = {
     install: "Instaliraj aplikaciju",
     help: "Na iPhone/iPad uređaju: otvorite Safari, izaberite Deli, zatim Dodaj na početni ekran. U drugim pregledačima potražite Instaliraj aplikaciju u meniju.",
     close: "Zatvori",
+    intro:
+      "Vaša privatnost je važna. Koristimo samo neophodne kolačiće za bezbednost, bez reklamnog praćenja ili analitike.",
+    necessary: "Samo neophodni",
+    customise: "Prilagodi",
+    essential: "Bezbednost i postavke",
+    always: "Uvek aktivno",
+    save: "Sačuvaj postavke",
   },
   en: {
     cookies: "Privacy & cookies",
@@ -28,6 +43,13 @@ const words = {
     install: "Install app",
     help: "On iPhone/iPad: open in Safari, choose Share, then Add to Home Screen. In other browsers, look for Install app in the browser menu.",
     close: "Close",
+    intro:
+      "Your privacy matters. We use only essential cookies for security, with no advertising tracking or analytics.",
+    necessary: "Necessary only",
+    customise: "Customise",
+    essential: "Security and preferences",
+    always: "Always active",
+    save: "Save preferences",
   },
 };
 export default function AppControls() {
@@ -36,11 +58,24 @@ export default function AppControls() {
   const [notice, setNotice] = useState(false),
     [prompt, setPrompt] = useState(null),
     [installed, setInstalled] = useState(false),
-    [help, setHelp] = useState(false);
+    [help, setHelp] = useState(false),
+    [details, setDetails] = useState(false);
+  const dialog = useRef(null);
+  useEffect(() => {
+    if (notice && !dialog.current.open) dialog.current.showModal();
+    else if (!notice && dialog.current.open) dialog.current.close();
+  }, [notice]);
+  function acknowledge() {
+    try {
+      localStorage.setItem("kr-privacy-notice-v2", "necessary-only");
+    } catch {}
+    setNotice(false);
+    setDetails(false);
+  }
   useEffect(() => {
     try {
       setNotice(
-        localStorage.getItem("kr-privacy-notice-v1") !== "acknowledged",
+        localStorage.getItem("kr-privacy-notice-v2") !== "necessary-only",
       );
     } catch {
       setNotice(true);
@@ -90,7 +125,10 @@ export default function AppControls() {
         <button
           type="button"
           className="rounded-lg px-3 py-2 underline underline-offset-4"
-          onClick={() => setNotice(!notice)}
+          onClick={() => {
+            setDetails(false);
+            setNotice(true);
+          }}
           aria-expanded={notice}
         >
           {t.cookies}
@@ -113,24 +151,82 @@ export default function AppControls() {
           {t.help}
         </p>
       )}
-      {notice && (
-        <div className="mx-auto mt-4 max-w-2xl rounded-xl border border-slate-200 p-5">
-          <h2 className="font-semibold text-slate-900">{t.title}</h2>
-          <p className="mt-2 leading-relaxed">{t.body}</p>
+      <dialog
+        ref={dialog}
+        className="cookie-sheet"
+        aria-labelledby="cookie-title"
+        aria-describedby="cookie-description"
+        onCancel={() => setNotice(false)}
+        onClose={() => setNotice(false)}
+      >
+        <div className="flex items-start gap-3">
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blue-50 text-blue-900">
+            <Cookie size={22} aria-hidden="true" />
+          </span>
+          <div className="min-w-0 flex-1">
+            <h2
+              id="cookie-title"
+              className="text-base font-semibold text-slate-950"
+            >
+              {t.title}
+            </h2>
+            <p
+              id="cookie-description"
+              className="mt-1 text-sm leading-relaxed text-slate-600"
+            >
+              {t.intro}
+            </p>
+          </div>
           <button
             type="button"
-            className="mt-4 rounded-lg bg-blue-800 px-4 py-2 font-semibold text-white"
-            onClick={() => {
-              try {
-                localStorage.setItem("kr-privacy-notice-v1", "acknowledged");
-              } catch {}
-              setNotice(false);
-            }}
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-slate-500 hover:bg-slate-100"
+            onClick={() => setNotice(false)}
+            aria-label={t.close}
           >
-            {t.ok}
+            <X size={18} />
           </button>
         </div>
-      )}
+        {details && (
+          <div
+            id="cookie-details"
+            className="mt-5 space-y-3 rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm"
+          >
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <span className="flex items-center gap-2 font-semibold text-slate-900">
+                <ShieldCheck size={18} aria-hidden="true" />
+                {t.essential}
+              </span>
+              <span className="rounded-full bg-blue-100 px-3 py-1 text-xs font-semibold text-blue-900">
+                {t.always}
+              </span>
+            </div>
+            <p className="leading-relaxed text-slate-600">{t.body}</p>
+          </div>
+        )}
+        <div className="mt-5 flex flex-col gap-2">
+          <button
+            type="button"
+            onClick={acknowledge}
+            className="min-h-11 w-full rounded-full bg-[#062653] px-5 py-3 text-sm font-semibold text-white hover:bg-blue-900"
+          >
+            {details ? t.save : t.necessary}
+          </button>
+          <button
+            type="button"
+            aria-expanded={details}
+            aria-controls="cookie-details"
+            onClick={() => setDetails(!details)}
+            className="flex min-h-11 items-center justify-center gap-2 rounded-full border border-slate-200 px-5 py-3 text-sm font-medium text-slate-700 hover:bg-slate-50"
+          >
+            {t.customise}
+            <ChevronDown
+              size={16}
+              className={details ? "rotate-180" : ""}
+              aria-hidden="true"
+            />
+          </button>
+        </div>
+      </dialog>
     </section>
   );
 }
