@@ -9,7 +9,7 @@ import {
   siteConfig,
 } from "./admin-auth";
 export async function currentAdmin() {
-  const token = cookies().get(ADMIN_COOKIE)?.value;
+  const token = (await cookies()).get(ADMIN_COOKIE)?.value;
   if (!token || !/^[A-Za-z0-9_-]{43}$/.test(token)) return null;
   try {
     const [rows] = await database().execute(
@@ -46,8 +46,8 @@ export async function createSessionRecord(
   );
   return { token, seconds };
 }
-export function setSessionCookie({ token, seconds }) {
-  cookies().set(ADMIN_COOKIE, token, {
+export async function setSessionCookie({ token, seconds }) {
+  (await cookies()).set(ADMIN_COOKIE, token, {
     httpOnly: true,
     secure: siteConfig().secure,
     sameSite: "strict",
@@ -56,15 +56,15 @@ export function setSessionCookie({ token, seconds }) {
   });
 }
 export async function startSession(accountId, temporary = false) {
-  setSessionCookie(await createSessionRecord(accountId, temporary));
+  await setSessionCookie(await createSessionRecord(accountId, temporary));
 }
 export async function endSession() {
-  const token = cookies().get(ADMIN_COOKIE)?.value;
+  const token = (await cookies()).get(ADMIN_COOKIE)?.value;
   if (token)
     await database().execute("DELETE FROM staff_sessions WHERE token_hash=?", [
       digest(token),
     ]);
-  cookies().set(ADMIN_COOKIE, "", {
+  (await cookies()).set(ADMIN_COOKIE, "", {
     httpOnly: true,
     secure: siteConfig().secure,
     sameSite: "strict",

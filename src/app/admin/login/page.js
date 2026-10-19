@@ -1,12 +1,13 @@
 import { siteTitle } from "../../../lib/site-branding";
-import { adminText as t, adminLanguage } from "../../../lib/admin-language";
+import { adminTranslator, adminLanguage } from "../../../lib/admin-language";
 import { currentAdmin } from "../../../lib/admin-session";
 import { redirect } from "next/navigation";
 import LoginForm from "./LoginForm";
 export const dynamic = "force-dynamic";
-export function generateMetadata() {
+export async function generateMetadata() {
+  const t = await adminTranslator();
   return {
-    title: `${t("Staff sign-in")} | ${siteTitle(adminLanguage())}`,
+    title: `${t("Staff sign-in")} | ${siteTitle(await adminLanguage())}`,
     robots: {
       index: false,
       follow: false,
@@ -15,6 +16,7 @@ export function generateMetadata() {
   };
 }
 export default async function Login() {
+  const t = await adminTranslator();
   if (await currentAdmin()) redirect("/admin");
   return (
     <div className="mx-auto w-full max-w-md px-5 py-14">

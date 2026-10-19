@@ -4,6 +4,7 @@ export const metadata = {
   robots: { index: false, follow: false },
   referrer: "no-referrer",
 };
-export default function Track({ params }) {
+export default async function Track(props) {
+  const params = await props.params;
   return <ReportProgress publicId={params.public_id} />;
 }

@@ -13,7 +13,8 @@ import {
 export const dynamic = "force-dynamic";
 const select =
   "SELECT r.id,r.public_id,r.category,r.description,r.status,r.created_at,r.resolved_at,r.lat,r.lng,d.notification_email,c.name AS city FROM reports r JOIN departments d ON d.id=r.department_id JOIN cities c ON c.id=r.city_id JOIN municipality_report_tokens t ON t.report_id=r.id AND t.department_id=r.department_id WHERE r.public_id=? AND t.token_hash=? AND t.expires_at>UTC_TIMESTAMP()";
-export async function GET(request, { params }) {
+export async function GET(request, props) {
+  const params = await props.params;
   const token = bearer(request);
   if (!token || !publicIdValid(params.public_id))
     return Response.json(
@@ -39,7 +40,8 @@ export async function GET(request, { params }) {
     );
   }
 }
-export async function POST(request, { params }) {
+export async function POST(request, props) {
+  const params = await props.params;
   if (request.headers.get("origin") !== siteConfig().origin)
     return Response.json(
       { error: "Origin not allowed" },

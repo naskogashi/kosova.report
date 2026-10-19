@@ -22,8 +22,8 @@ import {
   deliverStatusEmails,
 } from "../../lib/report-notifications";
 import { categories } from "../../lib/report-options";
-function assertOrigin() {
-  if (headers().get("origin") !== siteConfig().origin)
+async function assertOrigin() {
+  if ((await headers()).get("origin") !== siteConfig().origin)
     throw new Error("Request origin not allowed");
 }
 function value(form, key, max) {
@@ -36,7 +36,7 @@ const validId = (value) => /^[1-9]\d{0,9}$/.test(String(value));
 export async function loginAction(previous, form) {
   let signedIn = false;
   try {
-    assertOrigin();
+    await assertOrigin();
     const email = value(form, "email", 254).toLowerCase(),
       password = form.get("password");
     if (typeof password !== "string" || Buffer.byteLength(password) > 1024)
@@ -111,7 +111,7 @@ export async function loginAction(previous, form) {
     await database().execute("DELETE FROM admin_login_limits WHERE bucket=?", [
       bucket,
     ]);
-    setSessionCookie(newSession);
+    await setSessionCookie(newSession);
     signedIn = true;
   } catch (error) {
     console.error("Staff sign-in unavailable", {
@@ -125,13 +125,13 @@ export async function loginAction(previous, form) {
   if (signedIn) redirect("/admin");
 }
 export async function logoutAction() {
-  assertOrigin();
+  await assertOrigin();
   await endSession();
   redirect("/admin/login");
 }
 export async function updateAccountAction(previous, form) {
   let newSession;
-  assertOrigin();
+  await assertOrigin();
   const account = await requireAdmin({ allowPasswordChange: true });
   try {
     const name = value(form, "name", 120),
@@ -177,7 +177,7 @@ export async function updateAccountAction(previous, form) {
     } finally {
       connection.release();
     }
-    setSessionCookie(newSession);
+    await setSessionCookie(newSession);
   } catch (error) {
     return {
       error:
@@ -189,7 +189,7 @@ export async function updateAccountAction(previous, form) {
   redirect("/admin");
 }
 export async function createCheckerAction(previous, form) {
-  assertOrigin();
+  await assertOrigin();
   await requireOwner();
   try {
     const name = value(form, "name", 120),
@@ -210,7 +210,7 @@ export async function createCheckerAction(previous, form) {
   }
 }
 export async function resetCheckerAction(previous, form) {
-  assertOrigin();
+  await assertOrigin();
   await requireOwner();
   const id = value(form, "id", 10);
   if (!validId(id)) return { error: "Invalid checker" };
@@ -230,7 +230,7 @@ export async function resetCheckerAction(previous, form) {
   }
 }
 export async function toggleCheckerAction(form) {
-  assertOrigin();
+  await assertOrigin();
   await requireOwner();
   const id = value(form, "id", 10);
   if (!validId(id)) throw Error("Invalid checker");
@@ -244,7 +244,7 @@ export async function toggleCheckerAction(form) {
   revalidatePath("/admin/settings");
 }
 export async function updateReportAction(form) {
-  assertOrigin();
+  await assertOrigin();
   const account = await requireOwner();
   const id = value(form, "id", 10),
     status = value(form, "status", 20),
@@ -297,7 +297,7 @@ export async function updateReportAction(form) {
   );
 }
 export async function assignCheckerAction(form) {
-  assertOrigin();
+  await assertOrigin();
   await requireOwner();
   const reportId = value(form, "report_id", 10),
     accountId = value(form, "account_id", 10);
@@ -317,7 +317,7 @@ export async function assignCheckerAction(form) {
   redirect(`/admin?report=${reportId}&saved=assignment`);
 }
 export async function reviewReportAction(form) {
-  assertOrigin();
+  await assertOrigin();
   const account = await requireAdmin();
   const reportId = value(form, "report_id", 10),
     note = value(form, "note", 5000);
@@ -337,7 +337,7 @@ export async function reviewReportAction(form) {
   redirect(`/admin?report=${reportId}&saved=checked`);
 }
 export async function saveDepartmentAction(form) {
-  assertOrigin();
+  await assertOrigin();
   await requireOwner();
   const id = value(form, "id", 10),
     cityId = value(form, "city_id", 10),
@@ -383,7 +383,7 @@ export async function saveDepartmentAction(form) {
 const routeSaveError =
   "Could not save the assignment. The department must belong to the selected municipality.";
 export async function saveRouteAction(previous, form) {
-  assertOrigin();
+  await assertOrigin();
   await requireOwner();
   const cityId = value(form, "city_id", 10),
     departmentId = value(form, "department_id", 10),
@@ -416,7 +416,7 @@ export async function saveRouteAction(previous, form) {
   return { saved: "Assignment saved.", at: Date.now() };
 }
 export async function deleteRouteAction(previous, form) {
-  assertOrigin();
+  await assertOrigin();
   await requireOwner();
   const cityId = value(form, "city_id", 10),
     category = value(form, "category", 100);
@@ -437,7 +437,7 @@ export async function deleteRouteAction(previous, form) {
   return { saved: "Assignment deleted.", at: Date.now() };
 }
 export async function saveCountryAction(form) {
-  assertOrigin();
+  await assertOrigin();
   await requireOwner();
   const id = value(form, "id", 10),
     name = value(form, "name", 100),
@@ -462,7 +462,7 @@ export async function saveCountryAction(form) {
   redirect("/admin/settings?saved=country#geography");
 }
 export async function saveCityAction(form) {
-  assertOrigin();
+  await assertOrigin();
   await requireOwner();
   const id = value(form, "id", 10),
     countryId = value(form, "country_id", 10),

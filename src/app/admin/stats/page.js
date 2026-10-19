@@ -1,11 +1,12 @@
 import { siteTitle } from "../../../lib/site-branding";
-import { adminText as t, adminLanguage } from "../../../lib/admin-language";
+import { adminTranslator, adminLanguage } from "../../../lib/admin-language";
 import { database } from "../../../lib/db";
 import { requireAdmin } from "../../../lib/admin-session";
 export const dynamic = "force-dynamic";
-export function generateMetadata() {
+export async function generateMetadata() {
+  const t = await adminTranslator();
   return {
-    title: `${t("Statistics")} | ${siteTitle(adminLanguage())}`,
+    title: `${t("Statistics")} | ${siteTitle(await adminLanguage())}`,
     robots: {
       index: false,
       follow: false,
@@ -13,6 +14,7 @@ export function generateMetadata() {
   };
 }
 export default async function Stats() {
+  const t = await adminTranslator();
   const account = await requireAdmin(),
     owner = account.role === "owner",
     where = owner

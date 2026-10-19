@@ -15,7 +15,8 @@ function imageResponse(body, mimeType, fallback = false) {
     },
   });
 }
-export async function GET(request, { params }) {
+export async function GET(request, props) {
+  const params = await props.params;
   const item = branding.find((asset) => asset.key === params.key);
   if (!item) return new Response("Not found", { status: 404 });
   try {

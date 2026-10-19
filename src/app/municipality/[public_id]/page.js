@@ -4,6 +4,7 @@ export const metadata = {
   robots: { index: false, follow: false },
   referrer: "no-referrer",
 };
-export default function Municipality({ params }) {
+export default async function Municipality(props) {
+  const params = await props.params;
   return <ReportProgress publicId={params.public_id} municipality />;
 }

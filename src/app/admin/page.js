@@ -1,5 +1,5 @@
 import { siteTitle } from "../../lib/site-branding";
-import { adminText as t, adminLanguage } from "../../lib/admin-language";
+import { adminTranslator, adminLanguage } from "../../lib/admin-language";
 import { database } from "../../lib/db";
 import { requireAdmin } from "../../lib/admin-session";
 import {
@@ -10,9 +10,10 @@ import {
 } from "./actions";
 import AdminSubmit from "./AdminSubmit";
 export const dynamic = "force-dynamic";
-export function generateMetadata() {
+export async function generateMetadata() {
+  const t = await adminTranslator();
   return {
-    title: `${t("Admin panel")} | ${siteTitle(adminLanguage())}`,
+    title: `${t("Admin panel")} | ${siteTitle(await adminLanguage())}`,
     robots: {
       index: false,
       follow: false,
@@ -35,13 +36,15 @@ const labels = {
 };
 const control =
   "w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm";
-const formatDate = (value) =>
+const formatDate = (value, t) =>
   value
     ? new Date(value).toLocaleString("en-GB", {
         timeZone: "Europe/Belgrade",
       })
     : t("Not recorded");
-export default async function AdminPage({ searchParams }) {
+export default async function AdminPage(props) {
+  const searchParams = await props.searchParams;
+  const t = await adminTranslator();
   const admin = await requireAdmin();
   const owner = admin.role === "owner";
   let checkers = [],
@@ -353,7 +356,7 @@ export default async function AdminPage({ searchParams }) {
                             )?.name || row.city_code}
                           </p>
                           <p className="mt-1 text-xs text-slate-500">
-                            {formatDate(row.created_at)}
+                            {formatDate(row.created_at, t)}
                           </p>
                         </a>
                       </li>
@@ -396,7 +399,7 @@ export default async function AdminPage({ searchParams }) {
                     </h2>
                     <p className="mt-1 text-xs text-slate-500">
                       {" "}
-                      {t("Submitted")} {formatDate(report.created_at)}
+                      {t("Submitted")} {formatDate(report.created_at, t)}
                     </p>
                   </div>
                   <dl className="space-y-3 text-sm">
@@ -516,7 +519,7 @@ export default async function AdminPage({ searchParams }) {
                           className="rounded-lg bg-emerald-50 p-3 text-xs"
                         >
                           <strong>{review.name}</strong> ·{" "}
-                          {formatDate(review.checked_at)}
+                          {formatDate(review.checked_at, t)}
                           <p className="mt-1 whitespace-pre-wrap">
                             {review.note}
                           </p>
@@ -585,7 +588,7 @@ export default async function AdminPage({ searchParams }) {
                               {t(statuses[item.new_status])}
                             </p>
                             <p className="mt-1 break-words text-slate-500">
-                              {item.actor_email} · {formatDate(item.created_at)}
+                              {item.actor_email} · {formatDate(item.created_at, t)}
                             </p>
                             {item.note && (
                               <p className="mt-2 whitespace-pre-wrap break-words">

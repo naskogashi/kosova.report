@@ -3,7 +3,8 @@ import { database, required } from "../../../../../lib/db";
 import { currentAdmin } from "../../../../../lib/admin-session";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-export async function GET(request, { params }) {
+export async function GET(request, props) {
+  const params = await props.params;
   const headers = {
     "Cache-Control": "private, no-store",
     "X-Content-Type-Options": "nosniff",

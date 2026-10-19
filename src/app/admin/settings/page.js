@@ -1,5 +1,5 @@
 import { siteTitle } from "../../../lib/site-branding";
-import { adminText as t, adminLanguage } from "../../../lib/admin-language";
+import { adminTranslator, adminLanguage } from "../../../lib/admin-language";
 import { database } from "../../../lib/db";
 import { requireOwner } from "../../../lib/admin-session";
 import {
@@ -12,9 +12,10 @@ import CheckerForm from "./CheckerForm";
 import DepartmentSettings from "./DepartmentSettings";
 import { categories } from "../../../lib/report-options";
 export const dynamic = "force-dynamic";
-export function generateMetadata() {
+export async function generateMetadata() {
+  const t = await adminTranslator();
   return {
-    title: `${t("Platform settings")} | ${siteTitle(adminLanguage())}`,
+    title: `${t("Platform settings")} | ${siteTitle(await adminLanguage())}`,
     robots: {
       index: false,
       follow: false,
@@ -23,7 +24,8 @@ export function generateMetadata() {
 }
 const input =
   "mt-1 block w-full rounded-lg border border-slate-300 bg-white p-2.5 text-sm";
-function CityForm({ city, countries }) {
+async function CityForm({ city, countries }) {
+  const t = await adminTranslator();
   return (
     <form
       action={saveCityAction}
@@ -122,7 +124,9 @@ function CityForm({ city, countries }) {
     </form>
   );
 }
-export default async function Settings({ searchParams }) {
+export default async function Settings(props) {
+  const searchParams = await props.searchParams;
+  const t = await adminTranslator();
   await requireOwner();
   let countries = [],
     municipalities = [],

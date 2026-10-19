@@ -2,7 +2,8 @@ import { database } from "../../../../../lib/db";
 import { createReportPDF } from "../../../../../lib/report-pdf";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-export async function GET(request, { params }) {
+export async function GET(request, props) {
+  const params = await props.params;
   const publicId = params.public_id;
   const credential = request.headers
     .get("authorization")

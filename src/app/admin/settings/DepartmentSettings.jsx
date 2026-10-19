@@ -1,14 +1,15 @@
-import { adminText as t } from "../../../lib/admin-language";
+import { adminTranslator } from "../../../lib/admin-language";
 import { saveDepartmentAction } from "../actions";
 import RouteAssignments from "./RouteAssignments";
 import AdminSubmit from "../AdminSubmit";
 const control =
   "w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm";
-export default function DepartmentSettings({
+export default async function DepartmentSettings({
   departments,
   municipalities,
   routes,
 }) {
+  const t = await adminTranslator();
   return (
     <>
       <section
