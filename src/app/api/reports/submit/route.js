@@ -35,6 +35,24 @@ function invalid(message, status = 400) {
     status,
   });
 }
+// Department email in the site's design. Albanian first, Serbian and English beside it.
+// Email clients get tables and inline styles only.
+const categoryNames = {
+  infrastructure: ["Infrastrukturë", "Infrastruktura", "Infrastructure", "#a9592b"],
+  environment: ["Mjedis", "Životna sredina", "Environment", "#3c7847"],
+  public_services: ["Shërbime publike", "Javne usluge", "Public services", "#237486"],
+  administration: ["Administratë", "Administracija", "Administration", "#6b518f"],
+  health: ["Shëndetësi", "Zdravstvo", "Health", "#a64b51"],
+  education: ["Arsim", "Obrazovanje", "Education", "#787121"],
+  safety: ["Siguri", "Bezbednost", "Safety", "#416e8d"],
+};
+function departmentEmail({ publicId, city, category, description, latitude, longitude, reporter, link, imageHTML, attached, total }) {
+  const [sq, sr, en, color] = categoryNames[category] || [category, category, category, "#06244d"];
+  const row = (label, value) =>
+    `<tr><td style="padding:8px 12px 8px 0;color:#515e72;font-size:13px;vertical-align:top;white-space:nowrap">${label}</td><td style="padding:8px 0;color:#06244d;font-size:15px;font-weight:bold">${value}</td></tr>`;
+  const map = `https://www.openstreetmap.org/?mlat=${latitude}&mlon=${longitude}#map=17/${latitude}/${longitude}`;
+  return `<div style="background:#f6f9fd;padding:24px 12px;font-family:'Segoe UI',Arial,sans-serif;color:#06244d"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:600px;margin:auto;background:#ffffff;border-radius:18px;border:1px solid #d8e1ec"><tr><td style="padding:24px 24px 0"><span style="font-size:22px;font-weight:800;letter-spacing:-0.5px">kosova<span style="color:#e4b756">&#9679;</span>report</span><p style="margin:18px 0 0;color:#515e72;font-size:13px">Raport i ri qytetar / Nova prijava / New report</p><h1 style="margin:4px 0 0;font-size:28px;letter-spacing:-0.5px">${escapeHTML(publicId)}</h1><p style="margin:14px 0 0"><span style="display:inline-block;padding:6px 12px;border:2px solid ${color};border-radius:10px;color:${color};font-weight:800">${escapeHTML(sq)}</span> <span style="color:#515e72;font-size:13px">${escapeHTML(sr)} / ${escapeHTML(en)}</span></p></td></tr><tr><td style="padding:16px 24px 0"><table role="presentation" cellpadding="0" cellspacing="0">${row("Komuna / Opština / Municipality", escapeHTML(city))}${row("Vendi / Mesto / Place", `${latitude}, ${longitude}<br><a href="${map}" style="color:#154fc3;font-weight:normal;font-size:13px">OpenStreetMap</a>`)}${row("Raportuesi / Podnosilac / Reporter", reporter ? escapeHTML(reporter) : "Pa emër / Anonimno / Without name")}</table></td></tr><tr><td style="padding:16px 24px 0"><p style="margin:0 0 6px;color:#515e72;font-size:13px">Përshkrimi / Opis / Description</p><p style="margin:0;padding:14px 16px;background:#f6f9fd;border-radius:12px;font-size:16px;line-height:1.6;white-space:pre-wrap">${escapeHTML(description)}</p></td></tr><tr><td style="padding:20px 24px 0"><a href="${escapeHTML(link)}" style="display:inline-block;background:#154fc3;color:#ffffff;padding:15px 22px;border-radius:14px;font-weight:bold;text-decoration:none">Hap raportin dhe përditëso statusin</a><p style="margin:8px 0 0;color:#515e72;font-size:13px">Otvorite prijavu i ažurirajte status / Open the report and update its status</p></td></tr><tr><td style="padding:12px 24px 0">${imageHTML}<p style="margin:12px 0 0;color:#515e72;font-size:13px">${attached} / ${total} foto të bashkangjitura. Të gjitha fotot janë në panelin administrativ. / ${attached} of ${total} photos attached. All photos are in the staff panel.</p></td></tr><tr><td style="padding:20px 24px 24px"><p style="margin:0;padding-top:16px;border-top:1px solid #d8e1ec;color:#515e72;font-size:12px">Lidhja është private dhe skadon pas 90 ditësh. Mos e përcillni. / The link is private and expires after 90 days. Do not forward it.<br><br>in co-operation with CODON a part of Progon LLC.</p></td></tr></table></div>`;
+}
 function imageType(buffer) {
   if (buffer.subarray(0, 3).equals(Buffer.from([255, 216, 255])))
     return ["image/jpeg", "jpg"];
@@ -288,11 +306,23 @@ export async function POST(request) {
     const imageHTML = inlineImages
       .map(
         (image, index) =>
-          `<img src="cid:image-${index}@kosova.report" alt="Report photo ${index + 1}" style="display:block;max-width:100%;height:auto;margin:16px 0;border-radius:8px"/>`,
+          `<img src="cid:image-${index}@kosova.report" alt="Foto ${index + 1}" style="display:block;max-width:100%;height:auto;margin:12px 0 0;border-radius:10px"/>`,
       )
       .join("");
-    const html = `<div style="background:#f1f5f9;padding:24px;font-family:Arial,sans-serif;color:#102344"><div style="max-width:640px;margin:auto;background:#fff;border-radius:12px;overflow:hidden"><div style="background:#062653;color:white;padding:24px;font-size:22px;font-weight:bold">kosova.report</div><div style="padding:24px"><p style="color:#1d4ed8">NEW CIVIC REPORT</p><h1>${escapeHTML(public_id)}</h1><p>${escapeHTML(city)} / ${escapeHTML(category)}</p><p style="white-space:pre-wrap">${escapeHTML(description)}</p><p>Coordinates: ${latitude}, ${longitude}</p><p><a href="https://www.openstreetmap.org/?mlat=${latitude}&mlon=${longitude}#map=17/${latitude}/${longitude}" style="color:#1248b5">View location on OpenStreetMap</a></p><p>${anonymous ? "Anonymous report" : `Reporter email: ${escapeHTML(email)}`}</p><p><a href="${escapeHTML(progressLink)}" style="display:inline-block;background:#0843b5;color:white;padding:14px 20px;border-radius:8px">View report and update progress</a></p>${imageHTML}<p>${inlineImages.length} of ${validated.length} photos attached. All evidence is available to authorized staff in the admin panel.</p></div><div style="padding:20px;background:#f8fafc;font-size:12px">in co-operation with CODON a part of Progon LLC.</div></div></div>`;
-    const subject = `New report ${public_id}`;
+    const html = departmentEmail({
+      publicId: public_id,
+      city,
+      category,
+      description,
+      latitude,
+      longitude,
+      reporter: anonymous ? null : email,
+      link: progressLink,
+      imageHTML,
+      attached: inlineImages.length,
+      total: validated.length,
+    });
+    const subject = `Raport i ri ${public_id} / New report`;
     await connection.execute(
       "INSERT INTO report_notifications (report_id,recipient,subject,html) VALUES (?,?,?,?)",
       [reportId, department.notification_email, subject, html],
