@@ -21,20 +21,12 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 22
           script: |
-            # Kovakoodataan oikea Node-version v22.23.3 bin-polku automaatiolle
             export PATH=/home/kosova/.nvm/versions/node/v22.23.3/bin:$PATH
             
             cd /home/kosova/htdocs/kosova.report
-            
-            # Päivitetään koodi GitHubista puhtaasti
             git config --global --add safe.directory /home/kosova/htdocs/kosova.report
             git fetch --all
             git reset --hard origin/main
-
-            # Ajetaan asennukset ja Next.js tuotantorakennus
-            npm install
-            npm run build
-
-            # Käynnistetään/Uudelleenkäynnistetään sovellus PM2-ympäristössä portilla 3067
-            pm2 restart kosova-report || pm2 start npm --name "kosova-report" -- run start -- -p 3067
-            pm2 save
+            
+            # Asennetaan paketit
+            npm install --legacy-peer-deps
