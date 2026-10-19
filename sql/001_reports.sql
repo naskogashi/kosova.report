@@ -1,3 +1,4 @@
+-- LEGACY DRAFT SCHEMA: do not run on the existing kosova database. Use 004_existing_schema.sql.
 CREATE TABLE departments (
  id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
  city_code VARCHAR(2) NOT NULL,

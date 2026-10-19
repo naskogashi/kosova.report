@@ -1,10 +1,11 @@
 import { database } from "../../lib/db";
 import { requireAdmin } from "../../lib/admin-session";
-import { categories, cities } from "../../lib/report-options";
+import { categories } from "../../lib/report-options";
 import {
   logoutAction,
   updateReportAction,
   saveDepartmentAction,
+  saveRouteAction,
 } from "./actions";
 import AdminSubmit from "./AdminSubmit";
 export const dynamic = "force-dynamic";
@@ -13,10 +14,9 @@ export const metadata = {
   robots: { index: false, follow: false },
 };
 const statuses = {
-  submitted: "Submitted",
-  in_review: "In review",
-  resolved: "Resolved",
-  escalated: "Escalated",
+  Pending: "Pending",
+  "In Progress": "In progress",
+  Resolved: "Resolved",
 };
 const labels = {
   infrastructure: "Infrastructure",
@@ -48,11 +48,13 @@ export default async function AdminPage({ searchParams }) {
   );
   const selected =
     typeof searchParams.report === "string" &&
-    /^[0-9a-f-]{36}$/i.test(searchParams.report)
+    /^[1-9]\d{0,9}$/.test(searchParams.report)
       ? searchParams.report
       : null;
   let reports = [],
     departments = [],
+    municipalities = [],
+    routes = [],
     summary = [],
     total = 0,
     pending = 0,
@@ -75,7 +77,7 @@ export default async function AdminPage({ searchParams }) {
     const db = database();
     const results = await Promise.all([
       db.execute(
-        `SELECT r.id,r.public_id,r.category,r.city_code,r.status,r.created_at FROM reports r ${where} ORDER BY r.created_at DESC,r.id DESC LIMIT 25 OFFSET ${(page - 1) * 25}`,
+        `SELECT r.id,r.public_id,r.category,c.code AS city_code,r.status,r.created_at FROM reports r JOIN cities c ON c.id=r.city_id ${where} ORDER BY r.created_at DESC,r.id DESC LIMIT 25 OFFSET ${(page - 1) * 25}`,
         values,
       ),
       db.execute(`SELECT COUNT(*) AS total FROM reports r ${where}`, values),
@@ -83,12 +85,18 @@ export default async function AdminPage({ searchParams }) {
         "SELECT status,COUNT(*) AS total FROM reports GROUP BY status",
       ),
       db.execute(
-        "SELECT id,city_code,category,notification_email,active FROM departments ORDER BY city_code,category",
+        "SELECT d.id,d.city_id,d.name,d.notification_email,c.code AS city_code FROM departments d JOIN cities c ON c.id=d.city_id ORDER BY c.name,d.name",
       ),
       db.execute(
         "SELECT COUNT(*) AS total FROM report_notifications WHERE sent_at IS NULL",
       ),
+      db.execute("SELECT id,code,name FROM cities ORDER BY name"),
+      db.execute(
+        "SELECT routing.city_id,routing.category,routing.department_id,routing.active,c.code AS city_code FROM department_routes routing JOIN cities c ON c.id=routing.city_id ORDER BY c.name,routing.category",
+      ),
     ]);
+    municipalities = results[5][0];
+    routes = results[6][0];
     reports = results[0][0];
     total = Number(results[1][0][0].total);
     summary = results[2][0];
@@ -96,14 +104,14 @@ export default async function AdminPage({ searchParams }) {
     pending = Number(results[4][0][0].total);
     if (selected) {
       const [rows] = await db.execute(
-        "SELECT r.id,r.public_id,r.city_code,r.category,r.status,r.description,r.latitude,r.longitude,r.created_at,r.updated_at,r.anonymous,r.contact_email,r.admin_note,d.notification_email FROM reports r JOIN departments d ON d.id=r.department_id WHERE r.id=? LIMIT 1",
+        "SELECT r.id,r.public_id,c.code AS city_code,r.category,r.status,r.description,r.lat AS latitude,r.lng AS longitude,r.created_at,r.is_anonymous AS anonymous,r.reporter_email AS contact_email,r.admin_note,d.notification_email FROM reports r JOIN departments d ON d.id=r.department_id JOIN cities c ON c.id=r.city_id WHERE r.id=? LIMIT 1",
         [selected],
       );
       report = rows[0] || null;
       if (report) {
         const detail = await Promise.all([
           db.execute(
-            "SELECT id,mime_type FROM report_images WHERE report_id=? ORDER BY sort_order",
+            "SELECT id FROM report_images WHERE report_id=? ORDER BY id",
             [selected],
           ),
           db.execute(
@@ -184,17 +192,17 @@ export default async function AdminPage({ searchParams }) {
           >
             <h2 className="font-semibold">Database unavailable</h2>
             <p className="mt-2 text-sm">
-              Check the MySQL environment settings and apply migrations 001, 002
-              and 003 before using the admin panel.
+              Check the MySQL environment settings and apply
+              sql/004_existing_schema.sql. Do not rerun the legacy migrations.
             </p>
           </section>
         ) : (
           <>
-            <div className="grid grid-cols-2 gap-3 lg:grid-cols-5">
+            <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
               {Object.entries(statuses).map(([key, label]) => (
                 <a
                   key={key}
-                  href={`/admin?status=${key}`}
+                  href={`/admin?status=${encodeURIComponent(key)}`}
                   className="rounded-xl border border-slate-200 bg-white p-4"
                 >
                   <p className="text-xs text-slate-500">{label}</p>
@@ -262,7 +270,7 @@ export default async function AdminPage({ searchParams }) {
                       <li key={row.id}>
                         <a
                           href={browse(page, row.id)}
-                          className={`block p-4 hover:bg-blue-50 ${selected === row.id ? "bg-blue-50" : ""}`}
+                          className={`block p-4 hover:bg-blue-50 ${selected === String(row.id) ? "bg-blue-50" : ""}`}
                         >
                           <div className="flex flex-wrap items-center justify-between gap-2">
                             <span className="text-sm font-bold text-blue-900">
@@ -274,8 +282,9 @@ export default async function AdminPage({ searchParams }) {
                           </div>
                           <p className="mt-2 text-sm">
                             {labels[row.category] || row.category} ·{" "}
-                            {cities.find((item) => item.code === row.city_code)
-                              ?.name || row.city_code}
+                            {municipalities.find(
+                              (item) => item.code === row.city_code,
+                            )?.name || row.city_code}
                           </p>
                           <p className="mt-1 text-xs text-slate-500">
                             {formatDate(row.created_at)}
@@ -444,77 +453,167 @@ export default async function AdminPage({ searchParams }) {
                 The selected report could not be found.
               </p>
             )}
+
             <section
               id="departments"
-              className="scroll-mt-5 rounded-xl border border-slate-200 bg-white p-5 sm:p-6"
+              className="rounded-xl border border-slate-200 bg-white p-5 sm:p-6"
             >
               <h2 className="text-xl font-bold text-[#102344]">
-                Department routing
+                Departments and routing
               </h2>
               <p className="mt-2 text-sm text-slate-500">
-                Each municipality/category pair has one notification email.
-                Existing assignments can be edited below; adding the same pair
-                updates it.
+                Keep institutional contact details here. Assign each category to
+                a department in the same municipality below.
               </p>
-              <div className="mt-5 space-y-4">
+              <div className="mt-5 space-y-3">
                 {departments.map((department) => (
                   <form
                     key={department.id}
                     action={saveDepartmentAction}
-                    className="grid items-end gap-3 rounded-xl bg-slate-50 p-4 lg:grid-cols-[1fr_2fr_auto_auto]"
+                    className="grid items-end gap-3 rounded-lg bg-slate-50 p-4 lg:grid-cols-[1fr_2fr_2fr_auto]"
                   >
+                    <input type="hidden" name="id" value={department.id} />
                     <input
                       type="hidden"
-                      name="city"
-                      value={department.city_code}
+                      name="city_id"
+                      value={department.city_id}
                     />
-                    <input
-                      type="hidden"
-                      name="category"
-                      value={department.category}
-                    />
-                    <p className="pb-2 text-xs font-semibold">
-                      {cities.find((item) => item.code === department.city_code)
-                        ?.name || department.city_code}
-                      <span className="mt-1 block font-normal text-slate-500">
-                        {labels[department.category] || department.category}
-                      </span>
+                    <p className="py-2 text-sm font-semibold">
+                      {municipalities.find(
+                        (city) => city.id === department.city_id,
+                      )?.name || department.city_code}
                     </p>
+                    <label className="text-xs font-semibold">
+                      Department name
+                      <input
+                        name="name"
+                        required
+                        maxLength={255}
+                        className={`${control} mt-1`}
+                        defaultValue={department.name}
+                      />
+                    </label>
                     <label className="text-xs font-semibold">
                       Notification email
                       <input
-                        className={`${control} mt-1`}
                         name="email"
                         type="email"
                         required
-                        maxLength={254}
+                        maxLength={255}
+                        className={`${control} mt-1`}
                         defaultValue={department.notification_email}
                       />
-                    </label>
-                    <label className="flex min-h-11 items-center gap-2 text-xs">
-                      <input
-                        name="active"
-                        type="checkbox"
-                        defaultChecked={Boolean(department.active)}
-                      />
-                      Active
                     </label>
                     <AdminSubmit>Save</AdminSubmit>
                   </form>
                 ))}
               </div>
-              <h3 className="mt-7 font-semibold">
-                Add or update an assignment
-              </h3>
+              <h3 className="mt-6 font-semibold">Add a department</h3>
               <form
                 action={saveDepartmentAction}
-                className="mt-4 grid items-end gap-3 sm:grid-cols-2 lg:grid-cols-[1fr_1fr_2fr_auto_auto]"
+                className="mt-3 grid items-end gap-3 md:grid-cols-4"
+              >
+                <input type="hidden" name="id" value="" />
+                <label className="text-xs font-semibold">
+                  Municipality
+                  <select name="city_id" required className={`${control} mt-1`}>
+                    {municipalities.map((city) => (
+                      <option key={city.id} value={city.id}>
+                        {city.name}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <label className="text-xs font-semibold">
+                  Department name
+                  <input
+                    name="name"
+                    required
+                    maxLength={255}
+                    className={`${control} mt-1`}
+                  />
+                </label>
+                <label className="text-xs font-semibold">
+                  Notification email
+                  <input
+                    name="email"
+                    required
+                    type="email"
+                    maxLength={255}
+                    className={`${control} mt-1`}
+                  />
+                </label>
+                <AdminSubmit>Add department</AdminSubmit>
+              </form>
+              <h3 className="mt-8 font-semibold">Category assignments</h3>
+              {!routes.length && (
+                <p className="mt-2 rounded-lg bg-amber-50 p-3 text-sm text-amber-900">
+                  No categories are routed yet. Add assignments to enable public
+                  reporting.
+                </p>
+              )}
+              <div className="mt-4 space-y-3">
+                {routes.map((route) => (
+                  <form
+                    key={`${route.city_id}-${route.category}`}
+                    action={saveRouteAction}
+                    className="grid items-end gap-3 rounded-lg bg-slate-50 p-4 md:grid-cols-[1fr_2fr_auto_auto]"
+                  >
+                    <input type="hidden" name="city_id" value={route.city_id} />
+                    <input
+                      type="hidden"
+                      name="category"
+                      value={route.category}
+                    />
+                    <p className="py-2 text-xs font-semibold">
+                      {municipalities.find((city) => city.id === route.city_id)
+                        ?.name || route.city_code}{" "}
+                      · {labels[route.category] || route.category}
+                    </p>
+                    <label className="text-xs font-semibold">
+                      Department
+                      <select
+                        name="department_id"
+                        required
+                        defaultValue={route.department_id}
+                        className={`${control} mt-1`}
+                      >
+                        {departments
+                          .filter(
+                            (department) =>
+                              department.city_id === route.city_id,
+                          )
+                          .map((department) => (
+                            <option key={department.id} value={department.id}>
+                              {department.name}
+                            </option>
+                          ))}
+                      </select>
+                    </label>
+                    <label className="flex min-h-11 items-center gap-2 text-xs">
+                      <input
+                        type="checkbox"
+                        name="active"
+                        defaultChecked={Boolean(route.active)}
+                      />
+                      Active
+                    </label>
+                    <AdminSubmit>Save route</AdminSubmit>
+                  </form>
+                ))}
+              </div>
+              <h3 className="mt-6 font-semibold">
+                Add or update category assignment
+              </h3>
+              <form
+                action={saveRouteAction}
+                className="mt-3 grid items-end gap-3 md:grid-cols-2 lg:grid-cols-5"
               >
                 <label className="text-xs font-semibold">
                   Municipality
-                  <select name="city" required className={`${control} mt-1`}>
-                    {cities.map((city) => (
-                      <option key={city.code} value={city.code}>
+                  <select name="city_id" required className={`${control} mt-1`}>
+                    {municipalities.map((city) => (
+                      <option key={city.id} value={city.id}>
                         {city.name}
                       </option>
                     ))}
@@ -535,17 +634,21 @@ export default async function AdminPage({ searchParams }) {
                   </select>
                 </label>
                 <label className="text-xs font-semibold">
-                  Notification email
-                  <input
-                    className={`${control} mt-1`}
-                    name="email"
-                    type="email"
+                  Department (same municipality)
+                  <select
+                    name="department_id"
                     required
-                    maxLength={254}
-                  />
+                    className={`${control} mt-1`}
+                  >
+                    {departments.map((department) => (
+                      <option key={department.id} value={department.id}>
+                        {department.city_code} · {department.name}
+                      </option>
+                    ))}
+                  </select>
                 </label>
                 <label className="flex min-h-11 items-center gap-2 text-xs">
-                  <input name="active" type="checkbox" defaultChecked />
+                  <input type="checkbox" name="active" defaultChecked />
                   Active
                 </label>
                 <AdminSubmit>Save assignment</AdminSubmit>

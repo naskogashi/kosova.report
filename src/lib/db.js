@@ -16,6 +16,8 @@ export function database() {
       waitForConnections: true,
       connectionLimit: 10,
       charset: "utf8mb4",
+      supportBigNumbers: true,
+      bigNumberStrings: true,
       timezone: "Z",
     });
   return pool;

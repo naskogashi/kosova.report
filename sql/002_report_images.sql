@@ -1,3 +1,4 @@
+-- LEGACY DRAFT SCHEMA: do not run on the existing kosova database. Use 004_existing_schema.sql.
 -- Apply after 001_reports.sql. Existing report rows and image keys are preserved.
 CREATE TABLE cities (
  code VARCHAR(2) PRIMARY KEY,

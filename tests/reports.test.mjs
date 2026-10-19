@@ -17,21 +17,37 @@ const env = {
 };
 async function loadRoute(
   file,
-  { smtpFails = false, insertFails = false } = {},
+  {
+    smtpFails = false,
+    insertFails = false,
+    existingSequence = 0,
+    counterSequence = 41,
+    routeMissing = false,
+  } = {},
 ) {
   const events = [],
-    queries = [];
+    queries = [],
+    objectCommands = [];
   let mail;
   const execute = async (sql, values) => {
     queries.push({ sql, values });
-    if (sql.startsWith("SELECT code")) return [[{ code: "PR" }]];
-    if (sql.startsWith("SELECT id, notification"))
-      return [[{ id: 1, notification_email: "department@kosova.report" }]];
+    if (sql.startsWith("SELECT id,UPPER(code) AS code FROM cities"))
+      return [[{ id: 1, code: "PR" }]];
+    if (sql.startsWith("SELECT d.id,d.notification"))
+      return [
+        routeMissing
+          ? []
+          : [{ id: 1, notification_email: "department@kosova.report" }],
+      ];
     if (sql.startsWith("SELECT sequence_value"))
-      return [[{ sequence_value: 41 }]];
+      return [[{ sequence_value: counterSequence }]];
+    if (sql.startsWith("SELECT COALESCE(MAX"))
+      return [[{ last_sequence: existingSequence }]];
     if (sql.startsWith("INSERT INTO report_images") && insertFails)
       throw Error("insert failed");
     if (sql.startsWith("SELECT r.public_id")) return [[]];
+    if (sql.startsWith("INSERT INTO reports")) return [{ insertId: 7 }];
+    if (sql.startsWith("INSERT INTO report_images")) return [{ insertId: 21 }];
     return [{}];
   };
   const connection = {
@@ -53,6 +69,7 @@ async function loadRoute(
   }
   class S3Client {
     async send(command) {
+      objectCommands.push(command.input);
       events.push(command instanceof PutObjectCommand ? "upload" : "delete");
     }
   }
@@ -67,15 +84,15 @@ async function loadRoute(
       createReportPDF: () => Buffer.from("%PDF"),
     },
     "@aws-sdk/client-s3": { S3Client, PutObjectCommand, DeleteObjectCommand },
-    nodemailer: {
-      default: {
-        createTransport: () => ({
-          sendMail: async (value) => {
-            mail = value;
-            events.push("send");
-            if (smtpFails) throw Error("smtp failed");
-          },
-        }),
+    "../../../../lib/smtp2go": {
+      emailConfiguration: () => ({
+        apiKey: "test",
+        sender: "reports@kosova.report",
+      }),
+      sendDepartmentEmail: async (value) => {
+        mail = value;
+        events.push("send");
+        if (smtpFails) throw Error("API rejected notification");
       },
     },
     "../../../../lib/report-options": {
@@ -97,6 +114,7 @@ async function loadRoute(
     route: module.namespace,
     events,
     queries,
+    objectCommands,
     get mail() {
       return mail;
     },
@@ -145,14 +163,18 @@ test("submission stores relational URLs, commits before SMTP, escapes HTML and d
   assert.match(data.public_id, /^PR-\d{4}-000042$/);
   assert.match(data.tracking_key, /^[0-9a-f-]{36}$/);
   assert.equal(data.notification, "sent");
+  assert.equal(app.objectCommands[0].Bucket, "kosova-report-images");
   const report = app.queries.find((q) =>
     q.sql.startsWith("INSERT INTO reports"),
   );
-  assert.equal(report.values[11], null);
+  assert.equal(report.values[9], null);
   const image = app.queries.find((q) =>
     q.sql.startsWith("INSERT INTO report_images"),
   );
-  assert.match(image.values[2], /^https:\/\/images.kosova.report\/reports\//);
+  assert.match(
+    image.values[1],
+    /^https:\/\/test.r2.cloudflarestorage.com\/kosova-report-images\/reports\//,
+  );
   assert.ok(app.events.indexOf("commit") < app.events.indexOf("send"));
   assert.equal(app.mail.attachments.length, 1);
   assert.ok(app.mail.html.includes("cid:image-0@kosova.report"));
@@ -166,7 +188,7 @@ test("contact reports preserve email", async () => {
     201,
   );
   assert.equal(
-    app.queries.find((q) => q.sql.startsWith("INSERT INTO reports")).values[11],
+    app.queries.find((q) => q.sql.startsWith("INSERT INTO reports")).values[9],
     "citizen@example.com",
   );
 });
@@ -178,7 +200,7 @@ test("image insert failure rolls back and removes R2 upload without sending mail
   assert.ok(!app.events.includes("commit"));
   assert.ok(!app.events.includes("send"));
 });
-test("SMTP failure returns saved receipt and retains notification for retry", async () => {
+test("SMTP2Go API failure returns saved receipt and retains notification for retry", async () => {
   const app = await loadRoute(submitFile, { smtpFails: true });
   const response = await app.route.POST(request());
   assert.equal(response.status, 201);
@@ -205,4 +227,40 @@ test("PDF requires private credential and does not query DB for missing token", 
   );
   assert.equal(response.status, 404);
   assert.equal(app.queries.length, 0);
+});
+
+test("existing official IDs seed a missing or stale counter", async () => {
+  const app = await loadRoute(submitFile, {
+    existingSequence: 89,
+    counterSequence: 0,
+  });
+  const response = await app.route.POST(request());
+  assert.equal(response.status, 201);
+  assert.match((await response.json()).public_id, /-000090$/);
+  const counter = app.queries.find((query) =>
+    query.sql.startsWith("UPDATE report_counters"),
+  );
+  assert.equal(counter.values[0], "90");
+});
+test("unconfigured department routing rejects before R2 upload", async () => {
+  const app = await loadRoute(submitFile, { routeMissing: true });
+  assert.equal((await app.route.POST(request())).status, 503);
+  assert.ok(!app.events.includes("upload"));
+});
+test("image metadata references the real integer auto-increment IDs", async () => {
+  const app = await loadRoute(submitFile);
+  assert.equal((await app.route.POST(request())).status, 201);
+  const image = app.queries.find((query) =>
+    query.sql.startsWith("INSERT INTO report_images"),
+  );
+  assert.equal(image.values[0], 7);
+  const metadata = app.queries.find((query) =>
+    query.sql.startsWith("INSERT INTO report_image_storage"),
+  );
+  assert.equal(metadata.values[0], 21);
+  assert.ok(
+    !app.queries
+      .find((query) => query.sql.startsWith("INSERT INTO reports"))
+      .sql.includes("city_code"),
+  );
 });

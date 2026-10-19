@@ -21,18 +21,37 @@ export async function GET(request, { params }) {
     );
   try {
     const [rows] = await database().execute(
-      "SELECT object_key,mime_type FROM report_images WHERE id=? LIMIT 1",
+      "SELECT i.image_url,storage.object_key,storage.mime_type FROM report_images i LEFT JOIN report_image_storage storage ON storage.report_image_id=i.id WHERE i.id=? LIMIT 1",
       [params.id],
     );
     const image = rows[0];
-    if (
-      !image ||
-      !["image/jpeg", "image/png", "image/webp"].includes(image.mime_type)
-    )
+    if (!image)
       return Response.json(
         { error: "Image not found" },
         { status: 404, headers },
       );
+    let key = image.object_key;
+    if (!key) {
+      // Legacy URLs may only resolve to keys inside our configured R2 host/base.
+      const base = new URL(
+          (
+            process.env.R2_IMAGE_BASE_URL ||
+            `https://${required("R2_ACCOUNT_ID")}.r2.cloudflarestorage.com/${process.env.R2_BUCKET || "kosova-report-images"}`
+          ).replace(/\/$/, "") + "/",
+        ),
+        url = new URL(image.image_url);
+      if (url.origin !== base.origin || !url.pathname.startsWith(base.pathname))
+        return Response.json(
+          { error: "Legacy image is not in the configured R2 store" },
+          { status: 404, headers },
+        );
+      key = decodeURIComponent(url.pathname.slice(base.pathname.length));
+      if (!key || key.split("/").some((part) => part === ".." || part === "."))
+        return Response.json(
+          { error: "Image unavailable" },
+          { status: 404, headers },
+        );
+    }
     const s3 = new S3Client({
       region: "auto",
       endpoint: `https://${required("R2_ACCOUNT_ID")}.r2.cloudflarestorage.com`,
@@ -43,14 +62,20 @@ export async function GET(request, { params }) {
     });
     const object = await s3.send(
       new GetObjectCommand({
-        Bucket: required("R2_BUCKET"),
-        Key: image.object_key,
+        Bucket: process.env.R2_BUCKET || "kosova-report-images",
+        Key: key,
       }),
     );
+    const mimeType = image.mime_type || object.ContentType;
+    if (!["image/jpeg", "image/png", "image/webp"].includes(mimeType))
+      return Response.json(
+        { error: "Unsupported image type" },
+        { status: 415, headers },
+      );
     return new Response(object.Body.transformToWebStream(), {
       headers: {
         ...headers,
-        "Content-Type": image.mime_type,
+        "Content-Type": mimeType,
         "Content-Disposition": "inline",
       },
     });

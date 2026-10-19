@@ -1,3 +1,4 @@
+-- LEGACY DRAFT SCHEMA: do not run on the existing kosova database. Use 004_existing_schema.sql.
 -- Apply once after migrations 001 and 002.
 ALTER TABLE reports
  ADD COLUMN status ENUM('submitted','in_review','resolved','escalated') NOT NULL DEFAULT 'submitted',

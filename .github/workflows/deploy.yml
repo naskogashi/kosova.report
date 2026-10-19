@@ -15,20 +15,40 @@ jobs:
 
       - name: SSH and Deploy to Server
         uses: appleboy/ssh-action@v1.0.3
+        env:
+          DEPLOY_R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID || 'c268c9a22ef16f948948c241da7a9592' }}
+          DEPLOY_R2_BUCKET: ${{ secrets.R2_BUCKET || 'kosova-report-images' }}
+          DEPLOY_R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          DEPLOY_R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          DEPLOY_R2_IMAGE_BASE_URL: ${{ secrets.R2_IMAGE_BASE_URL }}
+          DEPLOY_SMTP2GO_API_KEY: ${{ secrets.SMTP2GO_API_KEY }}
+          DEPLOY_SMTP_FROM: ${{ secrets.SMTP_FROM }}
         with:
           host: 37.27.210.123
           username: kosova
           password: ${{ secrets.SSH_PASSWORD }} # <-- Vaihdettu avain salasanaksi!
           port: 22
+          envs: DEPLOY_R2_ACCOUNT_ID,DEPLOY_R2_BUCKET,DEPLOY_R2_ACCESS_KEY_ID,DEPLOY_R2_SECRET_ACCESS_KEY,DEPLOY_R2_IMAGE_BASE_URL,DEPLOY_SMTP2GO_API_KEY,DEPLOY_SMTP_FROM
           script: |
             set -eu
             export PATH=/home/kosova/.nvm/versions/node/v22.23.3/bin:$PATH
-            
+
             cd /home/kosova/htdocs/kosova.report
             git config --global --add safe.directory /home/kosova/htdocs/kosova.report
             git fetch --all
             git reset --hard origin/main
-            
+
+            # Import nonempty GitHub settings without interpolating secrets into shell code.
+            # Missing optional secrets leave existing server environment files in effect.
+            for setting in R2_ACCOUNT_ID R2_BUCKET R2_ACCESS_KEY_ID R2_SECRET_ACCESS_KEY R2_IMAGE_BASE_URL SMTP2GO_API_KEY SMTP_FROM; do
+              deploy_value=$(printenv "DEPLOY_$setting" || true)
+              if [ -n "$deploy_value" ]; then
+                export "$setting=$deploy_value"
+              fi
+              unset "DEPLOY_$setting"
+            done
+            unset deploy_value
+
             npm install --legacy-peer-deps
             npm run build
             pm2 delete kosova-report 2>/dev/null || true

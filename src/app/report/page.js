@@ -20,7 +20,7 @@ import {
   Upload,
   X,
 } from "lucide-react";
-import { categories, cities } from "../../lib/report-options";
+import { categories } from "../../lib/report-options";
 
 const ReportMap = dynamic(() => import("../../components/ReportMap"), {
   ssr: false,
@@ -208,6 +208,8 @@ const primaryClass =
   "inline-flex min-h-12 items-center justify-center gap-2 rounded-lg bg-[#0843b5] px-5 py-3 text-sm font-semibold text-white shadow-sm hover:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-50";
 
 export default function Home() {
+  const [municipalities, setMunicipalities] = useState([]);
+  const [optionsState, setOptionsState] = useState("loading");
   const [language, setLanguage] = useState("sq");
   const [step, setStep] = useState(0);
   const [category, setCategory] = useState("");
@@ -224,7 +226,28 @@ export default function Home() {
   const [result, setResult] = useState(null);
   const submissionLock = useRef(false);
   const heading = useRef(null);
+  const optionMessages = {
+    sq: "Raportimi për këtë kategori nuk është konfiguruar ende. Ju lutemi provoni më vonë.",
+    sr: "Prijavljivanje za ovu kategoriju još nije podešeno. Pokušajte kasnije.",
+    en: "Reporting for this category is not configured yet. Please try again later.",
+  };
   const t = translations[language];
+  useEffect(() => {
+    const abort = new AbortController();
+    fetch("/api/report-options", { signal: abort.signal, cache: "no-store" })
+      .then(async (response) => {
+        if (!response.ok) throw new Error();
+        return response.json();
+      })
+      .then((data) => {
+        setMunicipalities(data.cities);
+        setOptionsState("ready");
+      })
+      .catch((error) => {
+        if (error.name !== "AbortError") setOptionsState("error");
+      });
+    return () => abort.abort();
+  }, []);
   useEffect(() => {
     function sync() {
       const value = new URLSearchParams(window.location.search).get("lang");
@@ -257,7 +280,9 @@ export default function Home() {
     if (step === 0 && !category) return;
     if (
       step === 1 &&
-      (!city ||
+      (!municipalities.some(
+        (item) => item.code === city && item.categories.includes(category),
+      ) ||
         !position ||
         !position.every(Number.isFinite) ||
         position[0] < 41.8 ||
@@ -533,17 +558,33 @@ export default function Home() {
                       <label className="block text-sm font-semibold">
                         {t.city}
                         <span className="text-red-600"> *</span>
+                        {(optionsState === "error" ||
+                          (optionsState === "ready" &&
+                            !municipalities.some((item) =>
+                              item.categories.includes(category),
+                            ))) && (
+                          <span
+                            role="status"
+                            className="mt-2 block rounded-lg bg-amber-50 p-3 text-xs font-normal text-amber-900"
+                          >
+                            {optionMessages[language]}
+                          </span>
+                        )}
                         <select
                           className={inputClass}
                           value={city}
                           onChange={(event) => setCity(event.target.value)}
                         >
                           <option value="">{t.choose}</option>
-                          {cities.map((value) => (
-                            <option key={value.code} value={value.code}>
-                              {value.name}
-                            </option>
-                          ))}
+                          {municipalities
+                            .filter((item) =>
+                              item.categories.includes(category),
+                            )
+                            .map((value) => (
+                              <option key={value.code} value={value.code}>
+                                {value.name}
+                              </option>
+                            ))}
                         </select>
                       </label>
                       <label className="block text-sm font-semibold">
@@ -674,7 +715,8 @@ export default function Home() {
                           ],
                           [
                             t.city,
-                            cities.find((item) => item.code === city)?.name,
+                            municipalities.find((item) => item.code === city)
+                              ?.name,
                           ],
                           [
                             t.location,

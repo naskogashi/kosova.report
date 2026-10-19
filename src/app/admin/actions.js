@@ -12,7 +12,7 @@ import {
   loginBucket,
 } from "../../lib/admin-auth";
 import { requireAdmin } from "../../lib/admin-session";
-import { categories, cities } from "../../lib/report-options";
+import { categories } from "../../lib/report-options";
 function assertOrigin() {
   const config = adminConfig();
   if (!config || headers().get("origin") !== config.origin)
@@ -84,12 +84,12 @@ export async function logoutAction() {
 export async function updateReportAction(form) {
   assertOrigin();
   const admin = requireAdmin();
-  const id = value(form, "id", 36),
+  const id = value(form, "id", 10),
     status = value(form, "status", 20),
     note = value(form, "note", 5000);
   if (
-    !/^[0-9a-f-]{36}$/i.test(id) ||
-    !["submitted", "in_review", "resolved", "escalated"].includes(status)
+    !/^[1-9]\d{0,9}$/.test(id) ||
+    !["Pending", "In Progress", "Resolved"].includes(status)
   )
     throw new Error("Invalid report update.");
   const connection = await database().getConnection();
@@ -102,8 +102,8 @@ export async function updateReportAction(form) {
     );
     if (!rows.length) throw new Error("Report unavailable");
     await connection.execute(
-      "UPDATE reports SET status=?,admin_note=? WHERE id=?",
-      [status, note, id],
+      "UPDATE reports SET status=?,admin_note=?,resolved_at=CASE WHEN ?='Resolved' THEN COALESCE(resolved_at,UTC_TIMESTAMP()) ELSE NULL END WHERE id=?",
+      [status, note, status, id],
     );
     await connection.execute(
       "INSERT INTO report_audit_log (report_id,actor_email,previous_status,new_status,note) VALUES (?,?,?,?,?)",
@@ -127,23 +127,36 @@ export async function updateReportAction(form) {
 export async function saveDepartmentAction(form) {
   assertOrigin();
   requireAdmin();
-  const city = value(form, "city", 2),
-    category = value(form, "category", 30),
-    email = value(form, "email", 254),
-    active = form.get("active") === "on";
+  const id = value(form, "id", 10),
+    cityId = value(form, "city_id", 10),
+    name = value(form, "name", 255),
+    email = value(form, "email", 255);
   if (
-    !cities.some((item) => item.code === city) ||
-    !categories.includes(category) ||
+    (id && !/^[1-9]\d{0,9}$/.test(id)) ||
+    !/^[1-9]\d{0,9}$/.test(cityId) ||
+    !name ||
     !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) ||
     /[\r\n]/.test(email)
   )
-    throw new Error("Invalid department assignment.");
+    throw new Error("Invalid department.");
   let failed = false;
   try {
-    await database().execute(
-      "INSERT INTO departments (city_code,category,notification_email,active) VALUES (?,?,?,?) ON DUPLICATE KEY UPDATE notification_email=VALUES(notification_email),active=VALUES(active)",
-      [city, category, email, active],
+    const [cities] = await database().execute(
+      "SELECT id FROM cities WHERE id=?",
+      [cityId],
     );
+    if (!cities.length) throw new Error("Municipality unavailable");
+    if (id) {
+      const [result] = await database().execute(
+        "UPDATE departments SET name=?,notification_email=? WHERE id=? AND city_id=?",
+        [name, email, id, cityId],
+      );
+      if (!result.affectedRows) throw new Error("Department unavailable");
+    } else
+      await database().execute(
+        "INSERT INTO departments (city_id,name,notification_email) VALUES (?,?,?)",
+        [cityId, name, email],
+      );
   } catch (error) {
     console.error("Department update failed", {
       code: error.code || "UPDATE_ERROR",
@@ -154,4 +167,38 @@ export async function saveDepartmentAction(form) {
   redirect(
     `/admin?${failed ? "error=department" : "saved=department"}#departments`,
   );
+}
+export async function saveRouteAction(form) {
+  assertOrigin();
+  requireAdmin();
+  const cityId = value(form, "city_id", 10),
+    departmentId = value(form, "department_id", 10),
+    category = value(form, "category", 100),
+    active = form.get("active") === "on";
+  if (
+    !/^[1-9]\d{0,9}$/.test(cityId) ||
+    !/^[1-9]\d{0,9}$/.test(departmentId) ||
+    !categories.includes(category)
+  )
+    throw new Error("Invalid routing assignment.");
+  let failed = false;
+  try {
+    const [departments] = await database().execute(
+      "SELECT id FROM departments WHERE id=? AND city_id=?",
+      [departmentId, cityId],
+    );
+    if (!departments.length)
+      throw new Error("Department must belong to the selected municipality");
+    await database().execute(
+      "INSERT INTO department_routes (city_id,category,department_id,active) VALUES (?,?,?,?) ON DUPLICATE KEY UPDATE department_id=VALUES(department_id),active=VALUES(active)",
+      [cityId, category, departmentId, active],
+    );
+  } catch (error) {
+    console.error("Routing update failed", {
+      code: error.code || "UPDATE_ERROR",
+    });
+    failed = true;
+  }
+  revalidatePath("/admin");
+  redirect(`/admin?${failed ? "error=route" : "saved=route"}#departments`);
 }

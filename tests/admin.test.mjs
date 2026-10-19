@@ -69,7 +69,8 @@ async function actions({
   const execute = async (sql, values) => {
     queries.push({ sql, values });
     if (sql.startsWith("SELECT attempts")) return [[{ attempts }]];
-    if (sql.startsWith("SELECT status")) return [[{ status: "submitted" }]];
+    if (sql.startsWith("SELECT status")) return [[{ status: "Pending" }]];
+    if (sql.startsWith("SELECT id FROM departments")) return [[]];
     return [{}];
   };
   const connection = {
@@ -166,8 +167,8 @@ test("cross-origin and unauthenticated report changes never reach database", asy
 test("admin report update locks row and commits the audit record atomically", async () => {
   const app = await actions();
   const form = new FormData();
-  form.set("id", "11111111-1111-4111-8111-111111111111");
-  form.set("status", "resolved");
+  form.set("id", "7");
+  form.set("status", "Resolved");
   form.set("note", "Repair confirmed by department");
   await assert.rejects(app.action.updateReportAction(form), (error) =>
     error.url?.includes("saved=report"),
@@ -178,7 +179,24 @@ test("admin report update locks row and commits the audit record atomically", as
     query.sql.startsWith("INSERT INTO report_audit_log"),
   );
   assert.equal(audit.values[1], config.email);
-  assert.equal(audit.values[2], "submitted");
-  assert.equal(audit.values[3], "resolved");
+  assert.equal(audit.values[2], "Pending");
+  assert.equal(audit.values[3], "Resolved");
   assert.equal(app.queries.at(-1).sql, "COMMIT");
+});
+
+test("routing cannot assign a department from a different municipality", async () => {
+  const app = await actions();
+  const form = new FormData();
+  form.set("city_id", "1");
+  form.set("department_id", "2");
+  form.set("category", "infrastructure");
+  form.set("active", "on");
+  await assert.rejects(app.action.saveRouteAction(form), (error) =>
+    error.url?.includes("error=route"),
+  );
+  assert.ok(
+    !app.queries.some((query) =>
+      query.sql.startsWith("INSERT INTO department_routes"),
+    ),
+  );
 });
