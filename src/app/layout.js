@@ -3,6 +3,7 @@ import Footer from "../components/Footer";
 
 export const metadata = {
   title: "kosova.report",
+  referrer: "strict-origin-when-cross-origin",
   description: "Civic tech platform for institutional accountability",
 };
 

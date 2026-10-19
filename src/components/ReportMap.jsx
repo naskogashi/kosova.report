@@ -1,5 +1,5 @@
 "use client";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { divIcon } from "leaflet";
 import {
   MapContainer,
@@ -44,24 +44,53 @@ function Pin({ position, onChange }) {
     />
   ) : null;
 }
-export default function ReportMap({ position, onChange }) {
+export default function ReportMap({ position, onChange, language = "sq" }) {
+  const [tileError, setTileError] = useState(false);
+  const messages = {
+    sq: "Harta nuk u ngarkua. Mund të shkruani koordinatat më poshtë. Nëse problemi vazhdon, kontaktoni administratorin.",
+    sr: "Mapa nije učitana. Možete uneti koordinate ispod. Ako problem potraje, obratite se administratoru.",
+    en: "The map could not load. You can enter coordinates below. If this continues, contact the administrator.",
+  };
+  const customURL = process.env.NEXT_PUBLIC_MAP_TILE_URL;
+  const customAttribution = process.env.NEXT_PUBLIC_MAP_ATTRIBUTION;
+  const useCustom = Boolean(customURL && customAttribution);
   return (
-    <MapContainer
-      center={[42.6, 20.9]}
-      zoom={8}
-      minZoom={7}
-      maxBounds={[
-        [41.5, 19.5],
-        [43.6, 22.3],
-      ]}
-      scrollWheelZoom={false}
-      style={{ height: 340, width: "100%", zIndex: 0 }}
-    >
-      <TileLayer
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-      />
-      <Pin position={position} onChange={onChange} />
-    </MapContainer>
+    <div>
+      {tileError && (
+        <p
+          role="status"
+          className="border-b border-amber-200 bg-amber-50 p-3 text-xs text-amber-900"
+        >
+          {messages[language] || messages.en}
+        </p>
+      )}
+      <MapContainer
+        center={[42.6, 20.9]}
+        zoom={8}
+        minZoom={7}
+        maxBounds={[
+          [41.5, 19.5],
+          [43.6, 22.3],
+        ]}
+        scrollWheelZoom={false}
+        style={{ height: 340, width: "100%", zIndex: 0 }}
+      >
+        <TileLayer
+          attribution={
+            useCustom
+              ? customAttribution
+              : '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+          }
+          url={
+            useCustom
+              ? customURL
+              : "https://tile.openstreetmap.org/{z}/{x}/{y}.png"
+          }
+          referrerPolicy="strict-origin-when-cross-origin"
+          eventHandlers={{ tileerror: () => setTileError(true) }}
+        />
+        <Pin position={position} onChange={onChange} />
+      </MapContainer>
+    </div>
   );
 }

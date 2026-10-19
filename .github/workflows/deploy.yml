@@ -21,6 +21,7 @@ jobs:
           password: ${{ secrets.SSH_PASSWORD }} # <-- Vaihdettu avain salasanaksi!
           port: 22
           script: |
+            set -eu
             export PATH=/home/kosova/.nvm/versions/node/v22.23.3/bin:$PATH
             
             cd /home/kosova/htdocs/kosova.report
@@ -30,5 +31,6 @@ jobs:
             
             npm install --legacy-peer-deps
             npm run build
-            pm2 restart kosova-report || pm2 start npm --name "kosova-report" -- run start -- -p 3067
+            pm2 delete kosova-report 2>/dev/null || true
+            NODE_ENV=production pm2 start node_modules/next/dist/bin/next --name kosova-report --cwd /home/kosova/htdocs/kosova.report --interpreter "$(command -v node)" -- start -p 3067
             pm2 save
