@@ -1,106 +1,516 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-.cookie-sheet {
-  position: fixed;
-  inset: auto 0 0;
-  width: 100%;
-  max-width: 640px;
-  max-height: 85dvh;
-  margin: 0 auto;
-  border: 1px solid rgb(226 232 240 / 80%);
-  border-bottom: 0;
-  border-radius: 24px 24px 0 0;
-  padding: 24px 20px max(24px, env(safe-area-inset-bottom));
-  background: rgb(255 255 255 / 98%);
-  color: #0f172a;
-  box-shadow: 0 -12px 60px rgb(6 38 83 / 16%);
+@import "tailwindcss";
+
+/*
+ * kosova.report design tokens. The single source of truth for colour, type,
+ * radius and motion. Tailwind's default palette is removed so stock
+ * gray-/blue- classes can't sneak back in.
+ */
+@theme {
+  --color-*: initial;
+  --font-*: initial;
+  --radius-*: initial;
+  --shadow-*: initial;
+
+  /* Light. Dark and sunlight values are redefined further down. */
+  --color-paper: oklch(0.982 0.006 255);
+  --color-wash: oklch(0.95 0.028 255);
+  --color-card: oklch(1 0 0);
+  --color-ink: oklch(0.265 0.085 258);
+  --color-pencil: oklch(0.48 0.035 258);
+  --color-rule: oklch(0.9 0.018 255);
+  --color-blue: oklch(0.47 0.19 262);
+  --color-blue-press: oklch(0.41 0.18 262);
+  --color-on-blue: oklch(1 0 0);
+  --color-gold: oklch(0.8 0.125 84);
+  --color-stamp: oklch(0.53 0.105 72);
+  --color-error: oklch(0.5 0.17 27);
+  --color-error-wash: oklch(0.96 0.025 27);
+  --color-ok: oklch(0.48 0.1 155);
+  --color-ok-wash: oklch(0.96 0.03 155);
+  --color-white: oklch(1 0 0);
+  --color-transparent: transparent;
+  --color-current: currentColor;
+
+  /* Category accents, always paired with an icon and a label. */
+  --color-cat-infrastructure: oklch(0.55 0.13 48);
+  --color-cat-environment: oklch(0.52 0.11 148);
+  --color-cat-public_services: oklch(0.52 0.09 215);
+  --color-cat-administration: oklch(0.49 0.11 302);
+  --color-cat-health: oklch(0.53 0.13 18);
+  --color-cat-education: oklch(0.54 0.1 105);
+  --color-cat-safety: oklch(0.52 0.08 240);
+
+  --font-sans: var(--font-sofia), "Segoe UI", system-ui, sans-serif;
+  --font-stamp: var(--font-sofia-narrow), "Arial Narrow", sans-serif;
+
+  /* Fluid type scale, about 1.2 on phones and 1.33 on desktop. */
+  --text-xs: 0.8125rem;
+  --text-xs--line-height: 1.4;
+  --text-sm: 0.9375rem;
+  --text-sm--line-height: 1.5;
+  --text-base: 1rem;
+  --text-base--line-height: 1.55;
+  --text-lg: clamp(1.0625rem, 1rem + 0.3vw, 1.25rem);
+  --text-lg--line-height: 1.55;
+  --text-xl: clamp(1.25rem, 1.1rem + 0.6vw, 1.5rem);
+  --text-xl--line-height: 1.3;
+  --text-2xl: clamp(1.5rem, 1.25rem + 1.1vw, 2.125rem);
+  --text-2xl--line-height: 1.15;
+  --text-3xl: clamp(1.875rem, 1.4rem + 2vw, 2.875rem);
+  --text-3xl--line-height: 1.08;
+  --text-4xl: clamp(2.5rem, 1.7rem + 4.4vw, 4.75rem);
+  --text-4xl--line-height: 1.02;
+
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 22px;
+  --radius-full: 9999px;
+
+  --shadow-soft: 0 6px 18px -6px var(--shadow-tint);
+  --shadow-lift: 0 20px 44px -22px var(--shadow-tint);
+
+  --ease-out-quint: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-spring: linear(0, 0.24 7%, 0.82 21%, 1.06 33%, 1.03 45%, 0.995 62%, 1);
+  --duration-1: 120ms;
+  --duration-2: 220ms;
+  --duration-3: 400ms;
+  --duration-4: 700ms;
+
+  --breakpoint-sm: 40rem;
+  --breakpoint-md: 48rem;
+  --breakpoint-lg: 60rem;
+  --breakpoint-xl: 76rem;
 }
-.cookie-sheet::backdrop {
-  background: rgb(15 23 42 / 38%);
-  backdrop-filter: blur(3px);
+
+:root {
+  --shadow-tint: oklch(0.47 0.19 262 / 0.14);
+  --tint: 11%;
+  color-scheme: light;
 }
-@media (min-width: 768px) {
-  .cookie-sheet {
-    inset: auto 24px 24px;
-    margin-left: auto;
-    margin-right: 0;
-    border-bottom: 1px solid #e2e8f0;
-    border-radius: 24px;
-    padding: 28px;
+
+/* `dark:` follows the theme the site chose (sunset or the person's pick), not the OS. */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+/* Dark: a navy page with light ink, not an inversion. Light stays the default. */
+@media all {
+  :root[data-theme="dark"]:not([data-contrast="sun"]) {
+    --color-paper: oklch(0.205 0.045 258);
+    --color-wash: oklch(0.25 0.05 258);
+    --color-card: oklch(0.27 0.05 258);
+    --color-ink: oklch(0.95 0.01 250);
+    --color-pencil: oklch(0.78 0.03 250);
+    --color-rule: oklch(0.36 0.045 258);
+    --color-blue: oklch(0.72 0.13 262);
+    --color-blue-press: oklch(0.66 0.13 262);
+    --color-on-blue: oklch(0.205 0.045 258);
+    --color-gold: oklch(0.82 0.13 84);
+    --color-stamp: oklch(0.8 0.12 82);
+    --color-error: oklch(0.74 0.14 27);
+    --color-error-wash: oklch(0.28 0.05 27);
+    --color-ok: oklch(0.78 0.11 155);
+    --color-ok-wash: oklch(0.27 0.04 155);
+    --color-cat-infrastructure: oklch(0.77 0.11 50);
+    --color-cat-environment: oklch(0.77 0.1 148);
+    --color-cat-public_services: oklch(0.77 0.08 215);
+    --color-cat-administration: oklch(0.76 0.09 302);
+    --color-cat-health: oklch(0.76 0.1 18);
+    --color-cat-education: oklch(0.79 0.1 105);
+    --color-cat-safety: oklch(0.77 0.07 240);
+    --shadow-tint: oklch(0.08 0.03 258 / 0.55);
+    --tint: 16%;
+    color-scheme: dark;
+  }
+}
+
+/* Sunlight: one tap from the header. Pure white, darkest ink, outlined actions. */
+:root[data-contrast="sun"] {
+  --color-paper: oklch(1 0 0);
+  --color-wash: oklch(1 0 0);
+  --color-card: oklch(1 0 0);
+  --color-ink: oklch(0.18 0.07 260);
+  --color-pencil: oklch(0.3 0.04 258);
+  --color-rule: oklch(0.55 0.03 258);
+  --color-blue: oklch(0.38 0.17 262);
+  --color-blue-press: oklch(0.32 0.15 262);
+  --color-stamp: oklch(0.45 0.1 70);
+  --color-cat-infrastructure: oklch(0.45 0.12 48);
+  --color-cat-environment: oklch(0.42 0.1 148);
+  --color-cat-public_services: oklch(0.42 0.08 215);
+  --color-cat-administration: oklch(0.4 0.1 302);
+  --color-cat-health: oklch(0.43 0.12 18);
+  --color-cat-education: oklch(0.42 0.09 105);
+  --color-cat-safety: oklch(0.42 0.07 240);
+  --shadow-tint: transparent;
+  --tint: 0%;
+  color-scheme: light;
+}
+:root[data-contrast="sun"] body {
+  font-weight: 500;
+}
+
+/*
+ * TEMPORARY: the staff panel still uses stock colour names. They point at the
+ * new tokens until the admin redesign removes them. Do not use in new code.
+ */
+@theme {
+  --color-slate-50: var(--color-paper);
+  --color-slate-100: var(--color-wash);
+  --color-slate-200: var(--color-rule);
+  --color-slate-300: var(--color-rule);
+  --color-slate-400: var(--color-pencil);
+  --color-slate-500: var(--color-pencil);
+  --color-slate-600: var(--color-pencil);
+  --color-slate-700: var(--color-ink);
+  --color-slate-800: var(--color-ink);
+  --color-slate-900: var(--color-ink);
+  --color-slate-950: var(--color-ink);
+  --color-blue-50: var(--color-wash);
+  --color-blue-100: var(--color-wash);
+  --color-blue-200: var(--color-rule);
+  --color-blue-500: var(--color-blue);
+  --color-blue-600: var(--color-blue);
+  --color-blue-700: var(--color-blue);
+  --color-blue-800: var(--color-blue-press);
+  --color-blue-900: var(--color-ink);
+  --color-blue-950: var(--color-ink);
+  --color-red-50: var(--color-error-wash);
+  --color-red-200: var(--color-error);
+  --color-red-600: var(--color-error);
+  --color-red-700: var(--color-error);
+  --color-red-800: var(--color-error);
+  --color-amber-50: var(--color-wash);
+  --color-amber-200: var(--color-rule);
+  --color-amber-800: var(--color-stamp);
+  --color-amber-900: var(--color-stamp);
+  --color-emerald-50: var(--color-ok-wash);
+  --color-emerald-200: var(--color-ok);
+  --color-emerald-600: var(--color-ok);
+  --color-emerald-700: var(--color-ok);
+  --color-emerald-800: var(--color-ok);
+  --color-emerald-900: var(--color-ok);
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+  body {
+    background: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    font-feature-settings: "kern";
+  }
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+  p {
+    text-wrap: pretty;
+  }
+  button:not(:disabled),
+  [role="button"],
+  label[for] {
+    cursor: pointer;
+  }
+  button,
+  a {
+    -webkit-tap-highlight-color: transparent;
+  }
+  :focus-visible {
+    outline: 3px solid var(--color-blue);
+    outline-offset: 3px;
+  }
+  ::selection {
+    background: color-mix(in oklch, var(--color-gold) 55%, transparent);
+  }
+}
+
+/* Bottom sheet on phones, floating panel from tablet up. Native <dialog>, so Esc and focus return come for free. */
+@layer components {
+  .sheet {
+    position: fixed;
+    inset: auto 0 0 0;
+    margin: 0 auto;
+    width: 100%;
+    max-width: 40rem;
+    max-height: 88dvh;
+    border: 0;
+    padding: 0;
+    overflow: auto;
+    overscroll-behavior: contain;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    background: var(--color-card);
+    color: var(--color-ink);
+    box-shadow: 0 -18px 50px -20px var(--shadow-tint), 0 0 0 1px var(--color-rule);
+    translate: 0 0;
+    transition:
+      translate var(--duration-3) var(--ease-out-quint),
+      display var(--duration-3) allow-discrete,
+      overlay var(--duration-3) allow-discrete;
+  }
+  .sheet:not([open]) {
+    translate: 0 100%;
+  }
+  @starting-style {
+    .sheet[open] {
+      translate: 0 100%;
+    }
+  }
+  .sheet::backdrop {
+    background: oklch(0.2 0.05 258 / 0.42);
+    opacity: 1;
+    transition:
+      opacity var(--duration-3),
+      display var(--duration-3) allow-discrete,
+      overlay var(--duration-3) allow-discrete;
+  }
+  .sheet:not([open])::backdrop {
+    opacity: 0;
+  }
+  @starting-style {
+    .sheet[open]::backdrop {
+      opacity: 0;
+    }
+  }
+  @media (width >= 48rem) {
+    .sheet {
+      inset: auto 1.5rem 1.5rem auto;
+      max-width: 28rem;
+      border-radius: var(--radius-lg);
+    }
+    .sheet.sheet-center {
+      inset: 0;
+      margin: auto;
+      height: fit-content;
+    }
+  }
+}
+
+/* The receipt: ruled lines under the citizen's words, and the four signature moments. */
+@layer components {
+  .ruled {
+    line-height: 1.7;
+    background-image: repeating-linear-gradient(
+      to bottom,
+      transparent 0 calc(1.7em - 1px),
+      var(--color-rule) calc(1.7em - 1px) 1.7em
+    );
   }
 }
 @media (prefers-reduced-motion: no-preference) {
-  .cookie-sheet[open] {
-    animation: cookie-enter 220ms ease-out;
+  .stamp-in {
+    animation: stamp-in var(--duration-2) var(--ease-spring) both;
   }
-  @keyframes cookie-enter {
-    from {
-      opacity: 0;
-      transform: translateY(18px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
+  .pin-drop {
+    animation: pin-drop var(--duration-3) var(--ease-spring) both;
+  }
+  .clip-in {
+    animation: clip-in var(--duration-2) var(--ease-out-quint) both;
+  }
+  .stamp-hit {
+    animation: stamp-hit var(--duration-3) var(--ease-spring) 150ms both;
+  }
+  .stub-tear {
+    animation: stub-tear var(--duration-4) var(--ease-out-quint) 600ms both;
   }
 }
-body {
-  margin: 0;
-  font-family: system-ui, sans-serif;
+/* "Skip animation" on the success screen jumps straight to the stamped, torn state. */
+[data-skip] .stamp-hit,
+[data-skip] .stub-tear {
+  animation: none;
 }
-body {
-  caret-color: transparent;
+@keyframes stamp-in {
+  from {
+    opacity: 0;
+    transform: rotate(4deg) scale(1.25);
+  }
 }
-input,
-textarea,
-[contenteditable="true"] {
-  caret-color: auto;
+@keyframes pin-drop {
+  from {
+    opacity: 0;
+    translate: 0 -24px;
+  }
+  40% {
+    opacity: 1;
+  }
 }
-button,
-a {
-  -webkit-tap-highlight-color: transparent;
+@keyframes clip-in {
+  from {
+    opacity: 0;
+    transform: translateY(-10px) rotate(-8deg);
+  }
+}
+@keyframes stamp-hit {
+  from {
+    opacity: 0;
+    transform: rotate(-4deg) scale(1.7);
+    filter: blur(3px);
+  }
+  60% {
+    opacity: 0.95;
+    filter: blur(0);
+  }
+}
+@keyframes stub-tear {
+  from {
+    transform: none;
+  }
+}
+
+/* Landing: Prishtina's streets draw themselves, then pins drop, then the sample card settles. */
+@media (prefers-reduced-motion: no-preference) {
+  .hero-map .streets-major {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    animation: draw 900ms var(--ease-out-quint) forwards;
+  }
+  .hero-map .streets-minor {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    animation: draw 1500ms 250ms ease-out forwards;
+  }
+  .hero-map .hero-pin {
+    animation: pin-drop var(--duration-3) var(--ease-spring) both;
+    animation-delay: calc(1300ms + var(--i) * 90ms);
+  }
+  .hero-map .hero-card {
+    animation: settle var(--duration-4) var(--ease-out-quint) 1950ms both;
+  }
+}
+@keyframes draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes settle {
+  from {
+    opacity: 0;
+    translate: 0 14px;
+  }
+}
+
+/* "How it works": on wide screens the sample receipt assembles as each step scrolls into view.
+   Without scroll-timeline support (or with reduced motion) everything is simply visible. */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) and (width >= 60rem) {
+    .assemble {
+      timeline-scope: --how-1, --how-2, --how-3, --how-4;
+    }
+    .how-step-1 { view-timeline-name: --how-1; }
+    .how-step-2 { view-timeline-name: --how-2; }
+    .how-step-3 { view-timeline-name: --how-3; }
+    .how-step-4 { view-timeline-name: --how-4; }
+    .how-step {
+      animation: step-focus linear both;
+      animation-timeline: view();
+      animation-range: cover 10% cover 90%;
+    }
+    .assemble [data-part] {
+      animation: part-in linear both;
+      animation-range: entry 40% cover 45%;
+    }
+    .assemble [data-part="category"] { animation-timeline: --how-1; }
+    .assemble [data-part="place"] { animation-timeline: --how-2; }
+    .assemble [data-part="words"] { animation-timeline: --how-3; }
+    .assemble [data-part="stamp"] { animation-timeline: --how-4; }
+  }
+}
+@keyframes part-in {
+  from {
+    opacity: 0;
+    translate: 0 12px;
+  }
+}
+@keyframes step-focus {
+  0%,
+  100% {
+    opacity: 0.4;
+  }
+  35%,
+  65% {
+    opacity: 1;
+  }
+}
+
+/* Theme picker popover, anchored under the header on the right. */
+.theme-pop {
+  position: fixed;
+  inset: 4.25rem max(1rem, env(safe-area-inset-right)) auto auto;
+  opacity: 1;
+  translate: 0 0;
   transition:
-    background-color 180ms ease,
-    color 180ms ease,
-    box-shadow 180ms ease,
-    transform 180ms ease;
+    opacity var(--duration-2),
+    translate var(--duration-2) var(--ease-out-quint),
+    display var(--duration-2) allow-discrete,
+    overlay var(--duration-2) allow-discrete;
 }
-button:not(:disabled),
-a {
-  cursor: pointer;
+.theme-pop:not(:popover-open) {
+  opacity: 0;
+  translate: 0 -6px;
 }
-button:disabled {
-  cursor: not-allowed;
-}
-@media (hover: hover) and (prefers-reduced-motion: no-preference) {
-  button:not(:disabled):hover,
-  a.inline-flex:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 14px rgb(6 38 83 / 12%);
+@starting-style {
+  .theme-pop:popover-open {
+    opacity: 0;
+    translate: 0 -6px;
   }
-  button:not(:disabled):active,
-  a.inline-flex:active {
-    transform: translateY(0);
+}
+
+/* Leaflet, restyled: our type, 44px zoom buttons, pin that drops in. */
+.report-map {
+  font-family: inherit;
+  background: var(--color-wash);
+}
+.report-map:focus-visible {
+  outline-offset: -3px;
+}
+.report-map .leaflet-control-zoom a {
+  width: 44px;
+  height: 44px;
+  line-height: 44px;
+  font-size: 22px;
+  color: var(--color-ink);
+}
+.report-pin svg {
+  overflow: visible;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .report-pin svg {
+    animation: pin-drop var(--duration-3) var(--ease-spring) both;
   }
+}
+
+/* Reference numbers, dates and coordinates line up. */
+@utility tabular {
+  font-variant-numeric: tabular-nums;
+}
+@utility tint-* {
+  background-color: color-mix(in oklch, --value(--color-*) var(--tint), var(--color-card));
+}
+
+/* Language switch and report-step changes cross-fade; everything moves less when asked. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: var(--duration-2);
 }
 @media (prefers-reduced-motion: reduce) {
-  button,
-  a {
-    transition: none;
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }
-button,
-input,
-select,
-textarea {
-  font: inherit;
-}
-button:focus-visible,
-a:focus-visible,
-input:focus-visible,
-select:focus-visible,
-textarea:focus-visible {
-  outline: 3px solid #34d399;
-  outline-offset: 3px;
+@media (prefers-reduced-transparency: reduce) {
+  dialog::backdrop {
+    backdrop-filter: none !important;
+  }
 }

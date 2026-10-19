@@ -1,67 +1,69 @@
-"use client";
+import { getTranslations } from "next-intl/server";
 import { branding } from "../lib/branding";
-import useLanguage from "./useLanguage";
 import BrandingImage from "./BrandingImage";
-export default function Footer() {
-  const language = useLanguage();
-  const disclaimer = {
-    sq: "Ky aktivitet mbështetet nga CIVICUS Digital Democracy Initiative (DDI).",
-    sr: "Ovu aktivnost podržava CIVICUS Digital Democracy Initiative (DDI).",
-    en: "This activity is supported by the CIVICUS Digital Democracy Initiative (DDI).",
-  };
+import FooterActions from "./FooterActions";
+import { Icon } from "./icons";
+import { wrap } from "./ui";
+
+// Same content as before the redesign: partners, the CIVICUS DDI line and the CODON credit.
+export default async function Footer({ locale }) {
+  const t = await getTranslations({ locale, namespace: "footer" });
+  const partners = branding.filter((asset) => asset.key !== "codon");
+  const codon = branding.find((asset) => asset.key === "codon");
   return (
-    <footer className="mt-auto w-full border-t border-slate-200 bg-white px-4 py-8 text-slate-600">
-      <div className="mx-auto max-w-6xl">
-        <div className="overflow-x-auto pb-4">
-          <ul
-            aria-label="Project partners"
-            className="flex min-w-max items-center justify-center gap-8 sm:min-w-0"
-          >
-            {branding
-              .filter((asset) => asset.key !== "codon")
-              .map((asset) => (
-                <li
-                  key={asset.key}
-                  className="flex h-16 w-28 shrink-0 items-center justify-center"
+    <footer className="mt-auto bg-card pb-[max(1.5rem,env(safe-area-inset-bottom))]">
+      <div className={`${wrap} pt-10`}>
+        <ul
+          aria-label={t("partners")}
+          className="flex flex-wrap items-center justify-center gap-x-8 gap-y-5"
+        >
+          {partners.map((asset) => (
+            <li key={asset.key} className="flex h-14 w-28 items-center justify-center">
+              {asset.key === "sbunker" ? (
+                <a
+                  href="https://sbunker.org"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={`Sbunker (${t("newTab")})`}
+                  className="rounded-sm"
                 >
-                  {asset.key === "sbunker" ? (
-                    <a
-                      href="https://sbunker.org"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      aria-label="Sbunker (opens in a new tab)"
-                    >
-                      <BrandingImage
-                        asset={asset}
-                        className="max-h-12 max-w-full object-contain"
-                      />
-                    </a>
-                  ) : (
-                    <BrandingImage
-                      asset={asset}
-                      className="max-h-12 max-w-full object-contain"
-                    />
-                  )}
-                </li>
-              ))}
-          </ul>
-        </div>
-        <p className="mx-auto mt-4 max-w-3xl text-center text-xs leading-relaxed">
-          {disclaimer[language]}
+                  <BrandingImage asset={asset} className="max-h-12 max-w-full object-contain" />
+                </a>
+              ) : (
+                <BrandingImage asset={asset} className="max-h-12 max-w-full object-contain" />
+              )}
+            </li>
+          ))}
+        </ul>
+        <p className="mx-auto mt-6 max-w-[36rem] text-center text-sm text-pencil">
+          {t("support")}
         </p>
-        <div className="mt-6 flex flex-col items-center justify-center gap-3 border-t border-slate-100 pt-5 text-center text-xs">
+        <div className="mt-6 flex flex-col items-center gap-3 border-t border-rule pt-6 text-center text-xs text-pencil">
           <a
             href="https://codon.fi"
             target="_blank"
             rel="noopener noreferrer"
-            aria-label="CODON (opens in a new tab)"
+            aria-label={`CODON (${t("newTab")})`}
+            className="rounded-sm"
           >
-            <BrandingImage
-              asset={branding.find((asset) => asset.key === "codon")}
-              className="h-9 w-auto max-w-28 object-contain"
-            />
+            <BrandingImage asset={codon} className="h-9 w-auto max-w-28 object-contain" />
           </a>
-          <span>in co-operation with CODON a part of Progon LLC.</span>
+          <span lang="en">{t("codon")}</span>
+        </div>
+        <div className="mt-8 grid gap-4 rounded-md bg-wash p-4 text-sm sm:p-5 lg:grid-cols-[1fr_auto] lg:items-center">
+          <p className="flex items-start gap-2.5">
+            <Icon name="info" className="mt-0.5 size-5 shrink-0 text-blue" />
+            <span>
+              {t("disclaimer")}{" "}
+              <span className="whitespace-nowrap font-bold">
+                {t("emergency")}{" "}
+                <a href="tel:112" className="tabular text-blue underline underline-offset-4">
+                  112
+                </a>
+              </span>
+            </span>
+          </p>
+          <FooterActions cookies={t("cookies")} install={t("install")} />
         </div>
       </div>
     </footer>

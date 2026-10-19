@@ -1,0 +1,392 @@
+{
+  "meta": {
+    "slogan": "Vaš glas. Bolji grad.",
+    "home": {
+      "title": "Prijavite komunalne probleme u Prištini | kosova.report",
+      "description": "Rupa na putu, ugašena rasveta, prepuni kontejneri? Prijavite sa fotografijom i lokacijom, a prijava ide odeljenju koje je nadležno."
+    },
+    "report": {
+      "title": "Prijavite problem u Prištini | kosova.report",
+      "description": "Izaberite kategoriju, označite mesto na mapi, dodajte fotografije. Prijava dobija broj, privatni ključ i PDF potvrdu. Može i anonimno."
+    },
+    "sent": {
+      "title": "Prijava je poslata | kosova.report"
+    },
+    "track": {
+      "title": "Pronađite svoju prijavu | kosova.report",
+      "description": "Proverite status prijave pomoću broja prijave i privatnog ključa koji ste dobili posle slanja."
+    },
+    "trackReport": {
+      "title": "Status prijave | kosova.report"
+    },
+    "municipality": {
+      "title": "Prijava za odeljenje | kosova.report"
+    },
+    "notFound": {
+      "title": "Stranica nije pronađena | kosova.report"
+    }
+  },
+  "shell": {
+    "skip": "Pređi na sadržaj",
+    "home": "kosova.report, početna stranica",
+    "report": "Prijavi",
+    "reportLong": "Prijavite problem",
+    "track": "Pronađi moju prijavu",
+    "city": "Priština",
+    "citySoon": "Uskoro i drugi gradovi",
+    "language": "Jezik",
+    "languages": {
+      "sq": "Shqip",
+      "sr": "Srpski",
+      "en": "English"
+    },
+    "theme": {
+      "title": "Izgled",
+      "auto": "Automatski",
+      "autoHint": "Svetao danju, taman posle zalaska sunca",
+      "light": "Svetao",
+      "dark": "Taman",
+      "sun": "Visok kontrast",
+      "sunHint": "Za čitanje na suncu"
+    }
+  },
+  "footer": {
+    "support": "Ovu aktivnost podržava CIVICUS Digital Democracy Initiative (DDI).",
+    "partners": "Partneri projekta",
+    "codon": "in co-operation with CODON a part of Progon LLC.",
+    "disclaimer": "Ova platforma nije služba za hitne slučajeve. Prijava ne garantuje trenutno rešavanje problema.",
+    "emergency": "Hitni slučajevi: pozovite",
+    "cookies": "Privatnost i kolačići",
+    "install": "Instaliraj aplikaciju",
+    "newTab": "otvara se u novoj kartici"
+  },
+  "cookies": {
+    "title": "Samo neophodni kolačići",
+    "intro": "Nema reklama ni analitike. Koristimo samo ono što je potrebno da stranica radi.",
+    "necessary": "U redu",
+    "customise": "Pogledaj detalje",
+    "save": "Sačuvaj izbor",
+    "close": "Zatvori",
+    "essential": "Bezbednost i podešavanja",
+    "essentialBody": "Prijava osoblja koristi bezbednosni kolačić. Izabrani jezik i ovo obaveštenje čuvaju se na vašem uređaju.",
+    "always": "Uvek aktivno",
+    "map": "Mapa",
+    "mapBody": "Delovi mape se učitavaju od pružaoca mape, koji vidi vašu IP adresu. Ne postavlja kolačiće.",
+    "offline": "Rad van mreže",
+    "offlineBody": "Aplikacija na uređaju čuva samo stranicu van mreže i ikone. Privatne prijave se ne keširaju. Nacrt prijave ostaje samo na ovom uređaju dok ga ne pošaljete ili obrišete.",
+    "analytics": "Analitika i reklame",
+    "analyticsBody": "Ne koriste se. Nema šta da se uključi."
+  },
+  "install": {
+    "title": "Držite kosova.report na početnom ekranu",
+    "body": "Otvorite je kao aplikaciju i prijavite problem odmah sa ulice, bez traženja stranice.",
+    "action": "Instaliraj aplikaciju",
+    "later": "Ne sada",
+    "iosTitle": "Na iPhone ili iPad uređaju",
+    "iosSteps": [
+      "Otvorite ovu stranicu u Safariju.",
+      "Dodirnite dugme Deli na dnu ekrana.",
+      "Izaberite Dodaj na početni ekran."
+    ],
+    "otherHelp": "U drugim pregledačima potražite Instaliraj aplikaciju u meniju pregledača.",
+    "done": "Zatvori"
+  },
+  "categories": {
+    "label": "Kategorija",
+    "infrastructure": {
+      "name": "Infrastruktura",
+      "examples": "Rupa na putu, polomljen trotoar, javna rasveta koja ne radi, znak koji nedostaje.",
+      "short": "Rupa, polomljen trotoar, ugašena rasveta",
+      "prompt": "Šta je tačno oštećeno? Od kada? Da li je opasno za pešake ili vozila?"
+    },
+    "environment": {
+      "name": "Životna sredina",
+      "examples": "Prepuni kontejneri, otpad bačen na zelenu površinu, drveće posečeno bez dozvole.",
+      "short": "Prepuni kontejneri, otpad, posečeno drveće",
+      "prompt": "Šta vidite i koliko ga ima? Od kada je tako? Da li se ovde često ponavlja?"
+    },
+    "public_services": {
+      "name": "Javne usluge",
+      "examples": "Voda isključena bez najave, autobus koji ne dolazi, zapušena kanalizacija.",
+      "short": "Isključena voda, autobus ne dolazi",
+      "prompt": "Koja usluga ne radi? Od kada? Koliko ljudi ili domaćinstava pogađa?"
+    },
+    "administration": {
+      "name": "Administracija",
+      "examples": "Dokument koji kasni, šalter bez odgovora, informacija koja nedostaje.",
+      "short": "Dokument kasni, šalter bez odgovora",
+      "prompt": "Koja kancelarija ili postupak? Kada ste podneli zahtev? Kakav ste odgovor dobili, ako ste ga dobili?"
+    },
+    "health": {
+      "name": "Zdravstvo",
+      "examples": "Dom zdravlja bez lekara u radno vreme, dugo čekanje bez informacija, nedostatak osnovnih lekova.",
+      "short": "Dom zdravlja bez lekara, čekanje bez informacija",
+      "prompt": "Koja ustanova? Šta se dogodilo i kada? Ne upisujte lične zdravstvene podatke."
+    },
+    "education": {
+      "name": "Obrazovanje",
+      "examples": "Škola bez grejanja, opasno dvorište, pokvareni toaleti.",
+      "short": "Škola bez grejanja, opasno dvorište",
+      "prompt": "Koja škola ili vrtić? Koji je problem i od kada? Koga pogađa?"
+    },
+    "safety": {
+      "name": "Bezbednost",
+      "examples": "Raskrsnica bez semafora, park bez rasvete uveče, psi lutalice kod škole.",
+      "short": "Opasna raskrsnica, park bez rasvete",
+      "prompt": "Gde tačno i u koje doba je najopasnije? Da li je bilo nezgoda?"
+    }
+  },
+  "report": {
+    "title": "Prijavite problem",
+    "steps": [
+      "Kategorija",
+      "Mesto i detalji",
+      "Provera i slanje"
+    ],
+    "stepOf": "Korak {current} od {total}",
+    "progress": "{done} od 3 dela",
+    "yourReport": "Vaša prijava",
+    "expand": "Prikaži prijavu",
+    "collapse": "Zatvori",
+    "emptyCategory": "Ovde se prikazuje kategorija.",
+    "next": "Dalje",
+    "back": "Nazad",
+    "category": {
+      "heading": "Šta prijavljujete?",
+      "sub": "Izaberite kategoriju koja najbolje odgovara problemu."
+    },
+    "details": {
+      "heading": "Gde je i šta se dogodilo?",
+      "municipality": "Opština",
+      "chooseMunicipality": "Izaberite opštinu",
+      "notRouted": "Prijavljivanje za ovu kategoriju u ovoj opštini još nije podešeno. Izaberite drugu kategoriju ili pokušajte kasnije.",
+      "optionsError": "Spisak opština nije učitan. Proverite internet i pokušajte ponovo.",
+      "retry": "Pokušaj ponovo",
+      "location": "Mesto",
+      "useLocation": "Koristi moju lokaciju",
+      "locating": "Tražim lokaciju…",
+      "locationDenied": "Nemamo dozvolu za lokaciju. Dodirnite mapu na mestu problema ili dozvolite lokaciju u podešavanjima pregledača.",
+      "locationUnavailable": "Lokacija nije pronađena. Dodirnite mapu na mestu problema.",
+      "mapHint": "Dodirnite mapu ili prevucite oznaku na tačno mesto. Tastaturom: izaberite mapu i pomerajte oznaku strelicama.",
+      "pinPlaced": "Oznaka je postavljena: {coords}",
+      "outside": "Ova tačka je van opštine {city}. Za sada se primaju samo prijave za {city}.",
+      "mapError": "Mapa nije učitana. Unesite koordinate ispod.",
+      "coordinates": "Unesite koordinate",
+      "latitude": "Geografska širina (N)",
+      "longitude": "Geografska dužina (E)",
+      "description": "Opišite problem",
+      "count": "{count} od 5000",
+      "photos": "Fotografije",
+      "optional": "nije obavezno",
+      "takePhoto": "Fotografiši",
+      "gallery": "Izaberi iz galerije",
+      "photoLimit": "Do 10 fotografija. JPEG, PNG ili WebP.",
+      "photoPrivacy": "Pre slanja, fotografije se smanjuju i uklanjaju im se podaci o lokaciji i uređaju.",
+      "preparing": "Pripremam…",
+      "photo": "Fotografija {n}",
+      "remove": "Ukloni fotografiju {n}",
+      "moveLeft": "Pomeri fotografiju {n} ulevo",
+      "moveRight": "Pomeri fotografiju {n} udesno",
+      "photoFailed": "Ova fotografija nije učitana. Pokušajte sa drugom.",
+      "mapHelp": "Teško vam je da pronađete mesto na mapi? Neka ga telefon pronađe umesto vas.",
+      "locateMe": "Pronađi moju lokaciju"
+    },
+    "review": {
+      "heading": "Proverite prijavu",
+      "sub": "Ovako će je videti odeljenje. Ovako će izgledati i vaš PDF.",
+      "edit": "Izmeni",
+      "editCategory": "Izmeni kategoriju",
+      "editPlace": "Izmeni mesto",
+      "editDescription": "Izmeni opis",
+      "editPhotos": "Izmeni fotografije",
+      "identity": "Kako želite da prijavite?",
+      "anonymous": "Anonimno",
+      "anonymousBody": "Odeljenje ne dobija nikakve kontakt podatke. Status pratite pomoću privatnog ključa.",
+      "named": "Sa emailom",
+      "namedBody": "Odeljenje vidi vaš email i može da vam piše. Promene statusa stižu vam na email.",
+      "email": "Vaš email",
+      "consent": "Slažem se da se moj email da odeljenju koje obrađuje prijavu.",
+      "disclaimer": "Ova platforma nije služba za hitne slučajeve. Za hitne slučajeve pozovite 112.",
+      "submit": "Pošaljite prijavu",
+      "sending": "Slanje…"
+    },
+    "errors": {
+      "summary": "Ispravite sledeće pre nego što nastavite:",
+      "category": "Izaberite kategoriju.",
+      "municipality": "Izaberite opštinu.",
+      "pin": "Postavite oznaku na mapi ili unesite ispravne koordinate.",
+      "outside": "Postavite oznaku unutar izabrane opštine.",
+      "descriptionShort": "Napišite najmanje 10 znakova, da bi odeljenje razumelo problem.",
+      "descriptionLong": "Opis može imati najviše 5000 znakova.",
+      "email": "Unesite ispravan email, na primer ime@primer.com.",
+      "consent": "Označite saglasnost ili izaberite „Anonimno”.",
+      "photos": "Do 10 fotografija, JPEG, PNG ili WebP, svaka do 5 MB.",
+      "submit": "Prijava nije poslata. Proverite podatke i pokušajte ponovo.",
+      "server": "Prijava nije poslata jer servis ne odgovara. Nacrt je sačuvan. Pokušajte ponovo za koji trenutak."
+    },
+    "draft": {
+      "restored": "Nastavili smo prijavu koju ste započeli na ovom uređaju.",
+      "discard": "Počni iznova",
+      "confirmTitle": "Da obrišemo ovaj nacrt?",
+      "confirmBody": "Kategorija, mesto, tekst i fotografije biće uklonjeni sa ovog uređaja.",
+      "confirmYes": "Obriši nacrt",
+      "confirmNo": "Zadrži",
+      "saved": "Nacrt je sačuvan na ovom uređaju."
+    },
+    "offline": {
+      "queued": "Niste na mreži. Prijava je sačuvana na ovom uređaju i biće poslata čim se internet vrati, ako je ova stranica otvorena.",
+      "sendingQueued": "Internet se vratio. Šaljem prijavu…",
+      "banner": "Niste na mreži. Možete nastaviti da popunjavate prijavu."
+    }
+  },
+  "sent": {
+    "heading": "Prijava je poslata",
+    "stamp": "Poslato",
+    "skip": "Preskoči animaciju",
+    "number": "Broj prijave",
+    "copy": "Kopiraj",
+    "copied": "Kopirano",
+    "keyTitle": "Privatni ključ",
+    "keyBody": "Sa brojem prijave i ovim ključem pratite status i preuzimate PDF. Sačuvajte ga sada. Ako ga izgubite, ne postoji način da ga ponovo dobijete.",
+    "copyKey": "Kopiraj ključ",
+    "saveKey": "Sačuvaj kao datoteku",
+    "shareKey": "Pošalji sebi",
+    "keyFileIntro": "Vaša prijava na kosova.report",
+    "savedCheck": "Ključ je sačuvan",
+    "saveFirst": "Sačuvajte ključ i označite „Ključ je sačuvan” pre nego što odete.",
+    "pdf": "Preuzmi PDF potvrdu",
+    "pdfLoading": "Pripremam PDF…",
+    "pdfError": "PDF nije preuzet. Pokušajte ponovo.",
+    "pending": "Prijava je sačuvana. Obaveštenje odeljenju biće poslato što pre.",
+    "next": "Šta sada?",
+    "another": "Prijavite drugi problem",
+    "track": "Pogledaj status prijave",
+    "share": "Preporuči kosova.report",
+    "shareText": "Prijavite probleme u gradu sa fotografijom i lokacijom, može i anonimno.",
+    "missing": "Ova prijava više nije u ovom prozoru. Pronađite je pomoću broja prijave i privatnog ključa.",
+    "missingAction": "Pronađi moju prijavu"
+  },
+  "track": {
+    "heading": "Pronađite svoju prijavu",
+    "sub": "Unesite broj prijave i privatni ključ koje ste dobili posle slanja. Nalaze se i u datoteci koju ste sačuvali.",
+    "number": "Broj prijave",
+    "numberHint": "Na primer PR-2026-000418",
+    "key": "Privatni ključ",
+    "keyHint": "Nalepite ga ceo, sa crticama. Ima 36 znakova.",
+    "submit": "Prikaži prijavu",
+    "loading": "Učitavanje…",
+    "invalidNumber": "Broj izgleda ovako: oznaka grada, godina i broj, na primer PR-2026-000418.",
+    "invalidKey": "Ključ ima 36 znakova: cifre, slova od a do f i četiri crtice.",
+    "notFound": "Nismo pronašli prijavu sa ovim brojem i ključem. Proverite oba i pokušajte ponovo.",
+    "noKey": "Ovaj link nema ključ ili je istekao. Unesite broj i ključ ispod.",
+    "unavailable": "Servis trenutno ne odgovara. Pokušajte ponovo za koji trenutak.",
+    "private": "Ova stranica je privatna. Ne delite link javno.",
+    "status": "Status",
+    "statuses": {
+      "Pending": "Na čekanju",
+      "In Progress": "U obradi",
+      "Resolved": "Rešeno"
+    },
+    "timeline": {
+      "submitted": "Poslato",
+      "routed": "Kod nadležnog odeljenja",
+      "handling": "Odeljenje radi na prijavi",
+      "resolved": "Označeno kao rešeno"
+    },
+    "refresh": "Osveži",
+    "pdf": "Preuzmi PDF potvrdu",
+    "another": "Pronađi drugu prijavu"
+  },
+  "municipality": {
+    "heading": "Prijava za odeljenje",
+    "handling": "Radimo na ovome",
+    "resolve": "Označi kao rešeno",
+    "saving": "Čuvanje…",
+    "saved": "Status je sačuvan. Podnosilac dobija obaveštenje ako je ostavio email.",
+    "error": "Status nije sačuvan. Link je možda istekao. Pokušajte ponovo ili otvorite link iz emaila."
+  },
+  "receipt": {
+    "kind": "Građanska prijava",
+    "place": "Mesto",
+    "description": "Opis",
+    "photos": "Fotografije",
+    "photoCount": "{count, plural, =0 {Bez fotografija} one {# fotografija} few {# fotografije} other {# fotografija}}",
+    "submitted": "Poslato",
+    "mode": "Način",
+    "anonymous": "Anonimno",
+    "named": "Sa emailom",
+    "draft": "Nacrt, još bez broja",
+    "proofNote": "Ova potvrda dokazuje slanje na kosova.report. Ne potvrđuje da je nadležna ustanova rešila problem."
+  },
+  "home": {
+    "lede": "Rupa u Dardaniji, ugašeno svetlo u Ulpijani, prepuni kontejneri kod autobuske stanice. Prijavite ono što vidite, sa fotografijom i lokacijom, a prijava ide odeljenju koje je za to nadležno.",
+    "citiesSoon": "Za sada u Prištini. Druge opštine dolaze u bliskoj budućnosti.",
+    "cta": "Prijavite problem",
+    "see": "Pogledajte kako izgleda prijava",
+    "disclaimerShort": "Ovo nije služba za hitne slučajeve. Za hitne slučajeve pozovite",
+    "mapLabel": "Mapa centra Prištine sa primerima prijava",
+    "sample": "Primer",
+    "sampleText": "Duboka rupa ispred ulaza u školu. Automobili je zaobilaze prelazeći u drugu traku. Tu je od kiše prošle nedelje.",
+    "how": {
+      "title": "Jedna prijava, četiri dela",
+      "sub": "Da, traje oko dva minuta. Najviše vremena ode na traženje tačnog mesta na mapi.",
+      "steps": [
+        {
+          "title": "Izaberite kategoriju",
+          "body": "Sedam oblasti, od puteva do škola. Kategorija određuje koje odeljenje dobija prijavu."
+        },
+        {
+          "title": "Postavite oznaku",
+          "body": "Lokacijom telefona ili jednim dodirom na mapi. Tačna tačka štedi mnogo pitanja kasnije."
+        },
+        {
+          "title": "Opišite i fotografišite",
+          "body": "Šta je oštećeno, od kada, da li je opasno. Dobra fotografija vredi više od pasusa teksta."
+        },
+        {
+          "title": "Pošaljite i sačuvajte",
+          "body": "Dobijate broj prijave, privatni ključ i PDF potvrdu. Sa njima kasnije pratite prijavu."
+        }
+      ]
+    },
+    "choice": {
+      "title": "Sa imenom ili anonimno. Vi birate.",
+      "anonymousTitle": "Anonimno",
+      "anonymousBody": "Odeljenje ne dobija nikakve kontakt podatke. Vi čuvate privatni ključ i pomoću njega pratite status. Bez ključa ni mi ne možemo da povežemo prijavu sa vama.",
+      "namedTitle": "Sa emailom",
+      "namedBody": "Odeljenje vidi vaš email i može da vas pita za više detalja. Kada se status promeni, stiže vam email.",
+      "keyCaption": "Privatni ključ. Imate ga samo vi."
+    },
+    "categoriesTitle": "Šta možete da prijavite",
+    "categoriesSub": "Izaberite oblast i prijava se otvara sa njom već izabranom.",
+    "after": {
+      "title": "Šta se dešava posle slanja",
+      "steps": [
+        {
+          "title": "Prijava ide odeljenju",
+          "body": "Kancelariji koja pokriva tu kategoriju u vašoj opštini, sa fotografijama, mestom na mapi i opisom."
+        },
+        {
+          "title": "Vi imate potvrdu",
+          "body": "Broj prijave, privatni ključ i PDF pokazuju da je prijava poslata i kada."
+        },
+        {
+          "title": "Odeljenje ažurira status",
+          "body": "Kada je označi kao „U obradi” ili „Rešeno”, vidite to pomoću ključa. Ako ste ostavili email, stiže vam obaveštenje."
+        }
+      ],
+      "limitsTitle": "Šta ne možemo da obećamo",
+      "limits": "Ova platforma nije služba za hitne slučajeve. Prijava ne garantuje trenutno rešavanje problema. Odeljenje samo odlučuje kako i kada će je obraditi.",
+      "emergency": "Ako je neko u opasnosti, pozovite"
+    }
+  },
+  "system": {
+    "notFoundTitle": "Ove stranice nema na mapi",
+    "notFoundBody": "Link je možda star ili pogrešno upisan.",
+    "goHome": "Idi na početnu stranicu",
+    "errorTitle": "Nešto nije uspelo",
+    "errorBody": "Stranica se nije pravilno otvorila. Nacrt prijave, ako ga imate, i dalje je na ovom uređaju.",
+    "retry": "Pokušaj ponovo",
+    "offlineTitle": "Niste na mreži"
+  }
+}

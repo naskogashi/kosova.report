@@ -31,6 +31,7 @@ Legend: ☐ not started · ◐ in progress · ☑ redesigned and verified.
 | ☐ | **missing** — retrieve by key | — | Today a key can only be used through the emailed/copied link; there is nowhere to type it. | — | New route: report number + key input, paste/auto-format, invalid/expired states. Uses the existing tracking API, no backend change. |
 | ☐ | **missing** — privacy, cookies, about, FAQ | — | The cookie dialog is the only privacy text on the site. | — | New long-form pages. Legal text needs an owner (see open questions). |
 | ☐ | **missing** — category and city guide pages | — | — | — | Indexable "report a pothole in Prishtina" pages. Needs real department responsibilities (`TODO(data)`). |
+| ☐ | **new, requested** — news (`/sq/lajme`, `/sr/vesti`, `/en/news`) and article pages | — | Updates, articles and reports from the team for citizens. | — | Index, article, empty, not found. Needs a `news_posts` table, an admin editor and cover images in R2 (backend addition). |
 | ☐ | **missing** — `/design` | — | — | — | Dev-only system reference, `noindex`. |
 
 ## Admin / department routes (all `force-dynamic`, `noindex`, sq/en)

@@ -1,0 +1,392 @@
+{
+  "meta": {
+    "slogan": "Zëri yt. Një qytet më i mirë.",
+    "home": {
+      "title": "Raporto problemet e qytetit në Prishtinë | kosova.report",
+      "description": "Gropë në rrugë, ndriçim i fikur, kontejnerë plot? Raporto me foto dhe vendndodhje, dhe raporti shkon te departamenti që e mbulon."
+    },
+    "report": {
+      "title": "Raporto një problem në Prishtinë | kosova.report",
+      "description": "Zgjidh kategorinë, vendos shenjën në hartë, shto foto. Raporti merr numër, çelës privat dhe dëshmi PDF. Mund të raportosh edhe pa emër."
+    },
+    "sent": {
+      "title": "Raporti u dërgua | kosova.report"
+    },
+    "track": {
+      "title": "Gjej raportin tënd | kosova.report",
+      "description": "Shiko ecurinë e raportit me numrin e raportit dhe çelësin privat që more pas dërgimit."
+    },
+    "trackReport": {
+      "title": "Ecuria e raportit | kosova.report"
+    },
+    "municipality": {
+      "title": "Raporti për departamentin | kosova.report"
+    },
+    "notFound": {
+      "title": "Faqja nuk u gjet | kosova.report"
+    }
+  },
+  "shell": {
+    "skip": "Kalo te përmbajtja",
+    "home": "kosova.report, faqja kryesore",
+    "report": "Raporto",
+    "reportLong": "Raporto një problem",
+    "track": "Gjej raportin tim",
+    "city": "Prishtinë",
+    "citySoon": "Qytete të tjera së shpejti",
+    "language": "Gjuha",
+    "languages": {
+      "sq": "Shqip",
+      "sr": "Srpski",
+      "en": "English"
+    },
+    "theme": {
+      "title": "Pamja",
+      "auto": "Automatike",
+      "autoHint": "E çelët ditën, e errët pas perëndimit të diellit",
+      "light": "E çelët",
+      "dark": "E errët",
+      "sun": "Kontrast i lartë",
+      "sunHint": "Për lexim në diell"
+    }
+  },
+  "footer": {
+    "support": "Ky aktivitet mbështetet nga CIVICUS Digital Democracy Initiative (DDI).",
+    "partners": "Partnerët e projektit",
+    "codon": "in co-operation with CODON a part of Progon LLC.",
+    "disclaimer": "Kjo platformë nuk është shërbim emergjence. Raportimi nuk garanton zgjidhjen e menjëhershme të problemit.",
+    "emergency": "Urgjenca: thirr",
+    "cookies": "Privatësia dhe cookies",
+    "install": "Instalo aplikacionin",
+    "newTab": "hapet në skedë të re"
+  },
+  "cookies": {
+    "title": "Vetëm cookies të domosdoshme",
+    "intro": "Nuk ka reklama dhe as analitikë. Përdorim vetëm atë që duhet që faqja të punojë.",
+    "necessary": "Në rregull",
+    "customise": "Shiko detajet",
+    "save": "Ruaj zgjedhjen",
+    "close": "Mbyll",
+    "essential": "Siguria dhe preferencat",
+    "essentialBody": "Hyrja e stafit përdor një cookie sigurie. Gjuha që zgjedh dhe ky njoftim ruhen në pajisjen tënde.",
+    "always": "Gjithmonë aktive",
+    "map": "Harta",
+    "mapBody": "Pjesët e hartës ngarkohen nga ofruesi i hartës, i cili e sheh adresën tënde IP. Nuk vendos cookies.",
+    "offline": "Puna jashtë linje",
+    "offlineBody": "Aplikacioni ruan në pajisje vetëm faqen jashtë linje dhe ikonat. Raportet private nuk ruhen në cache. Drafti yt ruhet vetëm në këtë pajisje derisa ta dërgosh ose ta fshish.",
+    "analytics": "Analitikë dhe reklama",
+    "analyticsBody": "Nuk përdoren. Nuk ka asgjë për të aktivizuar."
+  },
+  "install": {
+    "title": "Mbaje kosova.report në ekranin kryesor",
+    "body": "Hape si aplikacion dhe raporto direkt nga rruga, pa e kërkuar faqen.",
+    "action": "Instalo aplikacionin",
+    "later": "Jo tani",
+    "iosTitle": "Në iPhone ose iPad",
+    "iosSteps": [
+      "Hape këtë faqe në Safari.",
+      "Prek butonin Ndaj në fund të ekranit.",
+      "Zgjidh Shto në ekranin kryesor."
+    ],
+    "otherHelp": "Në shfletues të tjerë, kërko Instalo aplikacionin në menynë e shfletuesit.",
+    "done": "Mbyll"
+  },
+  "categories": {
+    "label": "Kategoria",
+    "infrastructure": {
+      "name": "Infrastrukturë",
+      "examples": "Gropë në rrugë, trotuar i thyer, ndriçim publik që nuk punon, tabelë që mungon.",
+      "short": "Gropë, trotuar i thyer, ndriçim i fikur",
+      "prompt": "Çfarë saktësisht është prishur? Që kur? A është e rrezikshme për këmbësorët ose makinat?"
+    },
+    "environment": {
+      "name": "Mjedis",
+      "examples": "Kontejnerë të mbushur, mbeturina të hedhura në lëndinë, pemë të prera pa leje.",
+      "short": "Kontejnerë plot, mbeturina, pemë të prera",
+      "prompt": "Çfarë sheh dhe sa është? Që kur është kështu? Ndodh shpesh në këtë vend?"
+    },
+    "public_services": {
+      "name": "Shërbime publike",
+      "examples": "Ujë i ndërprerë pa njoftim, autobus që nuk vjen, kanalizim i bllokuar.",
+      "short": "Ujë i ndërprerë, autobus që nuk vjen",
+      "prompt": "Cili shërbim nuk punon? Që kur? Sa njerëz ose shtëpi prek?"
+    },
+    "administration": {
+      "name": "Administratë",
+      "examples": "Dokument që vonohet, sportel që nuk përgjigjet, informacion që mungon.",
+      "short": "Dokument që vonohet, sportel pa përgjigje",
+      "prompt": "Cila zyrë ose procedurë? Kur e ke kërkuar? Çfarë përgjigje more, nëse more?"
+    },
+    "health": {
+      "name": "Shëndetësi",
+      "examples": "QKMF pa mjek në orar pune, pritje e gjatë pa informacion, mungesë barnash bazë.",
+      "short": "QKMF pa mjek, pritje pa informacion",
+      "prompt": "Cili institucion? Çfarë ndodhi dhe kur? Mos shkruaj të dhëna shëndetësore personale."
+    },
+    "education": {
+      "name": "Arsim",
+      "examples": "Shkollë pa ngrohje, oborr i rrezikshëm, tualete të prishura.",
+      "short": "Shkollë pa ngrohje, oborr i rrezikshëm",
+      "prompt": "Cila shkollë ose çerdhe? Çfarë problemi ka dhe që kur? Kë prek?"
+    },
+    "safety": {
+      "name": "Siguri",
+      "examples": "Kryqëzim pa semafor, park pa ndriçim në mbrëmje, qen endacakë afër shkollës.",
+      "short": "Kryqëzim i rrezikshëm, park pa ndriçim",
+      "prompt": "Ku saktësisht dhe në cilën orë është më e rrezikshme? Ka pasur aksidente?"
+    }
+  },
+  "report": {
+    "title": "Raporto një problem",
+    "steps": [
+      "Kategoria",
+      "Vendi dhe detajet",
+      "Kontrollo dhe dërgo"
+    ],
+    "stepOf": "Hapi {current} nga {total}",
+    "progress": "{done} nga 3 pjesë",
+    "yourReport": "Raporti yt",
+    "expand": "Shiko raportin",
+    "collapse": "Mbylle",
+    "emptyCategory": "Kategoria shfaqet këtu.",
+    "next": "Vazhdo",
+    "back": "Prapa",
+    "category": {
+      "heading": "Çfarë po raporton?",
+      "sub": "Zgjidh kategorinë që i përshtatet më shumë problemit."
+    },
+    "details": {
+      "heading": "Ku është dhe çfarë ka ndodhur?",
+      "municipality": "Komuna",
+      "chooseMunicipality": "Zgjidh komunën",
+      "notRouted": "Raportimi për këtë kategori në këtë komunë nuk është konfiguruar ende. Zgjidh një kategori tjetër ose provo më vonë.",
+      "optionsError": "Lista e komunave nuk u ngarkua. Kontrollo internetin dhe provo përsëri.",
+      "retry": "Provo përsëri",
+      "location": "Vendi",
+      "useLocation": "Përdor vendndodhjen time",
+      "locating": "Duke gjetur vendndodhjen…",
+      "locationDenied": "Nuk kemi leje për vendndodhjen. Prek hartën te vendi i problemit, ose lejo vendndodhjen te cilësimet e shfletuesit.",
+      "locationUnavailable": "Vendndodhja nuk u gjet. Prek hartën te vendi i problemit.",
+      "mapHint": "Prek hartën ose tërhiq shenjën te vendi i saktë. Me tastierë: zgjidh hartën dhe lëviz shenjën me shigjeta.",
+      "pinPlaced": "Shenja u vendos: {coords}",
+      "outside": "Kjo pikë është jashtë {city}. Tani për tani pranohen vetëm raporte për {city}.",
+      "mapError": "Harta nuk u ngarkua. Shkruaj koordinatat më poshtë.",
+      "coordinates": "Shkruaj koordinatat",
+      "latitude": "Gjerësia (N)",
+      "longitude": "Gjatësia (E)",
+      "description": "Përshkruaj problemin",
+      "count": "{count} nga 5000",
+      "photos": "Fotografi",
+      "optional": "jo e detyrueshme",
+      "takePhoto": "Bëj foto",
+      "gallery": "Zgjidh nga galeria",
+      "photoLimit": "Deri në 10 foto. JPEG, PNG ose WebP.",
+      "photoPrivacy": "Para dërgimit, fotot zvogëlohen dhe u hiqen të dhënat e vendndodhjes dhe të pajisjes.",
+      "preparing": "Duke përgatitur…",
+      "photo": "Foto {n}",
+      "remove": "Hiq foton {n}",
+      "moveLeft": "Lëvize foton {n} majtas",
+      "moveRight": "Lëvize foton {n} djathtas",
+      "photoFailed": "Kjo foto nuk u lexua. Provo një tjetër.",
+      "mapHelp": "E ke të vështirë ta gjesh vendin në hartë? Lëre telefonin ta gjejë për ty.",
+      "locateMe": "Gjej vendndodhjen time"
+    },
+    "review": {
+      "heading": "Kontrollo raportin",
+      "sub": "Kështu do ta shohë departamenti. Kështu do të duket edhe PDF-ja jote.",
+      "edit": "Ndrysho",
+      "editCategory": "Ndrysho kategorinë",
+      "editPlace": "Ndrysho vendin",
+      "editDescription": "Ndrysho përshkrimin",
+      "editPhotos": "Ndrysho fotot",
+      "identity": "Si dëshiron të raportosh?",
+      "anonymous": "Pa emër",
+      "anonymousBody": "Departamenti nuk merr asnjë të dhënë kontakti. Ecurinë e sheh me çelësin privat.",
+      "named": "Me email",
+      "namedBody": "Departamenti e sheh emailin tënd dhe mund të të shkruajë. Ndryshimet e statusit të vijnë në email.",
+      "email": "Emaili yt",
+      "consent": "Pajtohem që emaili im t’i jepet departamentit që e trajton raportin.",
+      "disclaimer": "Kjo platformë nuk është shërbim emergjence. Për urgjenca thirr 112.",
+      "submit": "Dërgo raportin",
+      "sending": "Duke dërguar…"
+    },
+    "errors": {
+      "summary": "Rregullo këto para se të vazhdosh:",
+      "category": "Zgjidh një kategori.",
+      "municipality": "Zgjidh komunën.",
+      "pin": "Vendos shenjën në hartë ose shkruaj koordinata të vlefshme.",
+      "outside": "Vendos shenjën brenda komunës së zgjedhur.",
+      "descriptionShort": "Shkruaj të paktën 10 shkronja, që departamenti ta kuptojë problemin.",
+      "descriptionLong": "Përshkrimi mund të ketë deri në 5000 shkronja.",
+      "email": "Shkruaj një email të vlefshëm, për shembull emri@shembull.com.",
+      "consent": "Shëno pëlqimin, ose zgjidh “Pa emër”.",
+      "photos": "Deri në 10 foto, JPEG, PNG ose WebP, secila deri në 5 MB.",
+      "submit": "Raporti nuk u dërgua. Kontrollo të dhënat dhe provo përsëri.",
+      "server": "Raporti nuk u dërgua sepse shërbimi nuk po përgjigjet. Drafti yt është ruajtur. Provo përsëri pas pak."
+    },
+    "draft": {
+      "restored": "Vazhduam raportin që kishe filluar në këtë pajisje.",
+      "discard": "Fillo nga e para",
+      "confirmTitle": "Ta fshijmë këtë draft?",
+      "confirmBody": "Kategoria, vendi, teksti dhe fotot do të hiqen nga kjo pajisje.",
+      "confirmYes": "Fshije draftin",
+      "confirmNo": "Mbaje",
+      "saved": "Drafti u ruajt në këtë pajisje."
+    },
+    "offline": {
+      "queued": "Je jashtë linje. Raporti u ruajt në këtë pajisje dhe dërgohet vetë sapo të kthehet interneti, nëse kjo faqe është e hapur.",
+      "sendingQueued": "Interneti u kthye. Duke dërguar raportin…",
+      "banner": "Je jashtë linje. Mund të vazhdosh të plotësosh raportin."
+    }
+  },
+  "sent": {
+    "heading": "Raporti u dërgua",
+    "stamp": "Dërguar",
+    "skip": "Kalo animacionin",
+    "number": "Numri i raportit",
+    "copy": "Kopjo",
+    "copied": "U kopjua",
+    "keyTitle": "Çelësi privat",
+    "keyBody": "Me numrin e raportit dhe këtë çelës shikon ecurinë dhe shkarkon PDF-në. Ruaje tani. Nëse e humb, nuk ka mënyrë ta marrësh përsëri.",
+    "copyKey": "Kopjo çelësin",
+    "saveKey": "Ruaje si skedar",
+    "shareKey": "Dërgoje te vetja",
+    "keyFileIntro": "Raporti juaj në kosova.report",
+    "savedCheck": "E ruajta çelësin",
+    "saveFirst": "Ruaje çelësin dhe shëno “E ruajta çelësin” para se të largohesh.",
+    "pdf": "Shkarko dëshminë PDF",
+    "pdfLoading": "Duke përgatitur PDF-në…",
+    "pdfError": "PDF-ja nuk u shkarkua. Provo përsëri.",
+    "pending": "Raporti u ruajt. Njoftimi te departamenti do të dërgohet sa më shpejt.",
+    "next": "Çfarë tani?",
+    "another": "Raporto një problem tjetër",
+    "track": "Shiko ecurinë e raportit",
+    "share": "Trego për kosova.report",
+    "shareText": "Raporto problemet e qytetit me foto dhe vendndodhje, edhe pa emër.",
+    "missing": "Ky raport nuk është më në këtë dritare. Gjeje me numrin e raportit dhe çelësin privat.",
+    "missingAction": "Gjej raportin tim"
+  },
+  "track": {
+    "heading": "Gjej raportin tënd",
+    "sub": "Shkruaj numrin e raportit dhe çelësin privat që more pas dërgimit. I gjen edhe te skedari që ruajte.",
+    "number": "Numri i raportit",
+    "numberHint": "Për shembull PR-2026-000418",
+    "key": "Çelësi privat",
+    "keyHint": "Ngjite të plotë, me vizat. Ka 36 shenja.",
+    "submit": "Shiko raportin",
+    "loading": "Duke ngarkuar…",
+    "invalidNumber": "Numri duket kështu: kodi i qytetit, viti dhe një numër, për shembull PR-2026-000418.",
+    "invalidKey": "Çelësi ka 36 shenja: shifra, shkronjat a deri f dhe katër viza.",
+    "notFound": "Nuk gjetëm raport me këtë numër dhe çelës. Kontrollo të dyja dhe provo përsëri.",
+    "noKey": "Kjo lidhje nuk ka çelës ose ka skaduar. Shkruaj numrin dhe çelësin më poshtë.",
+    "unavailable": "Shërbimi nuk po përgjigjet tani. Provo përsëri pas pak.",
+    "private": "Kjo faqe është private. Mos e ndaj lidhjen publikisht.",
+    "status": "Statusi",
+    "statuses": {
+      "Pending": "Në pritje",
+      "In Progress": "Po trajtohet",
+      "Resolved": "I zgjidhur"
+    },
+    "timeline": {
+      "submitted": "Dërguar",
+      "routed": "Te departamenti përgjegjës",
+      "handling": "Departamenti po e trajton",
+      "resolved": "Shënuar si i zgjidhur"
+    },
+    "refresh": "Rifresko",
+    "pdf": "Shkarko dëshminë PDF",
+    "another": "Gjej një raport tjetër"
+  },
+  "municipality": {
+    "heading": "Raporti për departamentin",
+    "handling": "Po e trajtojmë",
+    "resolve": "Shëno si të zgjidhur",
+    "saving": "Duke ruajtur…",
+    "saved": "Statusi u ruajt. Raportuesi njoftohet nëse ka dhënë email.",
+    "error": "Statusi nuk u ruajt. Lidhja mund të ketë skaduar. Provo përsëri ose hape lidhjen nga emaili."
+  },
+  "receipt": {
+    "kind": "Raport qytetar",
+    "place": "Vendi",
+    "description": "Përshkrimi",
+    "photos": "Fotot",
+    "photoCount": "{count, plural, =0 {Pa foto} one {# foto} other {# foto}}",
+    "submitted": "Dërguar",
+    "mode": "Mënyra",
+    "anonymous": "Pa emër",
+    "named": "Me email",
+    "draft": "Draft, ende pa numër",
+    "proofNote": "Kjo dëshmi konfirmon dërgimin në kosova.report. Nuk vërteton zgjidhjen nga institucioni përgjegjës."
+  },
+  "home": {
+    "lede": "Gropa në Dardani, ndriçimi i fikur në Ulpianë, kontejnerët plot afër stacionit të autobusëve. Raporto atë që sheh, me foto dhe vendndodhje, dhe raporti shkon te departamenti që e mbulon.",
+    "citiesSoon": "Tani për tani në Prishtinë. Komuna të tjera vijnë në të ardhmen e afërt.",
+    "cta": "Raporto një problem",
+    "see": "Shiko si duket raporti",
+    "disclaimerShort": "Nuk është shërbim emergjence. Për urgjenca thirr",
+    "mapLabel": "Harta e qendrës së Prishtinës me shembuj raportesh",
+    "sample": "Shembull",
+    "sampleText": "Gropë e thellë përballë hyrjes së shkollës. Makinat e anashkalojnë duke dalë në korsinë tjetër. Është aty që nga reshjet e javës së kaluar.",
+    "how": {
+      "title": "Një raport, katër pjesë",
+      "sub": "Po, zgjat rreth dy minuta. Shumica e kohës shkon te gjetja e vendit të saktë në hartë.",
+      "steps": [
+        {
+          "title": "Zgjidh kategorinë",
+          "body": "Shtatë fusha, nga rrugët te shkollat. Kategoria vendos se cili departament e merr raportin."
+        },
+        {
+          "title": "Vendos shenjën",
+          "body": "Me vendndodhjen e telefonit ose me një prekje në hartë. Një pikë e saktë kursen shumë pyetje më vonë."
+        },
+        {
+          "title": "Shkruaj dhe fotografo",
+          "body": "Çfarë është prishur, që kur, a është e rrezikshme. Një foto e mirë vlen më shumë se një paragraf."
+        },
+        {
+          "title": "Dërgo dhe ruaje",
+          "body": "Merr numrin e raportit, çelësin privat dhe dëshminë PDF. Me to e ndjek raportin më vonë."
+        }
+      ]
+    },
+    "choice": {
+      "title": "Me emër ose pa emër. Ti vendos.",
+      "anonymousTitle": "Pa emër",
+      "anonymousBody": "Departamenti nuk merr asnjë të dhënë kontakti. Ti ruan një çelës privat dhe me të e sheh ecurinë. Pa çelës, as ne nuk mund ta lidhim raportin me ty.",
+      "namedTitle": "Me email",
+      "namedBody": "Departamenti e sheh emailin tënd dhe mund të të kërkojë më shumë detaje. Kur ndryshon statusi, të vjen një email.",
+      "keyCaption": "Çelësi privat. Vetëm ti e ke."
+    },
+    "categoriesTitle": "Çfarë mund të raportosh",
+    "categoriesSub": "Zgjidh një fushë dhe raporti hapet me të të zgjedhur.",
+    "after": {
+      "title": "Çfarë ndodh pasi e dërgon",
+      "steps": [
+        {
+          "title": "Raporti shkon te departamenti",
+          "body": "Te zyra që e mbulon atë kategori në komunën tënde, me fotot, vendin në hartë dhe përshkrimin."
+        },
+        {
+          "title": "Ti ke dëshminë",
+          "body": "Numri i raportit, çelësi privat dhe PDF-ja tregojnë se raporti u dërgua dhe kur."
+        },
+        {
+          "title": "Departamenti përditëson statusin",
+          "body": "Kur e shënon “Po trajtohet” ose “I zgjidhur”, e sheh me çelësin. Nëse ke dhënë email, të vjen njoftim."
+        }
+      ],
+      "limitsTitle": "Çfarë nuk mund të premtojmë",
+      "limits": "Kjo platformë nuk është shërbim emergjence. Raportimi nuk garanton zgjidhjen e menjëhershme të problemit. Departamenti vendos vetë si dhe kur e trajton.",
+      "emergency": "Nëse dikush është në rrezik, thirr"
+    }
+  },
+  "system": {
+    "notFoundTitle": "Kjo faqe nuk është në hartë",
+    "notFoundBody": "Lidhja mund të jetë e vjetër ose e shkruar gabim.",
+    "goHome": "Shko në faqen kryesore",
+    "errorTitle": "Diçka nuk punoi",
+    "errorBody": "Faqja nuk u hap si duhet. Drafti i raportit, nëse ke, është ende në këtë pajisje.",
+    "retry": "Provo përsëri",
+    "offlineTitle": "Je jashtë linje"
+  }
+}

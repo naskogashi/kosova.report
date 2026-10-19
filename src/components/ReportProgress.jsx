@@ -1,247 +1,219 @@
 "use client";
-import { useEffect, useState } from "react";
-import { CheckCircle2, Clock, Download, RefreshCw } from "lucide-react";
-const copy = {
-  sq: {
-    title: "Ecuria e raportit",
-    load: "Duke ngarkuar…",
-    error:
-      "Lidhja është e pavlefshme, ka skaduar ose raporti nuk është i disponueshëm.",
-    refresh: "Rifresko",
-    download: "Shkarko dëshminë PDF",
-    pending: "Në pritje",
-    progress: "Duke u trajtuar",
-    resolved: "I zgjidhur",
-    handling: "Po e trajtojmë këtë çështje",
-    resolve: "Shëno si të zgjidhur",
-    municipality: "Përditësimi i komunës",
-    notice: "Kjo lidhje është private. Mos e ndani publikisht.",
-    saved: "Përditësimi u ruajt.",
-    saving: "Duke ruajtur…",
-  },
-  sr: {
-    title: "Napredak prijave",
-    load: "Učitavanje…",
-    error: "Link je nevažeći, istekao je ili prijava nije dostupna.",
-    refresh: "Osveži",
-    download: "Preuzmi PDF potvrdu",
-    pending: "Na čekanju",
-    progress: "U obradi",
-    resolved: "Rešeno",
-    handling: "Radimo na ovom problemu",
-    resolve: "Označi kao rešeno",
-    municipality: "Ažuriranje opštine",
-    notice: "Ovaj link je privatan. Nemojte ga javno deliti.",
-    saved: "Ažuriranje je sačuvano.",
-    saving: "Čuvanje…",
-  },
-  en: {
-    title: "Report progress",
-    load: "Loading…",
-    error:
-      "This private link is invalid, expired, or the report is unavailable.",
-    refresh: "Refresh",
-    download: "Download PDF receipt",
-    pending: "Pending",
-    progress: "Being handled",
-    resolved: "Resolved",
-    handling: "We are handling this issue",
-    resolve: "Mark as resolved",
-    municipality: "Municipality update",
-    notice: "This link is private. Do not share it publicly.",
-    saved: "Update saved.",
-    saving: "Saving…",
-  },
-};
+import { useCallback, useEffect, useState } from "react";
+import { useFormatter, useLocale, useTranslations } from "next-intl";
+import Receipt from "./Receipt";
+import TrackForm from "./TrackForm";
+import { Icon } from "./icons";
+import { btn, wrap } from "./ui";
+import { localizedCityName } from "../lib/municipality-names";
+import { downloadReportPDF } from "../lib/report-pdf-client";
+
+const order = ["Pending", "In Progress", "Resolved"];
+
+// Citizen progress (/track) and the department's update page (/municipality).
+// The key arrives in the #fragment, is kept for this tab only, and is removed from the address bar.
 export default function ReportProgress({ publicId, municipality = false }) {
-  const [language, setLanguage] = useState("sq"),
-    [token, setToken] = useState(""),
-    [report, setReport] = useState(null),
-    [error, setError] = useState(""),
-    [busy, setBusy] = useState(false),
-    [notice, setNotice] = useState("");
-  const t = copy[language],
-    endpoint = `/api/${municipality ? "municipality" : "tracking"}/${encodeURIComponent(publicId)}`;
+  const t = useTranslations("track");
+  const tm = useTranslations("municipality");
+  const ts = useTranslations("sent");
+  const locale = useLocale();
+  const format = useFormatter();
+  const [token, setToken] = useState(null);
+  const [report, setReport] = useState(null);
+  const [state, setState] = useState("idle");
+  const [busy, setBusy] = useState(false);
+  const [notice, setNotice] = useState("");
+  const [pdfError, setPdfError] = useState(false);
+  const storeKey = `kr-${municipality ? "dept" : "key"}:${publicId}`;
+  const endpoint = `/api/${municipality ? "municipality" : "tracking"}/${encodeURIComponent(publicId)}`;
+
   useEffect(() => {
-    const url = new URL(location.href),
-      lang = url.searchParams.get("lang");
-    if (Object.hasOwn(copy, lang)) setLanguage(lang);
-    const key = new URLSearchParams(url.hash.slice(1)).get("key");
-    if (key) {
-      setToken(key);
-      url.hash = "";
-      history.replaceState({}, "", url);
-    } else setError("link");
-  }, []);
-  useEffect(() => {
-    document.documentElement.lang = language;
-  }, [language]);
-  async function load() {
-    setBusy(true);
-    setError("");
+    const fromHash = new URLSearchParams(location.hash.slice(1)).get("key");
+    if (fromHash) {
+      try {
+        sessionStorage.setItem(storeKey, fromHash);
+      } catch {}
+      history.replaceState(history.state, "", location.pathname + location.search);
+    }
+    let stored = null;
+    try {
+      stored = sessionStorage.getItem(storeKey);
+    } catch {}
+    setToken(fromHash || stored || "");
+  }, [storeKey]);
+
+  const load = useCallback(async () => {
+    if (!token) return;
+    setState("loading");
     try {
       const response = await fetch(endpoint, {
         headers: { Authorization: `Bearer ${token}` },
         cache: "no-store",
       });
-      if (!response.ok) throw Error();
+      if (response.status === 404) return setState("notFound");
+      if (!response.ok) return setState("unavailable");
       setReport(await response.json());
+      setState("ready");
     } catch {
-      setError("link");
-    } finally {
-      setBusy(false);
+      setState("unavailable");
     }
-  }
+  }, [endpoint, token]);
   useEffect(() => {
-    if (token) load();
-  }, [token]);
+    load();
+  }, [load]);
+
   async function update(status) {
     setBusy(true);
-    setError("");
+    setNotice("");
     try {
       const response = await fetch(endpoint, {
         method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
+        headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
         body: JSON.stringify({ status }),
       });
-      if (!response.ok) throw Error();
+      if (!response.ok) throw new Error();
       setReport((current) => ({ ...current, status }));
-      setNotice(t.saved);
+      setNotice(tm("saved"));
     } catch {
-      setError("link");
+      setNotice(tm("error"));
     } finally {
       setBusy(false);
     }
   }
-  async function pdf() {
-    setBusy(true);
-    try {
-      const response = await fetch(
-        `/api/reports/${encodeURIComponent(publicId)}/pdf`,
-        { headers: { Authorization: `Bearer ${token}` }, cache: "no-store" },
-      );
-      if (!response.ok) throw Error();
-      const url = URL.createObjectURL(await response.blob()),
-        link = document.createElement("a");
-      link.href = url;
-      link.download = `${publicId}.pdf`;
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-      setTimeout(() => URL.revokeObjectURL(url), 30000);
-    } catch {
-      setError("link");
-    } finally {
-      setBusy(false);
-    }
-  }
+
+  const heading = municipality ? tm("heading") : t("heading");
+  if (token === null) return <div className="min-h-[60svh]" />;
+  if (!token && !municipality)
+    return (
+      <div className={`${wrap} py-10 lg:py-16`}>
+        <h1 className="text-4xl font-extrabold tracking-[-0.03em]">{t("heading")}</h1>
+        <TrackForm initialNumber={publicId} notice={t("noKey")} />
+      </div>
+    );
+
+  const date = (value) =>
+    value
+      ? format.dateTime(new Date(value), { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" })
+      : null;
+  const reached = report ? order.indexOf(report.status) : -1;
+  const timeline = report
+    ? [
+        { label: t("timeline.submitted"), date: date(report.created_at), done: true },
+        { label: t("timeline.routed"), done: true },
+        { label: t("timeline.handling"), done: reached >= 1 },
+        { label: t("timeline.resolved"), date: date(report.resolved_at), done: reached >= 2 },
+      ]
+    : [];
+
   return (
-    <div className="mx-auto w-full max-w-2xl space-y-6 px-5 py-8">
-      <header className="flex flex-wrap items-center justify-between gap-3">
-        <a href="/" className="text-xl font-bold text-blue-950">
-          kosova.report
-        </a>
-        <nav aria-label="Language" className="flex gap-1">
-          {["sq", "sr", "en"].map((value) => (
-            <button
-              key={value}
-              onClick={() => setLanguage(value)}
-              aria-pressed={language === value}
-              className={`rounded-lg p-3 text-xs font-semibold ${language === value ? "bg-blue-700 text-white" : "bg-white"}`}
-            >
-              {value.toUpperCase()}
-            </button>
-          ))}
-        </nav>
-      </header>
-      <section className="space-y-5 rounded-2xl border bg-white p-6">
-        <h1 className="text-2xl font-bold">
-          {municipality ? t.municipality : t.title}
-        </h1>
-        <p className="text-sm text-slate-500">{t.notice}</p>
-        {error && (
-          <p
-            role="alert"
-            className="rounded-lg bg-red-50 p-3 text-sm text-red-800"
-          >
-            {t.error}
+    <div className={`${wrap} grid gap-10 py-8 lg:grid-cols-[minmax(0,1fr)_27.5rem] lg:gap-16 lg:py-14`}>
+      <div className="min-w-0">
+        <h1 className="text-4xl font-extrabold tracking-[-0.03em]">{heading}</h1>
+        <p className="mt-3 flex items-start gap-2 text-sm text-pencil">
+          <Icon name="key" className="mt-0.5 size-4 shrink-0" />
+          {t("private")}
+        </p>
+
+        {state === "loading" && !report && (
+          <p role="status" className="mt-8 text-lg font-semibold text-pencil">
+            {t("loading")}
           </p>
         )}
-        {!report && !error && <p role="status">{t.load}</p>}
+        {(state === "notFound" || (municipality && !token)) && (
+          <div role="alert" className="mt-8 max-w-[34rem]">
+            <p className="text-lg font-semibold">{municipality ? tm("error") : t("notFound")}</p>
+            {!municipality && <TrackForm initialNumber={publicId} />}
+          </div>
+        )}
+        {state === "unavailable" && (
+          <div role="alert" className="mt-8 flex flex-wrap items-center gap-3 rounded-md bg-wash p-4">
+            <p className="flex-1 font-semibold">{t("unavailable")}</p>
+            <button type="button" onClick={load} className={btn.link}>
+              <Icon name="refresh" className="size-5" />
+              {t("refresh")}
+            </button>
+          </div>
+        )}
+
         {report && (
           <>
-            <h2 className="text-xl font-bold text-blue-900">
-              {report.public_id}
-            </h2>
-            <p className="inline-flex items-center gap-2 rounded-full bg-blue-50 px-4 py-2 text-sm font-semibold text-blue-900">
-              {report.status === "Resolved" ? (
-                <CheckCircle2 size={18} />
-              ) : (
-                <Clock size={18} />
-              )}
-              {
-                {
-                  Pending: t.pending,
-                  "In Progress": t.progress,
-                  Resolved: t.resolved,
-                }[report.status]
-              }
-            </p>
-            <p className="text-sm text-slate-600">
-              {report.city} · {report.category}
-            </p>
-            <p className="whitespace-pre-wrap break-words text-sm leading-relaxed">
-              {report.description}
-            </p>
-            {notice && (
-              <p role="status" className="text-sm text-emerald-800">
-                {notice}
-              </p>
-            )}
+            <p className="mt-8 text-sm font-bold text-pencil">{t("status")}</p>
+            <p className="mt-1 text-3xl font-extrabold tracking-[-0.02em] text-blue">{t(`statuses.${report.status}`)}</p>
+            <ol className="mt-6 grid max-w-[34rem]">
+              {timeline.map((item, index) => (
+                <li key={item.label} className="relative grid grid-cols-[2rem_1fr] gap-3 pb-6 last:pb-0">
+                  {index < timeline.length - 1 && (
+                    <span aria-hidden="true" className={`absolute top-8 bottom-0 left-[0.9375rem] w-0.5 ${timeline[index + 1].done ? "bg-blue" : "bg-rule"}`} />
+                  )}
+                  <span className={`relative flex size-8 items-center justify-center rounded-full ${item.done ? "bg-blue text-on-blue" : "border-2 border-rule bg-card"}`}>
+                    {item.done && <Icon name="check" className="size-5" />}
+                  </span>
+                  <span className="pt-1">
+                    <span className={`block font-bold ${item.done ? "" : "text-pencil"}`}>{item.label}</span>
+                    {item.date && <span className="tabular block text-sm text-pencil">{item.date}</span>}
+                  </span>
+                </li>
+              ))}
+            </ol>
+
+            <div aria-live="polite" className="mt-6">
+              {notice && <p className="rounded-md bg-wash p-3 text-sm font-semibold">{notice}</p>}
+            </div>
+
             {municipality && report.status !== "Resolved" && (
-              <div className="grid gap-3 sm:grid-cols-2">
-                <button
-                  disabled={busy || report.status === "In Progress"}
-                  onClick={() => update("In Progress")}
-                  className="rounded-lg bg-blue-700 p-3 text-sm font-semibold text-white disabled:opacity-50"
-                >
-                  {busy ? t.saving : t.handling}
+              <div className="mt-6 grid gap-2 sm:grid-cols-2">
+                <button type="button" disabled={busy || report.status === "In Progress"} onClick={() => update("In Progress")} className={btn.soft}>
+                  {busy ? tm("saving") : tm("handling")}
                 </button>
-                <button
-                  disabled={busy}
-                  onClick={() => update("Resolved")}
-                  className="rounded-lg bg-emerald-700 p-3 text-sm font-semibold text-white disabled:opacity-50"
-                >
-                  {t.resolve}
+                <button type="button" disabled={busy} onClick={() => update("Resolved")} className={btn.primary}>
+                  <Icon name="check" className="size-5" />
+                  {tm("resolve")}
                 </button>
               </div>
             )}
-            <div className="flex flex-wrap gap-3">
-              <button
-                disabled={busy}
-                onClick={load}
-                className="inline-flex items-center gap-2 rounded-lg border p-3 text-sm"
-              >
-                <RefreshCw size={16} />
-                {t.refresh}
+
+            <div className="mt-8 flex flex-wrap gap-2">
+              <button type="button" onClick={load} disabled={state === "loading"} className={btn.soft}>
+                <Icon name="refresh" className="size-5" />
+                {t("refresh")}
               </button>
               {!municipality && (
                 <button
-                  disabled={busy}
-                  onClick={pdf}
-                  className="inline-flex items-center gap-2 rounded-lg bg-blue-700 p-3 text-sm text-white"
+                  type="button"
+                  onClick={async () => {
+                    setPdfError(false);
+                    try {
+                      await downloadReportPDF(publicId, token);
+                    } catch {
+                      setPdfError(true);
+                    }
+                  }}
+                  className={btn.primary}
                 >
-                  <Download size={16} />
-                  {t.download}
+                  <Icon name="download" className="size-5" />
+                  {t("pdf")}
                 </button>
               )}
             </div>
+            {pdfError && <p role="alert" className="mt-2 text-sm font-semibold text-error">{ts("pdfError")}</p>}
           </>
         )}
-      </section>
+      </div>
+      {report && (
+        <aside className="flex justify-center lg:block">
+          <div className="lg:sticky lg:top-6 lg:rotate-[-1.5deg]">
+            <Receipt
+              publicId={report.public_id}
+              category={report.category}
+              cityName={localizedCityName(report.city, locale)}
+              position={report.lat != null && report.lng != null ? [Number(report.lat), Number(report.lng)] : null}
+              description={report.description}
+              submittedAt={report.created_at}
+              stamped
+            />
+          </div>
+        </aside>
+      )}
     </div>
   );
 }

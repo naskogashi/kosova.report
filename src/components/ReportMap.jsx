@@ -1,114 +1,123 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { divIcon } from "leaflet";
-import {
-  MapContainer,
-  Marker,
-  TileLayer,
-  useMap,
-  useMapEvents,
-} from "react-leaflet";
+import { MapContainer, Marker, TileLayer, useMap, useMapEvents } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
+
 const pinIcon = divIcon({
   className: "report-pin",
-  html: '<svg width="32" height="42" viewBox="0 0 32 42" xmlns="http://www.w3.org/2000/svg"><path d="M16 40S2 24 2 16a14 14 0 1 1 28 0c0 8-14 24-14 24Z" fill="#0843b5" stroke="white" stroke-width="2"/><circle cx="16" cy="16" r="5" fill="white"/></svg>',
-  iconSize: [32, 42],
-  iconAnchor: [16, 40],
+  html: '<svg width="36" height="46" viewBox="-12 -34 24 34" aria-hidden="true"><path d="M0 0C0 0-11-12.5-11-20a11 11 0 0 1 22 0C11-12.5 0 0 0 0Z" fill="var(--color-gold)" stroke="var(--color-ink)" stroke-width="1.5"/><circle cy="-20" r="4.2" fill="var(--color-ink)"/></svg>',
+  iconSize: [36, 46],
+  iconAnchor: [18, 46],
 });
-function Pin({ position, onChange, center, zoom }) {
+
+const buzz = () => {
+  try {
+    navigator.vibrate?.(10);
+  } catch {}
+};
+
+function Pin({ position, onChange, center, zoom, label }) {
   const map = useMap();
-  const valid =
-    position &&
-    position.every(Number.isFinite) &&
-    Math.abs(position[0]) <= 90 &&
-    Math.abs(position[1]) <= 180;
+  const marker = useRef(null);
+  const valid = position?.every?.(Number.isFinite);
   const pinned = useRef(null);
   pinned.current = valid ? position : null;
   useEffect(() => {
-    // Keep an existing pin visible when the municipality (and centre) changes.
     if (pinned.current)
-      map.fitBounds([center, pinned.current], {
-        maxZoom: zoom,
-        padding: [40, 40],
-      });
+      map.fitBounds([center, pinned.current], { maxZoom: Math.max(zoom, 16), padding: [40, 40] });
     else map.setView(center, zoom);
   }, [map, center[0], center[1], zoom]);
-  useMapEvents({
-    click(event) {
-      onChange([event.latlng.lat, event.latlng.lng]);
-    },
-  });
   useEffect(() => {
     if (valid && !map.getBounds().contains(position)) map.panTo(position);
   }, [position, valid, map]);
+  // Keyboard: Enter or Space drops the pin at the centre of the map; arrows nudge it.
+  useMapEvents({
+    click(event) {
+      onChange([event.latlng.lat, event.latlng.lng]);
+      buzz();
+    },
+    keydown(event) {
+      const key = event.originalEvent.key;
+      if ((key === "Enter" || key === " ") && !pinned.current) {
+        event.originalEvent.preventDefault();
+        const c = map.getCenter();
+        onChange([c.lat, c.lng]);
+      }
+    },
+  });
+  useEffect(() => {
+    const element = marker.current?.getElement();
+    if (!element) return;
+    element.setAttribute("aria-label", label);
+    const nudge = (event) => {
+      const step = 0.00004 * 2 ** (18 - map.getZoom());
+      const delta = {
+        ArrowUp: [step, 0],
+        ArrowDown: [-step, 0],
+        ArrowLeft: [0, -step],
+        ArrowRight: [0, step],
+      }[event.key];
+      if (!delta || !pinned.current) return;
+      event.preventDefault();
+      event.stopPropagation();
+      onChange([pinned.current[0] + delta[0], pinned.current[1] + delta[1]]);
+    };
+    element.addEventListener("keydown", nudge);
+    return () => element.removeEventListener("keydown", nudge);
+  }, [valid, map, onChange, label]);
   return valid ? (
     <Marker
+      ref={marker}
       position={position}
       icon={pinIcon}
       draggable
+      keyboard
       eventHandlers={{
         dragend(event) {
           const point = event.target.getLatLng();
           onChange([point.lat, point.lng]);
+          buzz();
         },
       }}
     />
   ) : null;
 }
+
 export default function ReportMap({
   position,
   onChange,
-  language = "sq",
   center = [42.6629, 21.1655],
   zoom = 13,
+  label,
+  pinLabel,
+  onTileError,
 }) {
-  const [tileError, setTileError] = useState(false);
-  const messages = {
-    sq: "Harta nuk u ngarkua. Mund të shkruani koordinatat më poshtë. Nëse problemi vazhdon, kontaktoni administratorin.",
-    sr: "Mapa nije učitana. Možete uneti koordinate ispod. Ako problem potraje, obratite se administratoru.",
-    en: "The map could not load. You can enter coordinates below. If this continues, contact the administrator.",
-  };
   const customURL = process.env.NEXT_PUBLIC_MAP_TILE_URL;
   const customAttribution = process.env.NEXT_PUBLIC_MAP_ATTRIBUTION;
   const useCustom = Boolean(customURL && customAttribution);
   return (
-    <div>
-      {tileError && (
-        <p
-          role="status"
-          className="border-b border-amber-200 bg-amber-50 p-3 text-xs text-amber-900"
-        >
-          {messages[language] || messages.en}
-        </p>
-      )}
-      <MapContainer
-        center={center}
-        zoom={zoom}
-        minZoom={3}
-        scrollWheelZoom={false}
-        style={{ height: 340, width: "100%", zIndex: 0 }}
-      >
-        <TileLayer
-          attribution={
-            useCustom
-              ? customAttribution
-              : '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-          }
-          url={
-            useCustom
-              ? customURL
-              : "https://tile.openstreetmap.org/{z}/{x}/{y}.png"
-          }
-          referrerPolicy="strict-origin-when-cross-origin"
-          eventHandlers={{ tileerror: () => setTileError(true) }}
-        />
-        <Pin
-          position={position}
-          onChange={onChange}
-          center={center}
-          zoom={zoom}
-        />
-      </MapContainer>
-    </div>
+    <MapContainer
+      center={center}
+      zoom={zoom}
+      minZoom={11}
+      scrollWheelZoom={false}
+      className="report-map h-[min(58svh,26rem)] w-full"
+      style={{ zIndex: 0 }}
+      attributionControl
+      aria-label={label}
+    >
+      <TileLayer
+        attribution={
+          useCustom
+            ? customAttribution
+            : '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        }
+        url={useCustom ? customURL : "https://tile.openstreetmap.org/{z}/{x}/{y}.png"}
+        referrerPolicy="strict-origin-when-cross-origin"
+        eventHandlers={{ tileerror: () => onTileError?.() }}
+      />
+      <Pin position={position} onChange={onChange} center={center} zoom={zoom} label={pinLabel} />
+    </MapContainer>
   );
 }

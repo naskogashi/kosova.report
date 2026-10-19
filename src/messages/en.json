@@ -1,0 +1,392 @@
+{
+  "meta": {
+    "slogan": "Your voice. A better city.",
+    "home": {
+      "title": "Report street problems in Prishtina | kosova.report",
+      "description": "A pothole, a dead street light, bins overflowing? Report it with a photo and the exact spot, and it goes to the department that handles it."
+    },
+    "report": {
+      "title": "Report a problem in Prishtina | kosova.report",
+      "description": "Pick a category, drop a pin, add photos. Your report gets a number, a private key and a PDF receipt. You can report without your name."
+    },
+    "sent": {
+      "title": "Report sent | kosova.report"
+    },
+    "track": {
+      "title": "Find your report | kosova.report",
+      "description": "Check your report's progress with the report number and the private key you got after sending it."
+    },
+    "trackReport": {
+      "title": "Report progress | kosova.report"
+    },
+    "municipality": {
+      "title": "Report for the department | kosova.report"
+    },
+    "notFound": {
+      "title": "Page not found | kosova.report"
+    }
+  },
+  "shell": {
+    "skip": "Skip to content",
+    "home": "kosova.report, home",
+    "report": "Report",
+    "reportLong": "Report a problem",
+    "track": "Find my report",
+    "city": "Prishtina",
+    "citySoon": "More cities soon",
+    "language": "Language",
+    "languages": {
+      "sq": "Shqip",
+      "sr": "Srpski",
+      "en": "English"
+    },
+    "theme": {
+      "title": "Theme",
+      "auto": "Automatic",
+      "autoHint": "Light by day, dark after sunset",
+      "light": "Light",
+      "dark": "Dark",
+      "sun": "High contrast",
+      "sunHint": "For reading in sunlight"
+    }
+  },
+  "footer": {
+    "support": "This activity is supported by the CIVICUS Digital Democracy Initiative (DDI).",
+    "partners": "Project partners",
+    "codon": "in co-operation with CODON a part of Progon LLC.",
+    "disclaimer": "This platform is not an emergency service. Submitting a report does not guarantee an immediate resolution.",
+    "emergency": "Emergency: call",
+    "cookies": "Privacy & cookies",
+    "install": "Install app",
+    "newTab": "opens in a new tab"
+  },
+  "cookies": {
+    "title": "Essential cookies only",
+    "intro": "No ads and no analytics. We only use what the site needs to work.",
+    "necessary": "OK",
+    "customise": "See details",
+    "save": "Save choice",
+    "close": "Close",
+    "essential": "Security and preferences",
+    "essentialBody": "Staff sign-in uses a security cookie. Your language and this notice are remembered on your device.",
+    "always": "Always on",
+    "map": "Map",
+    "mapBody": "Map tiles load from the map provider, which sees your IP address. It sets no cookies.",
+    "offline": "Working offline",
+    "offlineBody": "The app keeps only the offline page and icons on your device. Private reports are never cached. Your draft stays on this device until you send or delete it.",
+    "analytics": "Analytics and ads",
+    "analyticsBody": "Not used. There is nothing to switch on."
+  },
+  "install": {
+    "title": "Keep kosova.report on your home screen",
+    "body": "Open it like an app and report straight from the street, without looking for the site.",
+    "action": "Install app",
+    "later": "Not now",
+    "iosTitle": "On iPhone or iPad",
+    "iosSteps": [
+      "Open this page in Safari.",
+      "Tap the Share button at the bottom of the screen.",
+      "Choose Add to Home Screen."
+    ],
+    "otherHelp": "In other browsers, look for Install app in the browser menu.",
+    "done": "Close"
+  },
+  "categories": {
+    "label": "Category",
+    "infrastructure": {
+      "name": "Infrastructure",
+      "examples": "A pothole, a broken pavement, a street light that's out, a missing sign.",
+      "short": "Pothole, broken pavement, street light out",
+      "prompt": "What exactly is broken? Since when? Is it dangerous for people walking or driving?"
+    },
+    "environment": {
+      "name": "Environment",
+      "examples": "Overflowing bins, rubbish dumped on a green space, trees cut down without a permit.",
+      "short": "Full bins, dumped rubbish, felled trees",
+      "prompt": "What do you see and how much of it? How long has it been like this? Does it keep happening here?"
+    },
+    "public_services": {
+      "name": "Public services",
+      "examples": "Water cut off without notice, a bus that never comes, a blocked sewer.",
+      "short": "Water cut off, bus not coming",
+      "prompt": "Which service isn't working? Since when? How many people or homes does it affect?"
+    },
+    "administration": {
+      "name": "Administration",
+      "examples": "A document that's overdue, a counter nobody answers, information that's missing.",
+      "short": "Overdue document, no answer at the counter",
+      "prompt": "Which office or procedure? When did you apply? What answer did you get, if any?"
+    },
+    "health": {
+      "name": "Health",
+      "examples": "A family health centre with no doctor during opening hours, long waits with no information, basic medicines missing.",
+      "short": "No doctor on duty, waits with no information",
+      "prompt": "Which institution? What happened and when? Please don't include personal health details."
+    },
+    "education": {
+      "name": "Education",
+      "examples": "A school without heating, an unsafe schoolyard, broken toilets.",
+      "short": "No heating, unsafe schoolyard",
+      "prompt": "Which school or kindergarten? What's the problem and since when? Who does it affect?"
+    },
+    "safety": {
+      "name": "Safety",
+      "examples": "A junction with no traffic lights, a park with no lighting at night, stray dogs near a school.",
+      "short": "Dangerous junction, unlit park",
+      "prompt": "Where exactly, and at what time of day is it worst? Have there been accidents?"
+    }
+  },
+  "report": {
+    "title": "Report a problem",
+    "steps": [
+      "Category",
+      "Place and details",
+      "Check and send"
+    ],
+    "stepOf": "Step {current} of {total}",
+    "progress": "{done} of 3 parts",
+    "yourReport": "Your report",
+    "expand": "Show report",
+    "collapse": "Hide",
+    "emptyCategory": "The category shows up here.",
+    "next": "Continue",
+    "back": "Back",
+    "category": {
+      "heading": "What are you reporting?",
+      "sub": "Pick the category that fits the problem best."
+    },
+    "details": {
+      "heading": "Where is it, and what happened?",
+      "municipality": "Municipality",
+      "chooseMunicipality": "Choose a municipality",
+      "notRouted": "Reporting for this category isn't set up in this municipality yet. Choose another category or try again later.",
+      "optionsError": "The list of municipalities didn't load. Check your connection and try again.",
+      "retry": "Try again",
+      "location": "Place",
+      "useLocation": "Use my location",
+      "locating": "Finding your location…",
+      "locationDenied": "We don't have permission to use your location. Tap the map where the problem is, or allow location in your browser settings.",
+      "locationUnavailable": "Your location couldn't be found. Tap the map where the problem is.",
+      "mapHint": "Tap the map or drag the pin to the exact spot. With a keyboard: select the map and move the pin with the arrow keys.",
+      "pinPlaced": "Pin placed: {coords}",
+      "outside": "This spot is outside {city}. For now, reports are only accepted for {city}.",
+      "mapError": "The map didn't load. Enter the coordinates below.",
+      "coordinates": "Enter coordinates",
+      "latitude": "Latitude (N)",
+      "longitude": "Longitude (E)",
+      "description": "Describe the problem",
+      "count": "{count} of 5000",
+      "photos": "Photos",
+      "optional": "optional",
+      "takePhoto": "Take a photo",
+      "gallery": "Choose from gallery",
+      "photoLimit": "Up to 10 photos. JPEG, PNG or WebP.",
+      "photoPrivacy": "Before sending, photos are made smaller and their location and device details are removed.",
+      "preparing": "Preparing…",
+      "photo": "Photo {n}",
+      "remove": "Remove photo {n}",
+      "moveLeft": "Move photo {n} left",
+      "moveRight": "Move photo {n} right",
+      "photoFailed": "This photo couldn't be read. Try another one.",
+      "mapHelp": "Finding the spot on the map is hard? Let your phone find it for you.",
+      "locateMe": "Locate me"
+    },
+    "review": {
+      "heading": "Check your report",
+      "sub": "This is what the department will see, and what your PDF will look like.",
+      "edit": "Edit",
+      "editCategory": "Edit category",
+      "editPlace": "Edit place",
+      "editDescription": "Edit description",
+      "editPhotos": "Edit photos",
+      "identity": "How do you want to report?",
+      "anonymous": "Without my name",
+      "anonymousBody": "The department gets no contact details. You follow progress with your private key.",
+      "named": "With my email",
+      "namedBody": "The department sees your email and can write to you. Status changes are emailed to you.",
+      "email": "Your email",
+      "consent": "I agree that my email is given to the department handling this report.",
+      "disclaimer": "This platform is not an emergency service. In an emergency, call 112.",
+      "submit": "Send report",
+      "sending": "Sending…"
+    },
+    "errors": {
+      "summary": "Fix these before you continue:",
+      "category": "Choose a category.",
+      "municipality": "Choose a municipality.",
+      "pin": "Place the pin on the map or enter valid coordinates.",
+      "outside": "Place the pin inside the chosen municipality.",
+      "descriptionShort": "Write at least 10 characters so the department understands the problem.",
+      "descriptionLong": "The description can be up to 5000 characters.",
+      "email": "Enter a valid email, for example name@example.com.",
+      "consent": "Tick the consent box, or choose “Without my name”.",
+      "photos": "Up to 10 photos, JPEG, PNG or WebP, each up to 5 MB.",
+      "submit": "The report wasn't sent. Check the details and try again.",
+      "server": "The report wasn't sent because the service isn't responding. Your draft is saved. Try again in a moment."
+    },
+    "draft": {
+      "restored": "We picked up the report you started on this device.",
+      "discard": "Start over",
+      "confirmTitle": "Delete this draft?",
+      "confirmBody": "The category, place, text and photos will be removed from this device.",
+      "confirmYes": "Delete draft",
+      "confirmNo": "Keep it",
+      "saved": "Draft saved on this device."
+    },
+    "offline": {
+      "queued": "You're offline. The report is saved on this device and sends itself as soon as you're back online, as long as this page is open.",
+      "sendingQueued": "You're back online. Sending your report…",
+      "banner": "You're offline. You can keep filling in the report."
+    }
+  },
+  "sent": {
+    "heading": "Report sent",
+    "stamp": "Sent",
+    "skip": "Skip animation",
+    "number": "Report number",
+    "copy": "Copy",
+    "copied": "Copied",
+    "keyTitle": "Private key",
+    "keyBody": "With the report number and this key you can check progress and download the PDF. Save it now. If you lose it, there's no way to get it back.",
+    "copyKey": "Copy key",
+    "saveKey": "Save as file",
+    "shareKey": "Send to myself",
+    "keyFileIntro": "Your report on kosova.report",
+    "savedCheck": "I saved my key",
+    "saveFirst": "Save your key and tick “I saved my key” before you leave.",
+    "pdf": "Download PDF receipt",
+    "pdfLoading": "Preparing the PDF…",
+    "pdfError": "The PDF didn't download. Try again.",
+    "pending": "Your report is saved. The department will be notified as soon as possible.",
+    "next": "What now?",
+    "another": "Report another problem",
+    "track": "Check report progress",
+    "share": "Tell someone about kosova.report",
+    "shareText": "Report problems in the city with a photo and location, even without your name.",
+    "missing": "This report is no longer in this window. Find it with the report number and your private key.",
+    "missingAction": "Find my report"
+  },
+  "track": {
+    "heading": "Find your report",
+    "sub": "Enter the report number and the private key you got after sending. They're also in the file you saved.",
+    "number": "Report number",
+    "numberHint": "For example PR-2026-000418",
+    "key": "Private key",
+    "keyHint": "Paste the whole key, dashes included. It has 36 characters.",
+    "submit": "Show report",
+    "loading": "Loading…",
+    "invalidNumber": "The number looks like this: city code, year and a number, for example PR-2026-000418.",
+    "invalidKey": "The key has 36 characters: digits, the letters a to f and four dashes.",
+    "notFound": "No report matches this number and key. Check both and try again.",
+    "noKey": "This link has no key or has expired. Enter the number and key below.",
+    "unavailable": "The service isn't responding right now. Try again in a moment.",
+    "private": "This page is private. Don't share the link publicly.",
+    "status": "Status",
+    "statuses": {
+      "Pending": "Pending",
+      "In Progress": "Being handled",
+      "Resolved": "Resolved"
+    },
+    "timeline": {
+      "submitted": "Sent",
+      "routed": "With the responsible department",
+      "handling": "The department is working on it",
+      "resolved": "Marked as resolved"
+    },
+    "refresh": "Refresh",
+    "pdf": "Download PDF receipt",
+    "another": "Find another report"
+  },
+  "municipality": {
+    "heading": "Report for the department",
+    "handling": "We're handling this",
+    "resolve": "Mark as resolved",
+    "saving": "Saving…",
+    "saved": "Status saved. The reporter is notified if they left an email.",
+    "error": "The status wasn't saved. The link may have expired. Try again or open the link from the email."
+  },
+  "receipt": {
+    "kind": "Civic report",
+    "place": "Place",
+    "description": "Description",
+    "photos": "Photos",
+    "photoCount": "{count, plural, =0 {No photos} one {# photo} other {# photos}}",
+    "submitted": "Sent",
+    "mode": "Reported",
+    "anonymous": "Without name",
+    "named": "With email",
+    "draft": "Draft, no number yet",
+    "proofNote": "This receipt confirms submission to kosova.report. It does not certify resolution by the responsible institution."
+  },
+  "home": {
+    "lede": "A pothole in Dardania, a dead street light in Ulpiana, bins overflowing by the bus station. Report what you see, with a photo and the exact spot, and it goes to the department that handles it.",
+    "citiesSoon": "Live in Prishtina for now. More municipalities are coming in the near future.",
+    "cta": "Report a problem",
+    "see": "See what a report looks like",
+    "disclaimerShort": "This is not an emergency service. In an emergency, call",
+    "mapLabel": "Map of central Prishtina with example reports",
+    "sample": "Example",
+    "sampleText": "Deep pothole in front of the school entrance. Cars swerve into the other lane to avoid it. It's been there since last week's rain.",
+    "how": {
+      "title": "One report, four parts",
+      "sub": "Yes, it takes about two minutes. Most of that is finding the right spot on the map.",
+      "steps": [
+        {
+          "title": "Pick a category",
+          "body": "Seven areas, from roads to schools. The category decides which department receives the report."
+        },
+        {
+          "title": "Drop the pin",
+          "body": "With your phone's location or one tap on the map. An exact spot saves a lot of questions later."
+        },
+        {
+          "title": "Describe it, add a photo",
+          "body": "What's broken, since when, whether it's dangerous. A good photo says more than a paragraph."
+        },
+        {
+          "title": "Send it and keep the proof",
+          "body": "You get a report number, a private key and a PDF receipt. Use them to follow the report later."
+        }
+      ]
+    },
+    "choice": {
+      "title": "With your name or without. Your call.",
+      "anonymousTitle": "Without your name",
+      "anonymousBody": "The department gets no contact details. You keep a private key and use it to check progress. Without the key, not even we can connect the report to you.",
+      "namedTitle": "With your email",
+      "namedBody": "The department sees your email and can ask you for more detail. When the status changes, you get an email.",
+      "keyCaption": "Your private key. Only you have it."
+    },
+    "categoriesTitle": "What you can report",
+    "categoriesSub": "Pick an area and the report opens with it already chosen.",
+    "after": {
+      "title": "What happens after you send it",
+      "steps": [
+        {
+          "title": "The report goes to the department",
+          "body": "To the office that covers that category in your municipality, with the photos, the pin and your description."
+        },
+        {
+          "title": "You have proof",
+          "body": "The report number, private key and PDF show that the report was sent, and when."
+        },
+        {
+          "title": "The department updates the status",
+          "body": "When they mark it “Being handled” or “Resolved”, you see it with your key. If you left an email, you get a notice."
+        }
+      ],
+      "limitsTitle": "What we can't promise",
+      "limits": "This platform is not an emergency service. Submitting a report does not guarantee an immediate resolution. The department decides how and when to handle it.",
+      "emergency": "If someone is in danger, call"
+    }
+  },
+  "system": {
+    "notFoundTitle": "This page isn't on the map",
+    "notFoundBody": "The link may be old or mistyped.",
+    "goHome": "Go to the home page",
+    "errorTitle": "Something didn't work",
+    "errorBody": "The page didn't open properly. Your report draft, if you have one, is still on this device.",
+    "retry": "Try again",
+    "offlineTitle": "You're offline"
+  }
+}
