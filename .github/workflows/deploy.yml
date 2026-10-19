@@ -21,10 +21,21 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 22
           script: |
+            # Pakotetaan NVM ja Node.js polut käyttöön tausta-ajossa
+            export NVM_DIR="$HOME/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+            export PATH=$PATH:$HOME/.nvm/versions/node/$(nvm current)/bin:$HOME/.config/composer/vendor/bin:/usr/local/bin
+
+            # Siirrytään kansioon ja päivitetään koodi GitHubista
             cd /home/kosova/htdocs/kosova.report
+            git config --global --add safe.directory /home/kosova/htdocs/kosova.report
             git fetch --all
             git reset --hard origin/main
+
+            # Ajetaan asennukset ja tuotantorakennus
             npm install
             npm run build
-            pm2 restart kosova-report || pm2 start npm --name "kosova-report" -- run start -- -p 3067
-            pm2 save
+
+            # Käynnistetään Next.js PM2-prosessinhallintaan portille 3067
+            ~/.nvm/versions/node/$(nvm current)/bin/pm2 restart kosova-report || ~/.nvm/versions/node/$(nvm current)/bin/pm2 start npm --name "kosova-report" -- run start -- -p 3067
+            ~/.nvm/versions/node/$(nvm current)/bin/pm2 save
