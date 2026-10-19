@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
+import { localizedPath } from "../i18n/paths";
 import Sheet from "./Sheet";
 import { btn } from "./ui";
 
@@ -9,6 +10,8 @@ const KEY = "kr-privacy-notice-v2";
 // Shown on first visit without a backdrop, so the Report button stays reachable.
 export default function CookieNotice() {
   const t = useTranslations("cookies");
+  // Plain link so it also works inside the staff panel, which has no locale routing.
+  const privacyHref = localizedPath("/privacy", useLocale());
   const [open, setOpen] = useState(false);
   const [details, setDetails] = useState(false);
   useEffect(() => {
@@ -47,6 +50,9 @@ export default function CookieNotice() {
       modal={false}
     >
       <p className="mt-1 text-pencil">{t("intro")}</p>
+      <a href={privacyHref} className="mt-1 inline-flex min-h-10 items-center text-sm font-bold text-blue underline underline-offset-4">
+        {t("more")}
+      </a>
       {details && (
         <ul className="mt-4 grid gap-2">
           {rows.map(([name, body, state, on]) => (

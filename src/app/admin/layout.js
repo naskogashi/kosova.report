@@ -27,7 +27,7 @@ export default async function AdminLayout({ children }) {
           messages={await getMessages({ locale: language })}
         >
           <AdminLanguage initialLanguage={language}>{children}</AdminLanguage>
-          <Footer locale={language} />
+          <Footer locale={language} staff />
           <CookieNotice />
         </NextIntlClientProvider>
       </body>

@@ -2,11 +2,16 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "../../i18n/navigation";
 import Receipt from "../../components/Receipt";
 import InstallBand from "../../components/InstallBand";
+import NewsCard from "../../components/NewsCard";
+import { localize, publishedNews } from "../../lib/news";
 import { Icon, categoryStyle } from "../../components/icons";
 import { btn, wrap } from "../../components/ui";
 import { categories } from "../../lib/report-options";
 import { pageMetadata, siteOrigin } from "../../lib/seo";
 import { localizedPath } from "../../i18n/paths";
+
+// Static, refreshed every two minutes so new news posts appear without a rebuild.
+export const revalidate = 120;
 
 export async function generateMetadata({ params }) {
   const { locale } = await params;
@@ -31,6 +36,8 @@ export default async function Home({ params }) {
   const tc = await getTranslations("categories");
   const tm = await getTranslations("meta");
   const ts = await getTranslations("sent");
+  const tn = await getTranslations("news");
+  const latest = (await publishedNews({ limit: 3 })).map((post) => localize(post, locale));
   const origin = siteOrigin();
   const jsonLd = [
     {
@@ -275,6 +282,28 @@ export default async function Home({ params }) {
           </aside>
         </div>
       </section>
+
+      {latest.length > 0 && (
+        <section aria-labelledby="news-title" className="py-16 lg:py-20">
+          <div className={wrap}>
+            <div className="flex flex-wrap items-end justify-between gap-4">
+              <h2 id="news-title" className="text-3xl font-extrabold tracking-[-0.025em]">
+                {tn("latest")}
+              </h2>
+              <Link href="/news" className={btn.link}>
+                {tn("all")}
+              </Link>
+            </div>
+            <ul className="mt-8 grid gap-6 md:grid-cols-3">
+              {latest.map((post) => (
+                <li key={post.id}>
+                  <NewsCard post={post} locale={locale} />
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+      )}
 
       <InstallBand />
     </>

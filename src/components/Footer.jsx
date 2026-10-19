@@ -1,4 +1,5 @@
 import { getTranslations } from "next-intl/server";
+import { Link } from "../i18n/navigation";
 import { branding } from "../lib/branding";
 import BrandingImage from "./BrandingImage";
 import FooterActions from "./FooterActions";
@@ -6,8 +7,17 @@ import { Icon } from "./icons";
 import { wrap } from "./ui";
 
 // Same content as before the redesign: partners, the CIVICUS DDI line and the CODON credit.
-export default async function Footer({ locale }) {
+// The public site adds page links; the staff panel (`staff`) leaves them out.
+export default async function Footer({ locale, staff = false }) {
   const t = await getTranslations({ locale, namespace: "footer" });
+  const ts = await getTranslations({ locale, namespace: "shell" });
+  const links = staff
+    ? null
+    : [
+        ["/news", ts("news")],
+        ["/track", ts("track")],
+        ["/privacy", ts("privacy")],
+      ];
   const partners = branding.filter((asset) => asset.key !== "codon");
   const codon = branding.find((asset) => asset.key === "codon");
   return (
@@ -50,7 +60,20 @@ export default async function Footer({ locale }) {
           </a>
           <span lang="en">{t("codon")}</span>
         </div>
-        <div className="mt-8 grid gap-4 rounded-md bg-wash p-4 text-sm sm:p-5 lg:grid-cols-[1fr_auto] lg:items-center">
+        {links && (
+          <nav aria-label={t("links")} className="mt-8">
+            <ul className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm font-bold">
+              {links.map(([href, label]) => (
+                <li key={href}>
+                  <Link href={href} className="inline-flex min-h-11 items-center text-blue underline-offset-4 hover:underline">
+                    {label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        )}
+        <div className="mt-6 grid gap-4 rounded-md bg-wash p-4 text-sm sm:p-5 lg:grid-cols-[1fr_auto] lg:items-center">
           <p className="flex items-start gap-2.5">
             <Icon name="info" className="mt-0.5 size-5 shrink-0 text-blue" />
             <span>

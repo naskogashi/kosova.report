@@ -1,42 +1,117 @@
 <!doctype html>
 <html lang="sq">
-  <meta charset="utf-8" /><meta
-    name="viewport"
-    content="width=device-width, initial-scale=1"
-  /><title>kosova.report — Offline</title
-  ><style>
-    body {
-      margin: 0;
-      background: #f8fafc;
-      color: #062653;
-      font: 16px system-ui;
-      display: grid;
-      min-height: 100vh;
-      place-items: center;
-    }
-    main {
-      max-width: 32rem;
-      padding: 2rem;
-    }
-    p {
-      line-height: 1.6;
-    }
-    a {
-      color: #0843b5;
-    }
-  </style>
-  <main>
-    <h1>kosova.report</h1>
-    <p lang="sq">
-      Jeni jashtë linje. Lidhuni me internetin për të dërguar ose parë raportet.
-    </p>
-    <p lang="sr">
-      Niste povezani. Povežite se na internet da pošaljete ili pregledate
-      prijave.
-    </p>
-    <p lang="en">
-      You’re offline. Connect to the internet to submit or view reports.
-    </p>
-    <a href="/">Provo përsëri / Pokušaj ponovo / Try again</a>
-  </main>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#f6f9fd" />
+    <title>kosova.report</title>
+    <style>
+      :root {
+        --paper: #f6f9fd;
+        --card: #ffffff;
+        --wash: #e2f0ff;
+        --ink: #06244d;
+        --pencil: #515e72;
+        --rule: #d8e1ec;
+        --blue: #154fc3;
+        --gold: #e4b756;
+        color-scheme: light;
+      }
+      :root[data-theme="dark"] {
+        --paper: #09172b;
+        --card: #15253d;
+        --wash: #122239;
+        --ink: #efebe0;
+        --pencil: #a3b3c4;
+        --rule: #2a3a52;
+        --blue: #77a4f6;
+        color-scheme: dark;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        min-height: 100dvh;
+        background: var(--paper);
+        color: var(--ink);
+        font: 16px/1.55 "Segoe UI", system-ui, -apple-system, sans-serif;
+        display: grid;
+        place-items: center;
+        padding: 24px max(16px, env(safe-area-inset-left)) 24px max(16px, env(safe-area-inset-right));
+      }
+      main { width: 100%; max-width: 30rem; }
+      .mark { font-weight: 800; font-size: 1.35rem; letter-spacing: -0.02em; display: inline-flex; align-items: baseline; }
+      .mark svg { width: 0.36em; height: 0.5em; margin: 0 0.05em; fill: var(--gold); }
+      h1 { font-size: 2rem; line-height: 1.1; letter-spacing: -0.025em; margin: 28px 0 8px; }
+      p { margin: 0 0 12px; color: var(--pencil); }
+      .draft { background: var(--card); border-radius: 18px; padding: 18px; margin: 20px 0; box-shadow: 0 0 0 1px var(--rule); }
+      .draft b { color: var(--ink); display: block; font-size: 1.1rem; }
+      .draft q { display: block; margin-top: 6px; color: var(--ink); quotes: none; }
+      .actions { display: grid; gap: 8px; margin-top: 20px; }
+      a.button, button {
+        display: inline-flex; align-items: center; justify-content: center; min-height: 56px; padding: 0 22px;
+        border-radius: 14px; font: inherit; font-weight: 700; text-decoration: none; cursor: pointer;
+      }
+      a.button { background: var(--blue); color: #fff; }
+      :root[data-theme="dark"] a.button { color: #09172b; }
+      button { background: var(--card); color: var(--blue); border: 1.5px solid var(--rule); }
+      .note { font-size: 0.9375rem; background: var(--wash); border-radius: 14px; padding: 12px 14px; color: var(--ink); margin-top: 20px; }
+      [hidden] { display: none !important; }
+      :focus-visible { outline: 3px solid var(--blue); outline-offset: 3px; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <span class="mark" aria-label="kosova.report">kosova<svg viewBox="0 0 10 14" aria-hidden="true"><path d="M5 14C5 14 0 8 0 5a5 5 0 0 1 10 0c0 3-5 9-5 9Z" /></svg>report</span>
+      <h1 data-k="title">Je jashtë linje</h1>
+      <p data-k="body">Kjo faqe nuk hapet pa internet. Raporti që po plotëson ruhet në këtë pajisje.</p>
+      <div class="draft" id="draft" hidden>
+        <b data-k="draft">Ke një raport të paplotësuar</b>
+        <span id="draft-category"></span>
+        <q id="draft-text"></q>
+      </div>
+      <div class="actions">
+        <a class="button" id="continue" href="/sq/raporto" data-k="continue">Vazhdo raportin</a>
+        <button type="button" onclick="location.reload()" data-k="retry">Provo përsëri</button>
+      </div>
+      <p class="note" data-k="queued">Nëse e ke dërguar raportin pa internet, ai dërgohet vetë sapo të kthehet lidhja dhe ta hapësh përsëri faqen e raportit.</p>
+    </main>
+    <script>
+      (function () {
+        var words = {
+          sq: { title: "Je jashtë linje", body: "Kjo faqe nuk hapet pa internet. Raporti që po plotëson ruhet në këtë pajisje.", draft: "Ke një raport të paplotësuar", continue: "Vazhdo raportin", retry: "Provo përsëri", queued: "Nëse e ke dërguar raportin pa internet, ai dërgohet vetë sapo të kthehet lidhja dhe ta hapësh përsëri faqen e raportit.", path: "/sq/raporto", categories: { infrastructure: "Infrastrukturë", environment: "Mjedis", public_services: "Shërbime publike", administration: "Administratë", health: "Shëndetësi", education: "Arsim", safety: "Siguri" } },
+          sr: { title: "Niste na mreži", body: "Ova stranica se ne otvara bez interneta. Prijava koju popunjavate čuva se na ovom uređaju.", draft: "Imate nedovršenu prijavu", continue: "Nastavite prijavu", retry: "Pokušajte ponovo", queued: "Ako ste prijavu poslali bez interneta, biće poslata sama čim se veza vrati i ponovo otvorite stranicu za prijavu.", path: "/sr/prijavi", categories: { infrastructure: "Infrastruktura", environment: "Životna sredina", public_services: "Javne usluge", administration: "Administracija", health: "Zdravstvo", education: "Obrazovanje", safety: "Bezbednost" } },
+          en: { title: "You're offline", body: "This page can't open without the internet. The report you're filling in is saved on this device.", draft: "You have an unfinished report", continue: "Continue the report", retry: "Try again", queued: "If you sent the report while offline, it sends itself once you're back online and open the report page again.", path: "/en/report", categories: { infrastructure: "Infrastructure", environment: "Environment", public_services: "Public services", administration: "Administration", health: "Health", education: "Education", safety: "Safety" } }
+        };
+        var match = document.cookie.match(/(?:^|; )kr-locale=(sq|sr|en)/);
+        var lang = match ? match[1] : (navigator.language || "sq").slice(0, 2);
+        if (!words[lang]) lang = "sq";
+        var w = words[lang];
+        document.documentElement.lang = lang === "sr" ? "sr-Latn" : lang;
+        document.querySelectorAll("[data-k]").forEach(function (el) { el.textContent = w[el.dataset.k]; });
+        document.getElementById("continue").href = w.path;
+        try {
+          // The theme the site last applied (light by day, dark after sunset, or the person's choice).
+          if (localStorage.getItem("kr-theme-applied") === "dark") document.documentElement.dataset.theme = "dark";
+        } catch (e) {}
+        // Show the draft saved by the report flow (IndexedDB "kosova-report" / "drafts" / "current").
+        try {
+          var open = indexedDB.open("kosova-report", 1);
+          open.onupgradeneeded = function () { open.result.createObjectStore("drafts"); };
+          open.onsuccess = function () {
+            var db = open.result;
+            if (!db.objectStoreNames.contains("drafts")) return;
+            var get = db.transaction("drafts", "readonly").objectStore("drafts").get("current");
+            get.onsuccess = function () {
+              var draft = get.result;
+              if (!draft || !(draft.category || draft.description)) return;
+              document.getElementById("draft").hidden = false;
+              document.getElementById("draft-category").textContent = w.categories[draft.category] || "";
+              var text = (draft.description || "").trim();
+              document.getElementById("draft-text").textContent = text.length > 140 ? text.slice(0, 140) + "…" : text;
+            };
+          };
+        } catch (e) {}
+      })();
+    </script>
+  </body>
 </html>

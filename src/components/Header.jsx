@@ -28,7 +28,21 @@ export default async function Header({ locale }) {
           <span className="font-bold text-ink">{t("city")}</span>
           <span>{t("citySoon")}</span>
         </p>
-        <div className="ml-auto flex items-center gap-0.5 sm:gap-1">
+        <nav aria-label={t("home")} className="ml-auto hidden lg:block">
+          <ul className="flex items-center gap-1 text-sm font-bold">
+            {[
+              ["/news", t("news")],
+              ["/track", t("track")],
+            ].map(([href, label]) => (
+              <li key={href}>
+                <Link href={href} className="inline-flex min-h-11 items-center rounded-full px-3 text-ink hover:bg-wash">
+                  {label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </nav>
+        <div className="ml-auto flex items-center gap-0.5 sm:gap-1 lg:ml-2">
           <ThemeMenu labels={t.raw("theme")} />
           <LanguageSwitch
             label={t("language")}

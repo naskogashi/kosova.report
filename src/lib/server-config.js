@@ -17,6 +17,7 @@ export const serverSettingNames = [
   "R2_IMAGE_BASE_URL",
   "SMTP2GO_API_KEY",
   "SMTP_FROM",
+  "PRIVACY_CONTACT_EMAIL",
 ];
 export function loadServerConfig() {
   try {

@@ -24,6 +24,14 @@
     },
     "notFound": {
       "title": "Page not found | kosova.report"
+    },
+    "news": {
+      "title": "News from kosova.report | Updates and reports",
+      "description": "Platform updates, articles and reports from the kosova.report team: new cities, what people are reporting and what is changing."
+    },
+    "privacy": {
+      "title": "Privacy and cookies | kosova.report",
+      "description": "What kosova.report stores when you report a problem, who sees it, where photos are kept and what stays on your device. No ads, no analytics."
     }
   },
   "shell": {
@@ -48,7 +56,9 @@
       "dark": "Dark",
       "sun": "High contrast",
       "sunHint": "For reading in sunlight"
-    }
+    },
+    "news": "News",
+    "privacy": "Privacy"
   },
   "footer": {
     "support": "This activity is supported by the CIVICUS Digital Democracy Initiative (DDI).",
@@ -58,7 +68,8 @@
     "emergency": "Emergency: call",
     "cookies": "Privacy & cookies",
     "install": "Install app",
-    "newTab": "opens in a new tab"
+    "newTab": "opens in a new tab",
+    "links": "Pages"
   },
   "cookies": {
     "title": "Essential cookies only",
@@ -75,7 +86,8 @@
     "offline": "Working offline",
     "offlineBody": "The app keeps only the offline page and icons on your device. Private reports are never cached. Your draft stays on this device until you send or delete it.",
     "analytics": "Analytics and ads",
-    "analyticsBody": "Not used. There is nothing to switch on."
+    "analyticsBody": "Not used. There is nothing to switch on.",
+    "more": "Read the full privacy page"
   },
   "install": {
     "title": "Keep kosova.report on your home screen",
@@ -396,5 +408,87 @@
     "followBody": "Scan the code or open {url}. You will need the private key you got after sending.",
     "coordinates": "Coordinates",
     "page": "Page {n} of {total}"
+  },
+  "news": {
+    "title": "News",
+    "sub": "Platform updates, articles and reports from the team.",
+    "kinds": {
+      "update": "Update",
+      "article": "Article",
+      "report": "Report"
+    },
+    "empty": "Nothing has been published yet. This is where you will find platform updates, articles and reports.",
+    "published": "Published {date}",
+    "onlyIn": "This piece is only available in Albanian.",
+    "back": "All news",
+    "latest": "Latest news",
+    "all": "See all news",
+    "nav": "News"
+  },
+  "privacy": {
+    "title": "Privacy and cookies",
+    "intro": "This page says exactly what happens to your data when you use kosova.report. We wrote it from what the platform actually does, not from a template.",
+    "updated": "Updated {date}",
+    "contents": "Contents",
+    "sections": [
+      {
+        "id": "kur-raporton",
+        "title": "What we store when you report",
+        "body": [
+          "When you send a report we store the category, the municipality, the coordinates of the pin, your description, the photos and the time it was sent. The report gets a number and a private key."
+        ],
+        "list": [
+          "Photos are made smaller on your phone before sending, and the location, device and time details that cameras add automatically are removed.",
+          "Your email is stored only if you choose “With my email”. If you choose “Without my name”, we store no contact details at all.",
+          "The private key is the only way to see the report later without an email. Don't share it."
+        ]
+      },
+      {
+        "id": "kush-e-sheh",
+        "title": "Who sees your report",
+        "body": [
+          "The report is emailed to the department that covers that category in your municipality: the description, the place on the map, the photos and, if you gave it, your email. The department gets a private link to mark the report “being handled” or “resolved”. That link expires after 90 days.",
+          "kosova.report staff who check reports see them in the staff panel. Reports are not published on the site."
+        ]
+      },
+      {
+        "id": "ku-ruhen",
+        "title": "Where the data is kept",
+        "list": [
+          "Reports are stored in the database on the platform's server.",
+          "Photos are stored in Cloudflare R2, a file storage service. They are not public; only authorised staff see them, and the department through the email.",
+          "Emails are sent through SMTP2Go, an email delivery service."
+        ]
+      },
+      {
+        "id": "cookies",
+        "title": "Cookies and what stays on your device",
+        "body": [
+          "We use no advertising or analytics cookies. There is nothing to switch on and nothing to refuse."
+        ],
+        "list": [
+          "kr-locale: a cookie that remembers your language, for one year.",
+          "Staff sign-in cookie: only for staff who sign in to the staff panel.",
+          "Your browser storage keeps your choice for this notice and your theme (light, dark, high contrast).",
+          "A report draft, photos included, stays on this device only, until you send or delete it.",
+          "The report number and key are kept in this browser tab and disappear when you close it."
+        ]
+      },
+      {
+        "id": "harta",
+        "title": "The map and outside services",
+        "body": [
+          "Map tiles load from the map provider (OpenStreetMap, unless another provider is set up). The provider sees your IP address, like any site you open. Fonts and the rest of the page load from our own server, with no outside services."
+        ]
+      },
+      {
+        "id": "kontakti",
+        "title": "Questions and requests",
+        "body": [
+          "For questions about your data, or to ask for a report to be deleted, write to us and include the report number."
+        ]
+      }
+    ],
+    "note": "This page is not legal advice. We will date any important change here."
   }
 }

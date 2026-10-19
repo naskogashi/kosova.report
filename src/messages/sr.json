@@ -24,6 +24,14 @@
     },
     "notFound": {
       "title": "Stranica nije pronađena | kosova.report"
+    },
+    "news": {
+      "title": "Vesti sa kosova.report | Novosti i izveštaji",
+      "description": "Novosti o platformi, članci i izveštaji tima kosova.report: novi gradovi, šta građani prijavljuju i šta se menja."
+    },
+    "privacy": {
+      "title": "Privatnost i kolačići | kosova.report",
+      "description": "Koje podatke kosova.report čuva kada prijavite problem, ko ih vidi, gde se čuvaju fotografije i šta ostaje na vašem uređaju. Bez reklama i analitike."
     }
   },
   "shell": {
@@ -48,7 +56,9 @@
       "dark": "Taman",
       "sun": "Visok kontrast",
       "sunHint": "Za čitanje na suncu"
-    }
+    },
+    "news": "Vesti",
+    "privacy": "Privatnost"
   },
   "footer": {
     "support": "Ovu aktivnost podržava CIVICUS Digital Democracy Initiative (DDI).",
@@ -58,7 +68,8 @@
     "emergency": "Hitni slučajevi: pozovite",
     "cookies": "Privatnost i kolačići",
     "install": "Instaliraj aplikaciju",
-    "newTab": "otvara se u novoj kartici"
+    "newTab": "otvara se u novoj kartici",
+    "links": "Stranice"
   },
   "cookies": {
     "title": "Samo neophodni kolačići",
@@ -75,7 +86,8 @@
     "offline": "Rad van mreže",
     "offlineBody": "Aplikacija na uređaju čuva samo stranicu van mreže i ikone. Privatne prijave se ne keširaju. Nacrt prijave ostaje samo na ovom uređaju dok ga ne pošaljete ili obrišete.",
     "analytics": "Analitika i reklame",
-    "analyticsBody": "Ne koriste se. Nema šta da se uključi."
+    "analyticsBody": "Ne koriste se. Nema šta da se uključi.",
+    "more": "Pročitajte celu stranicu o privatnosti"
   },
   "install": {
     "title": "Držite kosova.report na početnom ekranu",
@@ -396,5 +408,87 @@
     "followBody": "Skenirajte kod ili otvorite {url}. Biće vam potreban privatni ključ koji ste dobili posle slanja.",
     "coordinates": "Koordinate",
     "page": "Strana {n} od {total}"
+  },
+  "news": {
+    "title": "Vesti",
+    "sub": "Novosti o platformi, članci i izveštaji tima.",
+    "kinds": {
+      "update": "Novost",
+      "article": "Članak",
+      "report": "Izveštaj"
+    },
+    "empty": "Još ništa nije objavljeno. Ovde ćete naći novosti o platformi, članke i izveštaje.",
+    "published": "Objavljeno {date}",
+    "onlyIn": "Ovaj tekst je dostupan samo na albanskom.",
+    "back": "Sve vesti",
+    "latest": "Najnovije vesti",
+    "all": "Pogledajte sve vesti",
+    "nav": "Vesti"
+  },
+  "privacy": {
+    "title": "Privatnost i kolačići",
+    "intro": "Ova stranica tačno opisuje šta se dešava sa podacima kada koristite kosova.report. Napisana je prema onome što platforma zaista radi, a ne prema šablonu.",
+    "updated": "Ažurirano {date}",
+    "contents": "Sadržaj",
+    "sections": [
+      {
+        "id": "kur-raporton",
+        "title": "Šta čuvamo kada prijavite problem",
+        "body": [
+          "Kada pošaljete prijavu, čuvamo kategoriju, opštinu, koordinate oznake na mapi, opis, fotografije i vreme slanja. Prijava dobija broj i privatni ključ."
+        ],
+        "list": [
+          "Fotografije se smanjuju na vašem telefonu pre slanja i uklanjaju im se podaci o lokaciji, uređaju i vremenu koje kamera automatski dodaje.",
+          "Email se čuva samo ako izaberete „Sa emailom”. Ako izaberete „Anonimno”, ne čuvamo nikakve kontakt podatke.",
+          "Privatni ključ je jedini način da kasnije vidite prijavu bez emaila. Ne delite ga sa drugima."
+        ]
+      },
+      {
+        "id": "kush-e-sheh",
+        "title": "Ko vidi prijavu",
+        "body": [
+          "Prijava se emailom šalje odeljenju koje pokriva tu kategoriju u vašoj opštini: opis, mesto na mapi, fotografije i, ako ste ga ostavili, vaš email. Odeljenje dobija privatni link da prijavu označi kao „u obradi” ili „rešeno”. Taj link ističe posle 90 dana.",
+          "Osoblje kosova.report koje proverava prijave vidi ih u administratorskom panelu. Prijave se ne objavljuju na sajtu."
+        ]
+      },
+      {
+        "id": "ku-ruhen",
+        "title": "Gde se podaci čuvaju",
+        "list": [
+          "Prijave se čuvaju u bazi podataka na serveru platforme.",
+          "Fotografije se čuvaju u Cloudflare R2, servisu za skladištenje datoteka. Nisu javne; vide ih samo ovlašćeno osoblje i odeljenje preko emaila.",
+          "Emailovi se šalju preko SMTP2Go, servisa za slanje emailova."
+        ]
+      },
+      {
+        "id": "cookies",
+        "title": "Kolačići i šta ostaje na vašem uređaju",
+        "body": [
+          "Ne koristimo kolačiće za reklame ni analitiku. Nema šta da se uključi ni da se odbije."
+        ],
+        "list": [
+          "kr-locale: kolačić koji pamti izabrani jezik, godinu dana.",
+          "Kolačić za prijavu osoblja: samo za osoblje koje ulazi u administratorski panel.",
+          "U memoriji pregledača čuvamo vaš izbor za ovo obaveštenje i izgled (svetao, taman, visok kontrast).",
+          "Nacrt prijave, zajedno sa fotografijama, ostaje samo na ovom uređaju dok ga ne pošaljete ili obrišete.",
+          "Broj prijave i ključ ostaju u ovoj kartici pregledača i nestaju kada je zatvorite."
+        ]
+      },
+      {
+        "id": "harta",
+        "title": "Mapa i spoljni servisi",
+        "body": [
+          "Delovi mape se učitavaju od pružaoca mape (OpenStreetMap, ako nije podešen drugi pružalac). Pružalac vidi vašu IP adresu, kao i svaka stranica koju otvorite. Fontovi i ostatak stranice učitavaju se sa našeg servera, bez spoljnih servisa."
+        ]
+      },
+      {
+        "id": "kontakti",
+        "title": "Pitanja i zahtevi",
+        "body": [
+          "Za pitanja o podacima ili zahtev za brisanje prijave, pišite nam i navedite broj prijave."
+        ]
+      }
+    ],
+    "note": "Ova stranica nije pravni savet. Važne izmene ćemo ovde označiti datumom."
   }
 }

@@ -75,6 +75,7 @@ try {
   for (const file of [
     "sql/004_existing_schema.sql",
     "sql/005_platform_management.sql",
+    "sql/006_news.sql",
   ]) {
     await connection.query(readFileSync(file, "utf8").replace(/^\uFEFF/, ""));
     console.log(`Applied ${file}`);

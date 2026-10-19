@@ -24,6 +24,14 @@
     },
     "notFound": {
       "title": "Faqja nuk u gjet | kosova.report"
+    },
+    "news": {
+      "title": "Lajme nga kosova.report | Përditësime dhe raporte",
+      "description": "Përditësime për platformën, artikuj dhe raporte nga ekipi i kosova.report: qytete të reja, çfarë po raportojnë qytetarët dhe çfarë ndryshon."
+    },
+    "privacy": {
+      "title": "Privatësia dhe cookies | kosova.report",
+      "description": "Çfarë të dhënash ruan kosova.report kur raporton, kush i sheh, ku ruhen fotot dhe çfarë ruhet në pajisjen tënde. Pa reklama, pa analitikë."
     }
   },
   "shell": {
@@ -48,7 +56,9 @@
       "dark": "E errët",
       "sun": "Kontrast i lartë",
       "sunHint": "Për lexim në diell"
-    }
+    },
+    "news": "Lajme",
+    "privacy": "Privatësia"
   },
   "footer": {
     "support": "Ky aktivitet mbështetet nga CIVICUS Digital Democracy Initiative (DDI).",
@@ -58,7 +68,8 @@
     "emergency": "Urgjenca: thirr",
     "cookies": "Privatësia dhe cookies",
     "install": "Instalo aplikacionin",
-    "newTab": "hapet në skedë të re"
+    "newTab": "hapet në skedë të re",
+    "links": "Faqet"
   },
   "cookies": {
     "title": "Vetëm cookies të domosdoshme",
@@ -75,7 +86,8 @@
     "offline": "Puna jashtë linje",
     "offlineBody": "Aplikacioni ruan në pajisje vetëm faqen jashtë linje dhe ikonat. Raportet private nuk ruhen në cache. Drafti yt ruhet vetëm në këtë pajisje derisa ta dërgosh ose ta fshish.",
     "analytics": "Analitikë dhe reklama",
-    "analyticsBody": "Nuk përdoren. Nuk ka asgjë për të aktivizuar."
+    "analyticsBody": "Nuk përdoren. Nuk ka asgjë për të aktivizuar.",
+    "more": "Lexo faqen e plotë të privatësisë"
   },
   "install": {
     "title": "Mbaje kosova.report në ekranin kryesor",
@@ -396,5 +408,87 @@
     "followBody": "Skano kodin ose hap {url}. Do të të duhet çelësi privat që more pas dërgimit.",
     "coordinates": "Koordinatat",
     "page": "Faqja {n} nga {total}"
+  },
+  "news": {
+    "title": "Lajme",
+    "sub": "Përditësime për platformën, artikuj dhe raporte nga ekipi.",
+    "kinds": {
+      "update": "Përditësim",
+      "article": "Artikull",
+      "report": "Raport"
+    },
+    "empty": "Ende nuk ka asgjë të publikuar. Këtu do të gjesh përditësime për platformën, artikuj dhe raporte.",
+    "published": "Publikuar më {date}",
+    "onlyIn": "Ky shkrim është vetëm në shqip.",
+    "back": "Të gjitha lajmet",
+    "latest": "Lajmet e fundit",
+    "all": "Shiko të gjitha lajmet",
+    "nav": "Lajme"
+  },
+  "privacy": {
+    "title": "Privatësia dhe cookies",
+    "intro": "Kjo faqe tregon saktësisht çfarë ndodh me të dhënat kur përdor kosova.report. E shkruam nga ajo që platforma bën realisht, jo nga një shabllon.",
+    "updated": "Përditësuar më {date}",
+    "contents": "Përmbajtja",
+    "sections": [
+      {
+        "id": "kur-raporton",
+        "title": "Çfarë ruajmë kur raporton",
+        "body": [
+          "Kur e dërgon raportin ruajmë kategorinë, komunën, koordinatat e shenjës në hartë, përshkrimin, fotot dhe kohën e dërgimit. Raporti merr një numër dhe një çelës privat."
+        ],
+        "list": [
+          "Fotot zvogëlohen në telefonin tënd para dërgimit dhe u hiqen të dhënat e vendndodhjes, të pajisjes dhe të kohës që kamera i shton automatikisht.",
+          "Emaili ruhet vetëm nëse zgjedh “Me email”. Nëse zgjedh “Pa emër”, nuk ruajmë asnjë të dhënë kontakti.",
+          "Çelësi privat është mënyra e vetme për ta parë raportin më vonë pa email. Mos e ndaj me të tjerët."
+        ]
+      },
+      {
+        "id": "kush-e-sheh",
+        "title": "Kush e sheh raportin",
+        "body": [
+          "Raporti i dërgohet me email departamentit që e mbulon atë kategori në komunën tënde: përshkrimi, vendi në hartë, fotot dhe, nëse e ke dhënë, emaili yt. Departamenti merr një lidhje private për ta shënuar raportin si “po trajtohet” ose “i zgjidhur”. Kjo lidhje skadon pas 90 ditësh.",
+          "Stafi i kosova.report që kontrollon raportet i sheh ato në panelin administrativ. Raportet nuk publikohen në faqe."
+        ]
+      },
+      {
+        "id": "ku-ruhen",
+        "title": "Ku ruhen të dhënat",
+        "list": [
+          "Raportet ruhen në bazën e të dhënave në serverin e platformës.",
+          "Fotot ruhen në Cloudflare R2, një shërbim ruajtjeje skedarësh. Nuk janë publike; i sheh vetëm stafi i autorizuar dhe departamenti përmes emailit.",
+          "Emailet dërgohen përmes SMTP2Go, një shërbimi për dërgimin e emaileve."
+        ]
+      },
+      {
+        "id": "cookies",
+        "title": "Cookies dhe çfarë ruhet në pajisjen tënde",
+        "body": [
+          "Nuk përdorim cookies për reklama apo analitikë. Nuk kemi asgjë për të aktivizuar dhe asgjë për të refuzuar."
+        ],
+        "list": [
+          "kr-locale: cookie që mban mend gjuhën që zgjodhe, për një vit.",
+          "Cookie e hyrjes së stafit: vetëm për stafin që hyn në panelin administrativ.",
+          "Në memorien e shfletuesit ruajmë zgjedhjen tënde për këtë njoftim dhe pamjen (e çelët, e errët, kontrast i lartë).",
+          "Drafti i raportit, bashkë me fotot, ruhet vetëm në këtë pajisje derisa ta dërgosh ose ta fshish.",
+          "Numri i raportit dhe çelësi mbahen në këtë skedë të shfletuesit dhe zhduken kur e mbyll."
+        ]
+      },
+      {
+        "id": "harta",
+        "title": "Harta dhe shërbimet e jashtme",
+        "body": [
+          "Pjesët e hartës ngarkohen nga ofruesi i hartës (OpenStreetMap, nëse nuk është caktuar një ofrues tjetër). Ofruesi e sheh adresën tënde IP, si çdo faqe që hap. Shkronjat dhe pjesa tjetër e faqes ngarkohen nga serveri ynë, pa shërbime të jashtme."
+        ]
+      },
+      {
+        "id": "kontakti",
+        "title": "Pyetje dhe kërkesa",
+        "body": [
+          "Për pyetje rreth të dhënave ose për të kërkuar fshirjen e një raporti, na shkruaj dhe shëno numrin e raportit."
+        ]
+      }
+    ],
+    "note": "Kjo faqe nuk është këshillë ligjore. Ndryshimet e rëndësishme do t’i shënojmë këtu me datë."
   }
 }
