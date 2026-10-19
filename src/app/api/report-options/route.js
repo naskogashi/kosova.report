@@ -5,7 +5,7 @@ export const dynamic = "force-dynamic";
 export async function GET() {
   try {
     const [rows] = await database().execute(
-      "SELECT UPPER(c.code) AS code,c.name,m.latitude,m.longitude,m.zoom_level,CASE WHEN d.id IS NOT NULL THEN routing.category ELSE NULL END AS category FROM cities c JOIN municipality_settings m ON m.city_id=c.id AND m.enabled=1 LEFT JOIN department_routes routing ON routing.city_id=c.id AND routing.active=1 LEFT JOIN departments d ON d.id=routing.department_id AND d.city_id=c.id ORDER BY c.name",
+      "SELECT UPPER(c.code) AS code,c.name,co.name AS country,m.latitude,m.longitude,m.zoom_level,CASE WHEN d.id IS NOT NULL THEN routing.category ELSE NULL END AS category FROM cities c JOIN municipality_settings m ON m.city_id=c.id AND m.enabled=1 LEFT JOIN countries co ON co.id=c.country_id LEFT JOIN department_routes routing ON routing.city_id=c.id AND routing.active=1 LEFT JOIN departments d ON d.id=routing.department_id AND d.city_id=c.id ORDER BY c.name",
     );
     const municipalities = new Map();
     for (const row of rows) {
@@ -14,6 +14,7 @@ export async function GET() {
         municipalities.set(row.code, {
           code: row.code,
           name: cleanCityName(row.name),
+          country: row.country || null,
           categories: [],
           latitude: Number(row.latitude),
           longitude: Number(row.longitude),

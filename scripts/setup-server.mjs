@@ -1,22 +1,12 @@
-import {
-  readFileSync,
-  openSync,
-  closeSync,
-  mkdirSync,
-  unlinkSync,
-  writeFileSync,
-  renameSync,
-  chmodSync,
-} from "node:fs";
-import { homedir } from "node:os";
+import { mkdirSync, writeFileSync, renameSync, chmodSync } from "node:fs";
 import path from "node:path";
-import { spawnSync } from "node:child_process";
-import { connect, dbConfig, ensureDatabasePassword } from "./runtime.mjs";
+import { dbConfig, ensureDatabasePassword } from "./runtime.mjs";
 import {
   serverConfigPath,
   serverSettingNames,
 } from "../src/lib/server-config.js";
 import { bootstrapOwner } from "./bootstrap-owner.mjs";
+import { backupAndMigrate } from "./migrate-lib.mjs";
 const args = process.argv.slice(2),
   email = args[args.indexOf("--email") + 1];
 if (!args.includes("--email") || !email) {
@@ -28,58 +18,8 @@ if (!args.includes("--email") || !email) {
 let connection;
 try {
   await ensureDatabasePassword();
-  const config = dbConfig(),
-    directory = path.join(homedir(), "kosova-backups");
-  mkdirSync(directory, { recursive: true, mode: 0o700 });
-  const backup = path.join(
-      directory,
-      `kosova-${new Date().toISOString().replace(/[:.]/g, "-")}.sql`,
-    ),
-    fd = openSync(backup, "wx", 0o600);
-  let dump;
-  try {
-    dump = spawnSync(
-      "mysqldump",
-      [
-        "--single-transaction",
-        "--no-tablespaces",
-        "--host",
-        config.host,
-        "--port",
-        String(config.port),
-        "--user",
-        config.user,
-        config.database,
-      ],
-      {
-        env: { ...process.env, MYSQL_PWD: config.password },
-        stdio: ["ignore", fd, "pipe"],
-      },
-    );
-  } finally {
-    closeSync(fd);
-  }
-  if (dump.status !== 0) {
-    unlinkSync(backup);
-    const detail = String(
-      dump.error?.message || dump.stderr || "Unknown mysqldump failure",
-    )
-      .split(config.password)
-      .join("[redacted]")
-      .trim()
-      .slice(0, 2000);
-    throw new Error(`Database backup failed; no migration was run. ${detail}`);
-  }
-  console.log(`Private database backup saved: ${backup}`);
-  connection = await connect({ multipleStatements: true });
-  for (const file of [
-    "sql/004_existing_schema.sql",
-    "sql/005_platform_management.sql",
-    "sql/006_news.sql",
-  ]) {
-    await connection.query(readFileSync(file, "utf8").replace(/^\uFEFF/, ""));
-    console.log(`Applied ${file}`);
-  }
+  const config = dbConfig();
+  connection = await backupAndMigrate();
   for (const [key, value] of Object.entries({
     APP_URL: "https://kosova.report",
     MYSQL_HOST: config.host,

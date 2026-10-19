@@ -1,4 +1,6 @@
 export const adminAlbanian = {
+  "Official boundary on file. Pins outside it are refused.": "Kufiri zyrtar është i ngarkuar. Shenjat jashtë tij refuzohen.",
+  "No official boundary yet. Until one is added, pins within 20 km of the map centre are accepted. Add it with:": "Ende nuk ka kufi zyrtar. Derisa të shtohet, pranohen shenjat brenda 20 km nga qendra e hartës. Shtojeni me:",
   "Keyboard: j and k move between reports, / searches.": "Tastiera: j dhe k lëvizin mes raporteve, / kërkon.",
   "News": "Lajme",
   "Updates, articles and reports for citizens.": "Përditësime, artikuj dhe raporte për qytetarët.",

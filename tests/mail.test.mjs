@@ -77,6 +77,9 @@ test("SMTP2Go rejects HTTP errors and partial/failed acceptance", async () => {
 });
 test("public municipality options come from actual active database routes", async () => {
   const route = await load("src/app/api/report-options/route.js", {
+    "../../../lib/municipality-names": {
+      cleanCityName: (name) => name,
+    },
     "../../../lib/db": {
       database: () => ({
         execute: async () => [
@@ -126,6 +129,9 @@ test("public municipality options come from actual active database routes", asyn
 
 test("enabled Prishtina remains visible when a category has no department route", async () => {
   const route = await load("src/app/api/report-options/route.js", {
+    "../../../lib/municipality-names": {
+      cleanCityName: (name) => name,
+    },
     "../../../lib/db": {
       database: () => ({
         execute: async (sql) => {

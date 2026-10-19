@@ -7,8 +7,8 @@ loadServerConfig();
 
 // Bump when the text changes in a way people should know about.
 const UPDATED = "2026-10-19";
-// TODO(legal): set PRIVACY_CONTACT_EMAIL to the address that answers data requests.
-const contact = process.env.PRIVACY_CONTACT_EMAIL || "";
+// Answers data questions and deletion requests. PRIVACY_CONTACT_EMAIL overrides it on a server.
+const contact = process.env.PRIVACY_CONTACT_EMAIL || "privacy@kosova.report";
 
 export async function generateMetadata({ params }) {
   const { locale } = await params;

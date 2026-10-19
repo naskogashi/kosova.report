@@ -100,11 +100,13 @@ async function loadRoute(
         "https://kosova.report/municipality/PR-2026-000042#key=private-department-token",
       queueStatusEmails: async () => {},
       deliverStatusEmails: async () => ({ pending: 0 }),
+      stageFooter: () => "",
     },
     "../../../../lib/report-options": {
       categories: ["infrastructure"],
       cities: [{ code: "PR" }],
     },
+    "../../../../lib/city-boundary": { pinInsideCity: async () => true },
   };
   const module = new SourceTextModule(readFileSync(file, "utf8"));
   await module.link(async (name) => {

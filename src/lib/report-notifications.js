@@ -16,11 +16,29 @@ const statusNames = {
   "In Progress": ["Po trajtohet", "U obradi", "Being handled"],
   Resolved: ["I zgjidhur", "Rešeno", "Resolved"],
 };
-function statusEmail({ publicId, status, link, department }) {
+// Footer tracker: the three stages of a report, with the current one highlighted.
+const stages = [
+  ["Pending", "E pazgjidhur", "Nerešeno", "Not resolved"],
+  ["In Progress", "Në zgjidhje", "U rešavanju", "Being resolved"],
+  ["Resolved", "E zgjidhur", "Rešeno", "Resolved"],
+];
+export function stageFooter(current) {
+  const reached = Math.max(0, stages.findIndex(([key]) => key === current));
+  const cells = stages
+    .map(([, sq, sr, en], index) => {
+      const active = index === reached;
+      const done = index < reached;
+      const dot = active ? "#154fc3" : done ? "#8fb0ec" : "#d8e1ec";
+      return `<td width="33%" style="padding:10px 6px;vertical-align:top;text-align:center;border-top:4px solid ${dot}"><span style="display:block;font-size:14px;font-weight:${active ? "800" : "600"};color:${active ? "#06244d" : "#515e72"}">${sq}</span><span style="display:block;font-size:11px;color:#515e72">${sr} / ${en}</span></td>`;
+    })
+    .join("");
+  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:18px 0 0;border-collapse:separate;border-spacing:4px 0"><tr>${cells}</tr></table>`;
+}
+function statusEmail({ publicId, status, stage, link, department }) {
   const action = department
     ? ["Hap raportin dhe përditëso statusin", "Otvorite prijavu i ažurirajte status / Open the report and update its status"]
     : ["Shiko ecurinë e raportit", "Pogledajte status prijave / Check your report's progress"];
-  return `<div style="background:#f6f9fd;padding:24px 12px;font-family:'Segoe UI',Arial,sans-serif;color:#06244d"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:600px;margin:auto;background:#ffffff;border-radius:18px;border:1px solid #d8e1ec"><tr><td style="padding:24px"><span style="font-size:22px;font-weight:800;letter-spacing:-0.5px">kosova<span style="color:#e4b756">&#9679;</span>report</span><p style="margin:18px 0 0;color:#515e72;font-size:13px">Statusi i raportit / Status prijave / Report status</p><h1 style="margin:4px 0 0;font-size:28px;letter-spacing:-0.5px">${escapeHTML(publicId)}</h1><p style="margin:14px 0 0"><span style="display:inline-block;padding:6px 14px;background:#e2f0ff;border-radius:999px;color:#154fc3;font-weight:800">${escapeHTML(status[0])}</span> <span style="color:#515e72;font-size:13px">${escapeHTML(status[1])} / ${escapeHTML(status[2])}</span></p><p style="margin:22px 0 0"><a href="${escapeHTML(link)}" style="display:inline-block;background:#154fc3;color:#ffffff;padding:15px 22px;border-radius:14px;font-weight:bold;text-decoration:none">${action[0]}</a></p><p style="margin:8px 0 0;color:#515e72;font-size:13px">${escapeHTML(action[1])}</p><p style="margin:22px 0 0;padding-top:16px;border-top:1px solid #d8e1ec;color:#515e72;font-size:12px">Kjo lidhje private është vetëm për ju. Mos e ndani publikisht. / Ovaj privatni link je samo za vas. / This private link is for you only. Do not share it publicly.<br><br>Kjo platformë nuk është shërbim emergjence. / This platform is not an emergency service.<br><br>in co-operation with CODON a part of Progon LLC.</p></td></tr></table></div>`;
+  return `<div style="background:#f6f9fd;padding:24px 12px;font-family:'Segoe UI',Arial,sans-serif;color:#06244d"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:600px;margin:auto;background:#ffffff;border-radius:18px;border:1px solid #d8e1ec"><tr><td style="padding:24px"><span style="font-size:22px;font-weight:800;letter-spacing:-0.5px">kosova<span style="color:#e4b756">&#9679;</span>report</span><p style="margin:18px 0 0;color:#515e72;font-size:13px">Statusi i raportit / Status prijave / Report status</p><h1 style="margin:4px 0 0;font-size:28px;letter-spacing:-0.5px">${escapeHTML(publicId)}</h1><p style="margin:14px 0 0"><span style="display:inline-block;padding:6px 14px;background:#e2f0ff;border-radius:999px;color:#154fc3;font-weight:800">${escapeHTML(status[0])}</span> <span style="color:#515e72;font-size:13px">${escapeHTML(status[1])} / ${escapeHTML(status[2])}</span></p><p style="margin:22px 0 0"><a href="${escapeHTML(link)}" style="display:inline-block;background:#154fc3;color:#ffffff;padding:15px 22px;border-radius:14px;font-weight:bold;text-decoration:none">${action[0]}</a></p><p style="margin:8px 0 0;color:#515e72;font-size:13px">${escapeHTML(action[1])}</p>${stageFooter(stage)}<p style="margin:22px 0 0;padding-top:16px;border-top:1px solid #d8e1ec;color:#515e72;font-size:12px">Kjo lidhje private është vetëm për ju. Mos e ndani publikisht. / Ovaj privatni link je samo za vas. / This private link is for you only. Do not share it publicly.<br><br>Kjo platformë nuk është shërbim emergjence. / This platform is not an emergency service.<br><br>in co-operation with CODON a part of Progon LLC.</p></td></tr></table></div>`;
 }
 export async function departmentLink(connection, report) {
   const token = randomBytes(32).toString("base64url");
@@ -63,6 +81,7 @@ export async function queueStatusEmails(
     const html = statusEmail({
       publicId: report.public_id,
       status: [sq, sr, en],
+      stage: report.status,
       link,
       department: audience === "department",
     });

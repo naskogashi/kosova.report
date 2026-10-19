@@ -478,3 +478,11 @@
     backdrop-filter: none !important;
   }
 }
+
+/* Municipal border on the report map. */
+.report-map .city-outline {
+  stroke: var(--color-blue);
+  stroke-width: 2.5;
+  stroke-dasharray: 7 6;
+  stroke-opacity: 0.85;
+}

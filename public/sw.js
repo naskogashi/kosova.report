@@ -1,10 +1,10 @@
 /*
  * kosova.report service worker.
  * Caches only public things: hashed build files, fonts, icons, the street map,
- * the report flow pages and the public list of municipalities. It never caches
+ * the report flow pages, municipal boundaries and the list of municipalities. It never caches
  * tracking pages, department links, the staff panel, submissions, PDFs or photos.
  */
-const VERSION = "v2";
+const VERSION = "v3";
 const STATIC = `kosova-static-${VERSION}`;
 const PAGES = `kosova-pages-${VERSION}`;
 const INSTALL_ASSETS = [
@@ -65,7 +65,7 @@ self.addEventListener("fetch", (event) => {
   }
 
   // Report flow pages and the municipality list: network first, cache as fallback.
-  if (isReportPage(url.pathname) || url.pathname === "/api/report-options") {
+  if (isReportPage(url.pathname) || url.pathname === "/api/report-options" || url.pathname.startsWith("/boundaries/")) {
     event.respondWith(
       caches.open(PAGES).then(async (cache) => {
         try {

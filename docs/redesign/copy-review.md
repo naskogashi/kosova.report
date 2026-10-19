@@ -30,7 +30,7 @@ Every banned phrase from the brief (sq, sr, en lists, plus em dashes) was search
 ## Legal review (`TODO(legal)`)
 
 - `src/messages/*.json` → `privacy`: written from what the code does (fields stored, R2, SMTP2Go, map tiles, cookies, 90-day department links, one-year language cookie). A lawyer should check it, and the team should add: who the data controller is, how long reports and photos are kept, and server log retention.
-- Set `PRIVACY_CONTACT_EMAIL` on the server. Until then the "Questions and requests" section stays hidden.
+- The privacy page shows `privacy@kosova.report` for data requests. Make sure that mailbox (or a forward) exists before launch.
 
 ## Emails
 

@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useRef } from "react";
 import { divIcon } from "leaflet";
-import { MapContainer, Marker, TileLayer, useMap, useMapEvents } from "react-leaflet";
+import { MapContainer, Marker, Polygon, TileLayer, useMap, useMapEvents } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 
 const pinIcon = divIcon({
@@ -92,6 +92,7 @@ export default function ReportMap({
   label,
   pinLabel,
   onTileError,
+  outline,
 }) {
   const customURL = process.env.NEXT_PUBLIC_MAP_TILE_URL;
   const customAttribution = process.env.NEXT_PUBLIC_MAP_ATTRIBUTION;
@@ -117,6 +118,10 @@ export default function ReportMap({
         referrerPolicy="strict-origin-when-cross-origin"
         eventHandlers={{ tileerror: () => onTileError?.() }}
       />
+      {/* The municipality's official border, so people can see where reports are accepted. */}
+      {outline && (
+        <Polygon positions={outline} interactive={false} pathOptions={{ className: "city-outline", fill: false }} />
+      )}
       <Pin position={position} onChange={onChange} center={center} zoom={zoom} label={pinLabel} />
     </MapContainer>
   );

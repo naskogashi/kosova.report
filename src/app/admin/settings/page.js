@@ -1,3 +1,5 @@
+import { existsSync } from "node:fs";
+import path from "node:path";
 import AdminNav from "../AdminNav";
 import { siteTitle } from "../../../lib/site-branding";
 import { adminTranslator, adminLanguage } from "../../../lib/admin-language";
@@ -257,7 +259,18 @@ export default async function Settings(props) {
         </form>
         <h3 className="font-semibold">{t("Existing cities")}</h3>
         {municipalities.map((city) => (
-          <CityForm key={city.id} city={city} countries={countries} />
+          <div key={city.id} className="grid gap-2">
+            <CityForm city={city} countries={countries} />
+            {/* Official municipal border used to accept or refuse a pin (public/boundaries/<CODE>.json). */}
+            {existsSync(path.join(process.cwd(), "public", "boundaries", `${String(city.code).toUpperCase()}.json`)) ? (
+              <p className="text-sm font-semibold text-ok">{t("Official boundary on file. Pins outside it are refused.")}</p>
+            ) : (
+              <p className="text-sm text-pencil">
+                {t("No official boundary yet. Until one is added, pins within 20 km of the map centre are accepted. Add it with:")}{" "}
+                <code className="rounded-sm bg-wash px-1.5 py-0.5">npm run boundary -- --code {String(city.code).toUpperCase()} --relation &lt;OSM id&gt;</code>
+              </p>
+            )}
+          </div>
         ))}
         <h3 className="font-semibold">{t("Add a city")}</h3>
         <CityForm countries={countries} />

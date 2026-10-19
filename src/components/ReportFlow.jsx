@@ -11,6 +11,7 @@ import { btn, field, wrap } from "./ui";
 import { categories } from "../lib/report-options";
 import { localizedCityName } from "../lib/municipality-names";
 import { formatCoords } from "../lib/city-map";
+import { boundaryOutline, insideBoundary } from "../lib/boundary-geometry";
 import { ACCEPTED, MAX_BYTES, MAX_PHOTOS, preparePhoto } from "../lib/photos";
 import { clearDraft, keepReceipt, loadDraft, saveDraft } from "../lib/draft-store";
 
@@ -19,8 +20,8 @@ const ReportMap = dynamic(() => import("./ReportMap"), {
   loading: () => <div className="h-[min(58svh,26rem)] w-full animate-pulse bg-wash" />,
 });
 
-// A pin further than this from the municipality's centre counts as outside it.
-// The real boundary polygon isn't in the database yet. TODO(data): municipal boundaries.
+// Fallback for a city whose official boundary file (public/boundaries/<CODE>.json)
+// hasn't been added yet: a pin further than this from its centre counts as outside.
 const CITY_RADIUS_KM = 20;
 function distanceKm([lat1, lng1], [lat2, lng2]) {
   const rad = Math.PI / 180;
@@ -171,8 +172,25 @@ export default function ReportFlow() {
   const selectedCity = options.cities.find((item) => item.code === city);
   const cityName = selectedCity ? localizedCityName(selectedCity.name, locale) : "";
   const center = selectedCity ? [selectedCity.latitude, selectedCity.longitude] : [42.6629, 21.1655];
+  // The municipality's official boundary, once loaded. The server checks the same file.
+  const [boundary, setBoundary] = useState(null);
+  useEffect(() => {
+    setBoundary(null);
+    if (!selectedCity) return;
+    let alive = true;
+    fetch(`/boundaries/${selectedCity.code}.json`)
+      .then((response) => (response.ok ? response.json() : null))
+      .then((feature) => alive && setBoundary(feature))
+      .catch(() => {});
+    return () => {
+      alive = false;
+    };
+  }, [selectedCity?.code]);
   const outside =
-    selectedCity && validPoint(position) && distanceKm(position, center) > CITY_RADIUS_KM;
+    selectedCity &&
+    validPoint(position) &&
+    (boundary ? !insideBoundary(boundary, position) : distanceKm(position, center) > CITY_RADIUS_KM);
+  const outline = useMemo(() => (boundary ? boundaryOutline(boundary) : null), [boundary]);
   const notRouted =
     options.status === "ready" && selectedCity && category && !selectedCity.categories.includes(category);
 
@@ -598,6 +616,7 @@ export default function ReportFlow() {
                         label={t("details.location")}
                         pinLabel={validPoint(position) ? formatCoords(position) : ""}
                         onTileError={() => setTileError(true)}
+                        outline={outline}
                       />
                     </div>
                     {/* For anyone who finds pointing at a map hard: one big button under it. */}
