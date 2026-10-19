@@ -24,7 +24,7 @@ export async function GET(request, props) {
     );
   try {
     const [rows] = await database().execute(
-      "SELECT r.public_id,r.category,c.code AS city_code,r.lat AS latitude,r.lng AS longitude,r.description,r.created_at,c.name AS city_name,(SELECT COUNT(*) FROM report_images i WHERE i.report_id=r.id) AS image_count FROM reports r JOIN cities c ON c.id=r.city_id WHERE r.public_id=? AND r.tracking_key=? LIMIT 1",
+      "SELECT r.public_id,r.category,r.is_anonymous,c.code AS city_code,r.lat AS latitude,r.lng AS longitude,r.description,r.created_at,c.name AS city_name,(SELECT COUNT(*) FROM report_images i WHERE i.report_id=r.id) AS image_count FROM reports r JOIN cities c ON c.id=r.city_id WHERE r.public_id=? AND r.tracking_key=? LIMIT 1",
       [publicId, credential],
     );
     if (!rows.length)
@@ -32,7 +32,9 @@ export async function GET(request, props) {
         { error: "Report not found" },
         { status: 404, headers },
       );
-    return new Response(createReportPDF(rows[0]), {
+    // The PDF follows the language the person is using; the reports table has no language column.
+    const language = new URL(request.url).searchParams.get("lang");
+    return new Response(createReportPDF({ ...rows[0], language }), {
       headers: {
         ...headers,
         "Content-Type": "application/pdf",

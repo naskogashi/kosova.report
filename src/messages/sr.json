@@ -388,5 +388,13 @@
     "errorBody": "Stranica se nije pravilno otvorila. Nacrt prijave, ako ga imate, i dalje je na ovom uređaju.",
     "retry": "Pokušaj ponovo",
     "offlineTitle": "Niste na mreži"
+  },
+  "pdf": {
+    "title": "Potvrda o prijavi",
+    "number": "Broj prijave",
+    "follow": "Pratite status",
+    "followBody": "Skenirajte kod ili otvorite {url}. Biće vam potreban privatni ključ koji ste dobili posle slanja.",
+    "coordinates": "Koordinate",
+    "page": "Strana {n} od {total}"
   }
 }

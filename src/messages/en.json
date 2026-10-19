@@ -388,5 +388,13 @@
     "errorBody": "The page didn't open properly. Your report draft, if you have one, is still on this device.",
     "retry": "Try again",
     "offlineTitle": "You're offline"
+  },
+  "pdf": {
+    "title": "Report receipt",
+    "number": "Report number",
+    "follow": "Follow progress",
+    "followBody": "Scan the code or open {url}. You will need the private key you got after sending.",
+    "coordinates": "Coordinates",
+    "page": "Page {n} of {total}"
   }
 }

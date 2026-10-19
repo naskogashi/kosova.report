@@ -1,6 +1,7 @@
 // Fetches the PDF proof with the private key and saves it, without putting the key in a URL.
 export async function downloadReportPDF(publicId, key) {
-  const response = await fetch(`/api/reports/${encodeURIComponent(publicId)}/pdf`, {
+  const lang = document.documentElement.lang.slice(0, 2);
+  const response = await fetch(`/api/reports/${encodeURIComponent(publicId)}/pdf?lang=${lang}`, {
     headers: { Authorization: `Bearer ${key}` },
     cache: "no-store",
   });

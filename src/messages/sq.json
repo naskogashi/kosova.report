@@ -388,5 +388,13 @@
     "errorBody": "Faqja nuk u hap si duhet. Drafti i raportit, nëse ke, është ende në këtë pajisje.",
     "retry": "Provo përsëri",
     "offlineTitle": "Je jashtë linje"
+  },
+  "pdf": {
+    "title": "Dëshmi e raportit",
+    "number": "Numri i raportit",
+    "follow": "Ndiq ecurinë",
+    "followBody": "Skano kodin ose hap {url}. Do të të duhet çelësi privat që more pas dërgimit.",
+    "coordinates": "Koordinatat",
+    "page": "Faqja {n} nga {total}"
   }
 }
