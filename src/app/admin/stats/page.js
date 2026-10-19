@@ -1,10 +1,17 @@
+import { siteTitle } from "../../../lib/site-branding";
+import { adminText as t, adminLanguage } from "../../../lib/admin-language";
 import { database } from "../../../lib/db";
 import { requireAdmin } from "../../../lib/admin-session";
 export const dynamic = "force-dynamic";
-export const metadata = {
-  title: "Statistics | kosova.report",
-  robots: { index: false, follow: false },
-};
+export function generateMetadata() {
+  return {
+    title: `${t("Statistics")} | ${siteTitle(adminLanguage())}`,
+    robots: {
+      index: false,
+      follow: false,
+    },
+  };
+}
 export default async function Stats() {
   const account = await requireAdmin(),
     owner = account.role === "owner",
@@ -41,33 +48,35 @@ export default async function Stats() {
     checkers = results[3][0];
   } catch {
     return (
-      <div className="p-8">Statistics unavailable. Check database setup.</div>
+      <div className="p-8">
+        {t("Statistics unavailable. Check database setup.")}
+      </div>
     );
   }
   return (
     <div className="mx-auto w-full max-w-6xl space-y-7 px-5 py-8">
       <nav className="flex gap-5 text-sm text-blue-800">
-        <a href="/admin">Report inbox</a>
-        {owner && <a href="/admin/settings">Settings</a>}
+        <a href="/admin">{t("Report inbox")}</a>
+        {owner && <a href="/admin/settings">{t("Settings")}</a>}
       </nav>
       <h1 className="text-3xl font-bold">
-        {owner ? "Platform statistics" : "My assigned reports"}
+        {owner ? t("Platform statistics") : t("My assigned reports")}
       </h1>
       <div className="grid grid-cols-2 gap-3 md:grid-cols-5">
         {[
-          ["Total reports", totals.total],
-          ["Pending", totals.pending],
-          ["Being handled", totals.handling],
-          ["Resolved", totals.resolved],
+          [t("Total reports"), totals.total],
+          [t("Pending"), totals.pending],
+          [t("Being handled"), totals.handling],
+          [t("Resolved"), totals.resolved],
           [
-            "Avg. days to resolve",
+            t("Avg. days to resolve"),
             totals.resolution_days == null
               ? "—"
               : Number(totals.resolution_days).toFixed(1),
           ],
         ].map(([label, value]) => (
-          <div key={label} className="rounded-xl border bg-white p-5">
-            <p className="text-xs text-slate-500">{label}</p>
+          <div key={t(label)} className="rounded-xl border bg-white p-5">
+            <p className="text-xs text-slate-500">{t(label)}</p>
             <p className="mt-3 text-2xl font-bold text-blue-900">
               {value ?? 0}
             </p>
@@ -76,15 +85,16 @@ export default async function Stats() {
       </div>
       <section className="rounded-xl border bg-white p-5">
         <h2 className="text-xl font-semibold">
-          Checker workload and completed checks
+          {" "}
+          {t("Checker workload and completed checks")}{" "}
         </h2>
         <div className="mt-4 overflow-x-auto">
           <table className="w-full text-left text-sm">
             <thead>
               <tr className="border-b">
-                <th className="py-3">Checker</th>
-                <th>Currently assigned</th>
-                <th>Distinct reports checked</th>
+                <th className="py-3">{t("Checker")}</th>
+                <th>{t("Currently assigned")}</th>
+                <th>{t("Distinct reports checked")}</th>
               </tr>
             </thead>
             <tbody>
@@ -105,15 +115,15 @@ export default async function Stats() {
         </div>
       </section>
       <section className="rounded-xl border bg-white p-5">
-        <h2 className="text-xl font-semibold">Department performance</h2>
+        <h2 className="text-xl font-semibold">{t("Department performance")}</h2>
         <div className="mt-4 overflow-x-auto">
           <table className="w-full text-left text-sm">
             <thead>
               <tr className="border-b">
-                <th className="py-3">Department</th>
-                <th>Reports</th>
-                <th>Resolved</th>
-                <th>Resolution rate</th>
+                <th className="py-3">{t("Department")}</th>
+                <th>{t("Reports")}</th>
+                <th>{t("Resolved")}</th>
+                <th>{t("Resolution rate")}</th>
               </tr>
             </thead>
             <tbody>
@@ -138,7 +148,8 @@ export default async function Stats() {
       </section>
       <section className="rounded-xl border bg-white p-5">
         <h2 className="text-xl font-semibold">
-          New reports · last 30 days (UTC)
+          {" "}
+          {t("New reports \xB7 last 30 days (UTC)")}{" "}
         </h2>
         <div className="mt-5 space-y-3">
           {daily.map((day, index) => (
@@ -159,7 +170,9 @@ export default async function Stats() {
             </div>
           ))}
           {!daily.length && (
-            <p className="text-sm text-slate-500">No reports in this period.</p>
+            <p className="text-sm text-slate-500">
+              {t("No reports in this period.")}
+            </p>
           )}
         </div>
       </section>

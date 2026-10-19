@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import { slogans, siteTitle } from "../lib/site-branding";
 import {
   ArrowRight,
   CheckCircle2,
@@ -11,7 +12,7 @@ import {
 } from "lucide-react";
 const copy = {
   sq: {
-    tag: "Zëri yt. Një qytet më i mirë.",
+    tag: slogans.sq,
     title: "Raporto problemin. Ndërto një Kosovë më të mirë.",
     intro:
       "Një mënyrë e thjeshtë për të dokumentuar problemet në komunitet dhe për t’i dërguar te departamenti përgjegjës.",
@@ -42,7 +43,7 @@ const copy = {
     anonymous: "Raportim anonim",
   },
   sr: {
-    tag: "Vaš glas. Bolji grad.",
+    tag: slogans.sr,
     title: "Prijavite problem. Izgradimo bolje Kosovo.",
     intro:
       "Jednostavan način da dokumentujete probleme u zajednici i pošaljete ih nadležnom odeljenju.",
@@ -73,7 +74,7 @@ const copy = {
     anonymous: "Anonimno prijavljivanje",
   },
   en: {
-    tag: "Your voice. A better city.",
+    tag: slogans.en,
     title: "Report a problem. Build a better Kosovo.",
     intro:
       "A simple way to document issues in your community and send them to the responsible department.",
@@ -117,6 +118,7 @@ export default function Welcome() {
   }, []);
   useEffect(() => {
     document.documentElement.lang = language;
+    document.title = siteTitle(language);
   }, [language]);
   function changeLanguage(value) {
     const url = new URL(location.href);

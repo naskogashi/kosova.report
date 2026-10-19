@@ -1,23 +1,28 @@
 "use client";
+
+import { useAdminText } from "../AdminLanguage";
 import { useFormState, useFormStatus } from "react-dom";
 import { loginAction } from "../actions";
 function Submit() {
+  const t = useAdminText();
   const { pending } = useFormStatus();
   return (
     <button
       disabled={pending}
       className="min-h-12 w-full rounded-lg bg-blue-700 px-5 py-3 font-semibold text-white disabled:opacity-50"
     >
-      {pending ? "Signing in…" : "Sign in"}
+      {pending ? t("Signing in\u2026") : t("Sign in")}
     </button>
   );
 }
 export default function LoginForm() {
+  const t = useAdminText();
   const [state, action] = useFormState(loginAction, {});
   return (
     <form action={action} className="mt-6 space-y-5">
       <label className="block text-sm font-semibold">
-        Email
+        {" "}
+        {t("Email")}{" "}
         <input
           name="email"
           type="email"
@@ -28,7 +33,8 @@ export default function LoginForm() {
         />
       </label>
       <label className="block text-sm font-semibold">
-        Password
+        {" "}
+        {t("Password")}{" "}
         <input
           name="password"
           type="password"
@@ -43,7 +49,7 @@ export default function LoginForm() {
           role="alert"
           className="rounded-lg bg-red-50 p-3 text-sm text-red-800"
         >
-          {state.error}
+          {t(state.error)}
         </p>
       )}
       <Submit />

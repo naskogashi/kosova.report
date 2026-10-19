@@ -1,3 +1,5 @@
+import { siteTitle } from "../../lib/site-branding";
+import { adminText as t, adminLanguage } from "../../lib/admin-language";
 import { database } from "../../lib/db";
 import { requireAdmin } from "../../lib/admin-session";
 import {
@@ -8,10 +10,15 @@ import {
 } from "./actions";
 import AdminSubmit from "./AdminSubmit";
 export const dynamic = "force-dynamic";
-export const metadata = {
-  title: "Admin panel | kosova.report",
-  robots: { index: false, follow: false },
-};
+export function generateMetadata() {
+  return {
+    title: `${t("Admin panel")} | ${siteTitle(adminLanguage())}`,
+    robots: {
+      index: false,
+      follow: false,
+    },
+  };
+}
 const statuses = {
   Pending: "Pending",
   "In Progress": "In progress",
@@ -30,8 +37,10 @@ const control =
   "w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm";
 const formatDate = (value) =>
   value
-    ? new Date(value).toLocaleString("en-GB", { timeZone: "Europe/Belgrade" })
-    : "Not recorded";
+    ? new Date(value).toLocaleString("en-GB", {
+        timeZone: "Europe/Belgrade",
+      })
+    : t("Not recorded");
 export default async function AdminPage({ searchParams }) {
   const admin = await requireAdmin();
   const owner = admin.role === "owner";
@@ -175,24 +184,29 @@ export default async function AdminPage({ searchParams }) {
               kosova.report
             </a>
             <p className="mt-1 text-xs text-blue-100">
-              Administration · {admin.email}
+              {" "}
+              {t("Administration \xB7")} {admin.email}
             </p>
           </div>
           <div className="flex items-center gap-4">
             {owner && (
               <a href="/admin/settings" className="text-sm">
-                Settings
+                {" "}
+                {t("Settings")}{" "}
               </a>
             )}
             <a href="/admin/stats" className="text-sm">
-              Statistics
+              {" "}
+              {t("Statistics")}{" "}
             </a>
             <a href="/admin/account" className="text-sm">
-              My account
+              {" "}
+              {t("My account")}{" "}
             </a>
             <form action={logoutAction}>
               <button className="rounded-lg border border-white/30 px-4 py-2 text-sm">
-                Sign out
+                {" "}
+                {t("Sign out")}{" "}
               </button>
             </form>
           </div>
@@ -200,10 +214,14 @@ export default async function AdminPage({ searchParams }) {
       </header>
       <div className="mx-auto w-full max-w-7xl space-y-6 px-4 py-7 sm:px-6">
         <div>
-          <h1 className="text-2xl font-bold text-[#102344]">Report inbox</h1>
+          <h1 className="text-2xl font-bold text-[#102344]">
+            {t("Report inbox")}
+          </h1>
           <p className="mt-1 text-sm text-slate-500">
-            Review evidence, update report progress and configure institutional
-            routing.
+            {" "}
+            {t(
+              "Review evidence, update report progress and configure institutional routing.",
+            )}{" "}
           </p>
         </div>
         {searchParams.saved && (
@@ -212,8 +230,8 @@ export default async function AdminPage({ searchParams }) {
             className="rounded-lg border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-900"
           >
             {searchParams.saved === "email_pending"
-              ? "Changes saved. Some notification emails are pending."
-              : "Changes saved."}
+              ? t("Changes saved. Some notification emails are pending.")
+              : t("Changes saved.")}
           </p>
         )}
         {searchParams.error && (
@@ -221,7 +239,10 @@ export default async function AdminPage({ searchParams }) {
             role="alert"
             className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-800"
           >
-            Changes could not be saved. Check the database and try again.
+            {" "}
+            {t(
+              "Changes could not be saved. Check the database and try again.",
+            )}{" "}
           </p>
         )}
         {unavailable ? (
@@ -229,10 +250,12 @@ export default async function AdminPage({ searchParams }) {
             role="alert"
             className="rounded-xl border border-amber-200 bg-amber-50 p-6 text-amber-900"
           >
-            <h2 className="font-semibold">Database unavailable</h2>
+            <h2 className="font-semibold">{t("Database unavailable")}</h2>
             <p className="mt-2 text-sm">
-              Check the MySQL environment settings and run the platform setup
-              command (migrations 004 and 005).
+              {" "}
+              {t(
+                "Check the MySQL environment settings and run the platform setup command (migrations 004 and 005).",
+              )}{" "}
             </p>
           </section>
         ) : (
@@ -244,7 +267,7 @@ export default async function AdminPage({ searchParams }) {
                   href={`/admin?status=${encodeURIComponent(key)}`}
                   className="rounded-xl border border-slate-200 bg-white p-4"
                 >
-                  <p className="text-xs text-slate-500">{label}</p>
+                  <p className="text-xs text-slate-500">{t(label)}</p>
                   <p className="mt-2 text-2xl font-bold text-[#102344]">
                     {Number(
                       summary.find((row) => row.status === key)?.total || 0,
@@ -253,7 +276,9 @@ export default async function AdminPage({ searchParams }) {
                 </a>
               ))}
               <div className="rounded-xl border border-amber-200 bg-amber-50 p-4">
-                <p className="text-xs text-amber-800">Pending email alerts</p>
+                <p className="text-xs text-amber-800">
+                  {t("Pending email alerts")}
+                </p>
                 <p className="mt-2 text-2xl font-bold text-amber-900">
                   {pending}
                 </p>
@@ -265,28 +290,29 @@ export default async function AdminPage({ searchParams }) {
               className="flex flex-col gap-3 sm:flex-row"
             >
               <label className="flex-1">
-                <span className="sr-only">Search reports</span>
+                <span className="sr-only">{t("Search reports")}</span>
                 <input
                   className={control}
                   name="q"
                   defaultValue={query}
                   maxLength={100}
-                  placeholder="Search public ID or description"
+                  placeholder={t("Search public ID or description")}
                 />
               </label>
               <label>
-                <span className="sr-only">Filter by status</span>
+                <span className="sr-only">{t("Filter by status")}</span>
                 <select name="status" className={control} defaultValue={status}>
-                  <option value="">All statuses</option>
+                  <option value="">{t("All statuses")}</option>
                   {Object.entries(statuses).map(([key, label]) => (
                     <option value={key} key={key}>
-                      {label}
+                      {t(label)}
                     </option>
                   ))}
                 </select>
               </label>
               <button className="rounded-lg bg-blue-700 px-5 py-2.5 text-sm font-semibold text-white">
-                Search
+                {" "}
+                {t("Search")}{" "}
               </button>
             </form>
             <div
@@ -294,14 +320,15 @@ export default async function AdminPage({ searchParams }) {
             >
               <section className="min-w-0 overflow-hidden rounded-xl border border-slate-200 bg-white">
                 <div className="flex items-center justify-between border-b border-slate-100 px-4 py-3">
-                  <h2 className="font-semibold">Reports</h2>
+                  <h2 className="font-semibold">{t("Reports")}</h2>
                   <span className="text-xs text-slate-500">
-                    {total} matching
+                    {total} {t("matching")}{" "}
                   </span>
                 </div>
                 {!reports.length ? (
                   <p className="p-6 text-sm text-slate-500">
-                    No reports match your filters.
+                    {" "}
+                    {t("No reports match your filters.")}{" "}
                   </p>
                 ) : (
                   <ul className="divide-y divide-slate-100">
@@ -316,11 +343,11 @@ export default async function AdminPage({ searchParams }) {
                               {row.public_id}
                             </span>
                             <span className="rounded-full bg-slate-100 px-2.5 py-1 text-[11px] text-slate-600">
-                              {statuses[row.status] || row.status}
+                              {t(statuses[row.status] || row.status)}
                             </span>
                           </div>
                           <p className="mt-2 text-sm">
-                            {labels[row.category] || row.category} ·{" "}
+                            {t(labels[row.category] || row.category)} ·{" "}
                             {municipalities.find(
                               (item) => item.code === row.city_code,
                             )?.name || row.city_code}
@@ -339,18 +366,22 @@ export default async function AdminPage({ searchParams }) {
                       className="font-semibold text-blue-800"
                       href={browse(page - 1)}
                     >
-                      Previous
+                      {" "}
+                      {t("Previous")}{" "}
                     </a>
                   ) : (
                     <span />
                   )}
-                  <span className="text-xs text-slate-500">Page {page}</span>
+                  <span className="text-xs text-slate-500">
+                    {t("Page")} {page}
+                  </span>
                   {page * 25 < total ? (
                     <a
                       className="font-semibold text-blue-800"
                       href={browse(page + 1)}
                     >
-                      Next
+                      {" "}
+                      {t("Next")}{" "}
                     </a>
                   ) : (
                     <span />
@@ -364,27 +395,34 @@ export default async function AdminPage({ searchParams }) {
                       {report.public_id}
                     </h2>
                     <p className="mt-1 text-xs text-slate-500">
-                      Submitted {formatDate(report.created_at)}
+                      {" "}
+                      {t("Submitted")} {formatDate(report.created_at)}
                     </p>
                   </div>
                   <dl className="space-y-3 text-sm">
                     <div>
                       <dt className="font-semibold text-slate-500">
-                        Description
+                        {" "}
+                        {t("Description")}{" "}
                       </dt>
                       <dd className="mt-1 whitespace-pre-wrap break-words">
                         {report.description}
                       </dd>
                     </div>
                     <div>
-                      <dt className="font-semibold text-slate-500">Reporter</dt>
+                      <dt className="font-semibold text-slate-500">
+                        {t("Reporter")}
+                      </dt>
                       <dd className="mt-1 break-words">
-                        {report.anonymous ? "Anonymous" : report.contact_email}
+                        {report.anonymous
+                          ? t("Anonymous")
+                          : report.contact_email}
                       </dd>
                     </div>
                     <div>
                       <dt className="font-semibold text-slate-500">
-                        Department notification
+                        {" "}
+                        {t("Department notification")}{" "}
                       </dt>
                       <dd className="mt-1 break-words">
                         {report.notification_email}
@@ -397,12 +435,15 @@ export default async function AdminPage({ searchParams }) {
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    View location · {report.latitude}, {report.longitude}
+                    {" "}
+                    {t("View location \xB7")} {report.latitude},{" "}
+                    {report.longitude}
                   </a>
                   {photos.length > 0 && (
                     <div>
                       <h3 className="mb-3 text-sm font-semibold">
-                        Evidence · {photos.length}
+                        {" "}
+                        {t("Evidence \xB7")} {photos.length}
                       </h3>
                       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
                         {photos.map((photo) => (
@@ -414,7 +455,7 @@ export default async function AdminPage({ searchParams }) {
                           >
                             <img
                               src={`/api/admin/images/${photo.id}`}
-                              alt="Report evidence"
+                              alt={t("Report evidence")}
                               loading="lazy"
                               className="aspect-square w-full rounded-lg border border-slate-200 object-cover"
                             />
@@ -430,14 +471,15 @@ export default async function AdminPage({ searchParams }) {
                     >
                       <input type="hidden" name="report_id" value={report.id} />
                       <label className="block text-sm font-semibold">
-                        Assign report checker
+                        {" "}
+                        {t("Assign report checker")}{" "}
                         <select
                           name="account_id"
                           required
                           defaultValue={assignment || ""}
                           className={`${control} mt-2`}
                         >
-                          <option value="">Choose a checker</option>
+                          <option value="">{t("Choose a checker")}</option>
                           {checkers.map((checker) => (
                             <option key={checker.id} value={checker.id}>
                               {checker.name} · {checker.email}
@@ -445,7 +487,7 @@ export default async function AdminPage({ searchParams }) {
                           ))}
                         </select>
                       </label>
-                      <AdminSubmit>Assign checker</AdminSubmit>
+                      <AdminSubmit>{t("Assign checker")}</AdminSubmit>
                     </form>
                   )}
                   <form
@@ -454,7 +496,8 @@ export default async function AdminPage({ searchParams }) {
                   >
                     <input type="hidden" name="report_id" value={report.id} />
                     <label className="block text-sm font-semibold">
-                      Check / verify report
+                      {" "}
+                      {t("Check / verify report")}{" "}
                       <textarea
                         name="note"
                         required
@@ -463,7 +506,7 @@ export default async function AdminPage({ searchParams }) {
                         className={`${control} mt-2`}
                       />
                     </label>
-                    <AdminSubmit>Mark report checked</AdminSubmit>
+                    <AdminSubmit>{t("Mark report checked")}</AdminSubmit>
                   </form>
                   {reviews.length > 0 && (
                     <ul className="space-y-2">
@@ -490,7 +533,8 @@ export default async function AdminPage({ searchParams }) {
                       >
                         <input type="hidden" name="id" value={report.id} />
                         <label className="block text-sm font-semibold">
-                          Status
+                          {" "}
+                          {t("Status")}{" "}
                           <select
                             className={`${control} mt-2`}
                             name="status"
@@ -498,13 +542,14 @@ export default async function AdminPage({ searchParams }) {
                           >
                             {Object.entries(statuses).map(([key, label]) => (
                               <option key={key} value={key}>
-                                {label}
+                                {t(label)}
                               </option>
                             ))}
                           </select>
                         </label>
                         <label className="block text-sm font-semibold">
-                          Internal note
+                          {" "}
+                          {t("Internal note")}{" "}
                           <textarea
                             name="note"
                             rows={4}
@@ -513,18 +558,22 @@ export default async function AdminPage({ searchParams }) {
                             className={`${control} mt-2`}
                           />
                           <span className="mt-1 block text-xs font-normal text-slate-500">
-                            For authorized staff. Every save is recorded in
-                            report history.
+                            {" "}
+                            {t(
+                              "For authorized staff. Every save is recorded in report history.",
+                            )}{" "}
                           </span>
                         </label>
-                        <AdminSubmit>Save report</AdminSubmit>
+                        <AdminSubmit>{t("Save report")}</AdminSubmit>
                       </form>
                     </>
                   )}
 
                   {history.length > 0 && (
                     <div className="border-t border-slate-100 pt-5">
-                      <h3 className="text-sm font-semibold">Recent history</h3>
+                      <h3 className="text-sm font-semibold">
+                        {t("Recent history")}
+                      </h3>
                       <ul className="mt-3 space-y-3">
                         {history.map((item, index) => (
                           <li
@@ -532,8 +581,8 @@ export default async function AdminPage({ searchParams }) {
                             className="rounded-lg bg-slate-50 p-3 text-xs"
                           >
                             <p className="font-semibold">
-                              {statuses[item.previous_status]} →{" "}
-                              {statuses[item.new_status]}
+                              {t(statuses[item.previous_status])} →{" "}
+                              {t(statuses[item.new_status])}
                             </p>
                             <p className="mt-1 break-words text-slate-500">
                               {item.actor_email} · {formatDate(item.created_at)}
@@ -553,7 +602,8 @@ export default async function AdminPage({ searchParams }) {
             </div>
             {selected && !report && (
               <p role="status" className="text-sm text-slate-500">
-                The selected report could not be found.
+                {" "}
+                {t("The selected report could not be found.")}{" "}
               </p>
             )}
           </>

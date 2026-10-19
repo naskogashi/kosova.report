@@ -1,17 +1,20 @@
 "use client";
+
+import { useAdminText } from "../AdminLanguage";
 import { useFormState } from "react-dom";
 import { updateAccountAction } from "../actions";
 import AdminSubmit from "../AdminSubmit";
 export default function AccountForm({ account }) {
+  const t = useAdminText();
   const [state, action] = useFormState(updateAccountAction, {});
   return (
     <form action={action} className="mt-6 space-y-4">
       {[
-        ["name", "Name", "text", account.name],
-        ["email", "Email", "email", account.email],
+        ["name", t("Name"), "text", account.name],
+        ["email", t("Email"), "email", account.email],
       ].map(([name, label, type, value]) => (
         <label key={name} className="block text-sm font-semibold">
-          {label}
+          {t(label)}
           <input
             name={name}
             type={type}
@@ -24,7 +27,8 @@ export default function AccountForm({ account }) {
       ))}
       {!account.must_change_password && (
         <label className="block text-sm font-semibold">
-          Current password
+          {" "}
+          {t("Current password")}{" "}
           <input
             name="current_password"
             type="password"
@@ -35,11 +39,11 @@ export default function AccountForm({ account }) {
         </label>
       )}
       {[
-        ["new_password", "New password"],
-        ["confirm_password", "Confirm new password"],
+        ["new_password", t("New password")],
+        ["confirm_password", t("Confirm new password")],
       ].map(([name, label]) => (
         <label key={name} className="block text-sm font-semibold">
-          {label}
+          {t(label)}
           <input
             name={name}
             type="password"
@@ -52,14 +56,17 @@ export default function AccountForm({ account }) {
         </label>
       ))}
       <p className="text-xs text-slate-500">
-        Use at least 14 characters. Saving signs out all other sessions.
+        {" "}
+        {t(
+          "Use at least 14 characters. Saving signs out all other sessions.",
+        )}{" "}
       </p>
       {state.error && (
         <p role="alert" className="text-sm text-red-700">
-          {state.error}
+          {t(state.error)}
         </p>
       )}
-      <AdminSubmit>Save account details</AdminSubmit>
+      <AdminSubmit>{t("Save account details")}</AdminSubmit>
     </form>
   );
 }

@@ -21,6 +21,7 @@ import {
   X,
 } from "lucide-react";
 import { categories } from "../../lib/report-options";
+import { siteTitle } from "../../lib/site-branding";
 
 const ReportMap = dynamic(() => import("../../components/ReportMap"), {
   ssr: false,
@@ -260,6 +261,7 @@ export default function Home() {
   }, []);
   useEffect(() => {
     document.documentElement.lang = language;
+    document.title = siteTitle(language);
   }, [language]);
   useEffect(() => {
     const urls = images.map((image) => URL.createObjectURL(image));
@@ -430,7 +432,7 @@ export default function Home() {
               <h1
                 tabIndex={-1}
                 ref={heading}
-                className="text-2xl font-bold text-[#102344]"
+                className="text-2xl font-bold text-[#102344] outline-none"
               >
                 {t.saved}
               </h1>
@@ -503,7 +505,7 @@ export default function Home() {
                     <h2
                       ref={heading}
                       tabIndex={-1}
-                      className="text-lg font-bold text-[#102344]"
+                      className="text-lg font-bold text-[#102344] outline-none"
                     >
                       {t.heading[step]}
                     </h2>
@@ -561,8 +563,10 @@ export default function Home() {
                         <span className="text-red-600"> *</span>
                         {(optionsState === "error" ||
                           (optionsState === "ready" &&
-                            !municipalities.some((item) =>
-                              item.categories.includes(category),
+                            !municipalities.some(
+                              (item) =>
+                                item.code === city &&
+                                item.categories.includes(category),
                             ))) && (
                           <span
                             role="status"
@@ -580,16 +584,12 @@ export default function Home() {
                           }}
                         >
                           <option value="">{t.choose}</option>
-                          {municipalities
-                            .filter((item) =>
-                              item.categories.includes(category),
-                            )
-                            .map((value) => (
-                              <option key={value.code} value={value.code}>
-                                {value.name}{" "}
-                                {value.country ? `· ${value.country}` : ""}
-                              </option>
-                            ))}
+                          {municipalities.map((value) => (
+                            <option key={value.code} value={value.code}>
+                              {value.name}{" "}
+                              {value.country ? `· ${value.country}` : ""}
+                            </option>
+                          ))}
                         </select>
                       </label>
                       <label className="block text-sm font-semibold">

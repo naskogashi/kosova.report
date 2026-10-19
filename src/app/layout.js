@@ -1,9 +1,10 @@
 import "./globals.css";
 import Footer from "../components/Footer";
 import AppControls from "../components/AppControls";
+import { siteTitle } from "../lib/site-branding";
 
 export const metadata = {
-  title: "kosova.report",
+  title: siteTitle("sq"),
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,

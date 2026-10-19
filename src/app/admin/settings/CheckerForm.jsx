@@ -1,8 +1,11 @@
 "use client";
+
+import { useAdminText } from "../AdminLanguage";
 import { useFormState } from "react-dom";
 import { createCheckerAction, resetCheckerAction } from "../actions";
 import AdminSubmit from "../AdminSubmit";
 export default function CheckerForm({ id }) {
+  const t = useAdminText();
   const [state, action] = useFormState(
     id ? resetCheckerAction : createCheckerAction,
     {},
@@ -14,7 +17,8 @@ export default function CheckerForm({ id }) {
       ) : (
         <>
           <label className="block text-xs font-semibold">
-            Name
+            {" "}
+            {t("Name")}{" "}
             <input
               name="name"
               required
@@ -23,7 +27,8 @@ export default function CheckerForm({ id }) {
             />
           </label>
           <label className="block text-xs font-semibold">
-            Email
+            {" "}
+            {t("Email")}{" "}
             <input
               name="email"
               type="email"
@@ -36,7 +41,7 @@ export default function CheckerForm({ id }) {
       )}
       {state.error && (
         <p role="alert" className="text-sm text-red-700">
-          {state.error}
+          {t(state.error)}
         </p>
       )}
       {state.password && (
@@ -45,8 +50,10 @@ export default function CheckerForm({ id }) {
           className="rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm"
         >
           <p>
-            Copy this one-time password now. It expires in 24 hours and must be
-            changed at first sign-in.
+            {" "}
+            {t(
+              "Copy this one-time password now. It expires in 24 hours and must be changed at first sign-in.",
+            )}{" "}
           </p>
           {state.email && <p className="mt-2">{state.email}</p>}
           <code className="mt-2 block break-all font-bold">
@@ -55,7 +62,7 @@ export default function CheckerForm({ id }) {
         </div>
       )}
       <AdminSubmit>
-        {id ? "Generate new one-time password" : "Create report checker"}
+        {id ? t("Generate new one-time password") : t("Create report checker")}
       </AdminSubmit>
     </form>
   );

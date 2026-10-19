@@ -4,15 +4,11 @@ export const dynamic = "force-dynamic";
 export async function GET() {
   try {
     const [rows] = await database().execute(
-      "SELECT UPPER(c.code) AS code,c.name,country.name AS country,m.latitude,m.longitude,m.zoom_level,routing.category FROM cities c JOIN countries country ON country.id=c.country_id JOIN municipality_settings m ON m.city_id=c.id AND m.enabled=1 JOIN department_routes routing ON routing.city_id=c.id JOIN departments d ON d.id=routing.department_id AND d.city_id=c.id WHERE routing.active=1 ORDER BY c.name",
+      "SELECT UPPER(c.code) AS code,c.name,country.name AS country,m.latitude,m.longitude,m.zoom_level,CASE WHEN d.id IS NOT NULL THEN routing.category ELSE NULL END AS category FROM cities c JOIN countries country ON country.id=c.country_id JOIN municipality_settings m ON m.city_id=c.id AND m.enabled=1 LEFT JOIN department_routes routing ON routing.city_id=c.id AND routing.active=1 LEFT JOIN departments d ON d.id=routing.department_id AND d.city_id=c.id ORDER BY c.name",
     );
     const municipalities = new Map();
     for (const row of rows) {
-      if (
-        !/^[A-Z0-9]{2,10}$/.test(row.code) ||
-        !categories.includes(row.category)
-      )
-        continue;
+      if (!/^[A-Z0-9]{2,10}$/.test(row.code)) continue;
       if (!municipalities.has(row.code))
         municipalities.set(row.code, {
           code: row.code,
@@ -23,7 +19,12 @@ export async function GET() {
           longitude: Number(row.longitude),
           zoom: Number(row.zoom_level),
         });
-      municipalities.get(row.code).categories.push(row.category);
+      const available = municipalities.get(row.code).categories;
+      if (
+        categories.includes(row.category) &&
+        !available.includes(row.category)
+      )
+        available.push(row.category);
     }
     return Response.json(
       { cities: [...municipalities.values()] },

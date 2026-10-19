@@ -4,6 +4,28 @@ import { SourceTextModule, SyntheticModule } from "node:vm";
 import { createHash } from "node:crypto";
 import test from "node:test";
 const digest = (value) => createHash("sha256").update(value).digest("hex");
+test("admin translations cover navigation, forms, status and login errors in Albanian", async () => {
+  const { translateAdmin } = await import(
+    `data:text/javascript;base64,${Buffer.from(readFileSync("src/lib/admin-translations.js", "utf8")).toString("base64")}`
+  );
+  for (const text of [
+    "Report inbox",
+    "Platform settings",
+    "Save assignment",
+    "Pending",
+    "Email",
+    "Password",
+    "Check your email and password.",
+    "Missing category assignments",
+  ]) {
+    assert.notEqual(translateAdmin(text, "sq"), text);
+    assert.equal(translateAdmin(text, "en"), text);
+  }
+  assert.equal(
+    translateAdmin("Untranslated user content", "sq"),
+    "Untranslated user content",
+  );
+});
 async function brandingFixture(mode) {
   const assets = [{ key: "civicus", fallback: "/logos/civicus.png" }];
   return load("src/app/api/branding/[key]/route.js", {

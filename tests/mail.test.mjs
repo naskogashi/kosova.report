@@ -123,3 +123,37 @@ test("public municipality options come from actual active database routes", asyn
   });
   assert.equal(response.headers.get("cache-control"), "no-store");
 });
+
+test("enabled Prishtina remains visible when a category has no department route", async () => {
+  const route = await load("src/app/api/report-options/route.js", {
+    "../../../lib/db": {
+      database: () => ({
+        execute: async (sql) => {
+          assert.ok(sql.includes("LEFT JOIN department_routes"));
+          assert.ok(sql.includes("m.enabled=1"));
+          return [
+            [
+              {
+                code: "PR",
+                name: "Prishtinë",
+                country: "Kosovo",
+                latitude: "42.6629",
+                longitude: "21.1655",
+                zoom_level: 13,
+                category: null,
+              },
+            ],
+          ];
+        },
+      }),
+    },
+    "../../../lib/report-options": {
+      categories: ["infrastructure", "environment"],
+    },
+  });
+  const response = await route.GET();
+  const data = await response.json();
+  assert.equal(data.cities.length, 1);
+  assert.equal(data.cities[0].name, "Prishtinë");
+  assert.deepEqual(data.cities[0].categories, []);
+});

@@ -8,7 +8,8 @@
     "start": "next start",
     "test": "node --experimental-vm-modules --test tests/reports.test.mjs tests/admin.test.mjs tests/mail.test.mjs tests/progress.test.mjs",
     "setup:server": "node scripts/setup-server.mjs",
-    "migrate:images": "node scripts/migrate-images.mjs"
+    "migrate:images": "node scripts/migrate-images.mjs",
+    "verify:images": "node scripts/verify-images.mjs"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.500.0",

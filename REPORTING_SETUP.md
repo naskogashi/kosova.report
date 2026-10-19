@@ -102,6 +102,14 @@ Run `npm test` and `npm run build`. Tests isolate MySQL, R2 and SMTP2Go, exercis
 Keep Node 22 on port 3067 and Nginx client_max_body_size 52m with adequate timeouts. Original-image EXIF stripping/transcoding/scanning and persistent client idempotency across a lost submission response are not implemented.
 # Public branding, install support and privacy controls
 
+Public headings and browser titles use the shared slogan from `src/lib/site-branding.js`: “Your voice. A better city.” / “Zëri yt. Një qytet më i mirë.” / “Vaš glas. Bolji grad.” Keep this slogan in the title when updating branding.
+
+The admin panel supports English and Albanian. Select the language in the top bar; the preference is stored in the `kr-admin-language` cookie. Public reporting continues to support all three languages.
+
+Enabled cities appear in the reporting form even if a category has no recipient configured. In Admin → Settings → Reporting readiness, review missing categories. Add a department with its notification email, then add an active category assignment for each category you want to accept. A city is not ready to receive a category until that route exists; submissions are still validated on the server.
+
+To confirm objects actually exist in Cloudflare R2 (not merely in database records or logo fallbacks), run `npm run verify:images` on the server. This read-only command checks every stored report image and the six logos with authenticated R2 `HeadObject` requests, validates sizes/content types, and reports verified, unverified and failed totals. If any objects have no R2 records, run `npm run migrate:images -- --apply` and verify again. The verifier requires the same R2 credentials as uploads and does not print keys or citizen details.
+
 The public R2 custom domain is `https://images.kosova.report`. Connect that domain to the `kosova-report-images` bucket in Cloudflare. The deployment workflow supplies this as the default `R2_IMAGE_BASE_URL`; if a repository secret with that name exists, set it to the same URL. The R2 SDK continues using the account's S3 endpoint for authenticated uploads. Branding is served through `/api/branding/[key]` using authenticated R2 reads with bundled logo fallbacks if storage or the database is unavailable. It does not redirect visitors to the public image domain. Existing report records are not rewritten by this change.
 
 Only expose objects intended for public access through a public bucket/custom domain. The authenticated report-image endpoint does not make an underlying public R2 object private. For confidential evidence, use a separate private bucket or a Worker that enforces authorization before serving evidence; keep only logos in the public bucket.

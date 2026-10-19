@@ -1,3 +1,4 @@
+import { adminText as t } from "../../../lib/admin-language";
 import { saveDepartmentAction, saveRouteAction } from "../actions";
 import AdminSubmit from "../AdminSubmit";
 import { categories } from "../../../lib/report-options";
@@ -18,11 +19,14 @@ export default function DepartmentSettings({
         className="rounded-xl border border-slate-200 bg-white p-5 sm:p-6"
       >
         <h2 className="text-xl font-bold text-[#102344]">
-          Departments and routing
+          {" "}
+          {t("Departments and routing")}{" "}
         </h2>
         <p className="mt-2 text-sm text-slate-500">
-          Keep institutional contact details here. Assign each category to a
-          department in the same municipality below.
+          {" "}
+          {t(
+            "Keep institutional contact details here. Assign each category to a department in the same municipality below.",
+          )}{" "}
         </p>
         <div className="mt-5 space-y-3">
           {departments.map((department) => (
@@ -38,7 +42,8 @@ export default function DepartmentSettings({
                   ?.name || department.city_code}
               </p>
               <label className="text-xs font-semibold">
-                Department name
+                {" "}
+                {t("Department name")}{" "}
                 <input
                   name="name"
                   required
@@ -48,7 +53,8 @@ export default function DepartmentSettings({
                 />
               </label>
               <label className="text-xs font-semibold">
-                Notification email
+                {" "}
+                {t("Notification email")}{" "}
                 <input
                   name="email"
                   type="email"
@@ -58,18 +64,19 @@ export default function DepartmentSettings({
                   defaultValue={department.notification_email}
                 />
               </label>
-              <AdminSubmit>Save</AdminSubmit>
+              <AdminSubmit>{t("Save")}</AdminSubmit>
             </form>
           ))}
         </div>
-        <h3 className="mt-6 font-semibold">Add a department</h3>
+        <h3 className="mt-6 font-semibold">{t("Add a department")}</h3>
         <form
           action={saveDepartmentAction}
           className="mt-3 grid items-end gap-3 md:grid-cols-4"
         >
           <input type="hidden" name="id" value="" />
           <label className="text-xs font-semibold">
-            Municipality
+            {" "}
+            {t("Municipality")}{" "}
             <select name="city_id" required className={`${control} mt-1`}>
               {municipalities.map((city) => (
                 <option key={city.id} value={city.id}>
@@ -79,7 +86,8 @@ export default function DepartmentSettings({
             </select>
           </label>
           <label className="text-xs font-semibold">
-            Department name
+            {" "}
+            {t("Department name")}{" "}
             <input
               name="name"
               required
@@ -88,7 +96,8 @@ export default function DepartmentSettings({
             />
           </label>
           <label className="text-xs font-semibold">
-            Notification email
+            {" "}
+            {t("Notification email")}{" "}
             <input
               name="email"
               required
@@ -97,13 +106,15 @@ export default function DepartmentSettings({
               className={`${control} mt-1`}
             />
           </label>
-          <AdminSubmit>Add department</AdminSubmit>
+          <AdminSubmit>{t("Add department")}</AdminSubmit>
         </form>
-        <h3 className="mt-8 font-semibold">Category assignments</h3>
+        <h3 className="mt-8 font-semibold">{t("Category assignments")}</h3>
         {!routes.length && (
           <p className="mt-2 rounded-lg bg-amber-50 p-3 text-sm text-amber-900">
-            No categories are routed yet. Add assignments to enable public
-            reporting.
+            {" "}
+            {t(
+              "No categories are routed yet. Add assignments to enable public reporting.",
+            )}{" "}
           </p>
         )}
         <div className="mt-4 space-y-3">
@@ -118,10 +129,11 @@ export default function DepartmentSettings({
               <p className="py-2 text-xs font-semibold">
                 {municipalities.find((city) => city.id === route.city_id)
                   ?.name || route.city_code}{" "}
-                · {labels[route.category] || route.category}
+                · {t(labels[route.category] || route.category)}
               </p>
               <label className="text-xs font-semibold">
-                Department
+                {" "}
+                {t("Department")}{" "}
                 <select
                   name="department_id"
                   required
@@ -144,22 +156,24 @@ export default function DepartmentSettings({
                   type="checkbox"
                   name="active"
                   defaultChecked={Boolean(route.active)}
-                />
-                Active
+                />{" "}
+                {t("Active")}{" "}
               </label>
-              <AdminSubmit>Save route</AdminSubmit>
+              <AdminSubmit>{t("Save route")}</AdminSubmit>
             </form>
           ))}
         </div>
         <h3 className="mt-6 font-semibold">
-          Add or update category assignment
+          {" "}
+          {t("Add or update category assignment")}{" "}
         </h3>
         <form
           action={saveRouteAction}
           className="mt-3 grid items-end gap-3 md:grid-cols-2 lg:grid-cols-5"
         >
           <label className="text-xs font-semibold">
-            Municipality
+            {" "}
+            {t("Municipality")}{" "}
             <select name="city_id" required className={`${control} mt-1`}>
               {municipalities.map((city) => (
                 <option key={city.id} value={city.id}>
@@ -169,17 +183,19 @@ export default function DepartmentSettings({
             </select>
           </label>
           <label className="text-xs font-semibold">
-            Category
+            {" "}
+            {t("Category")}{" "}
             <select name="category" required className={`${control} mt-1`}>
               {categories.map((category) => (
                 <option key={category} value={category}>
-                  {labels[category]}
+                  {t(labels[category])}
                 </option>
               ))}
             </select>
           </label>
           <label className="text-xs font-semibold">
-            Department (same municipality)
+            {" "}
+            {t("Department (same municipality)")}{" "}
             <select name="department_id" required className={`${control} mt-1`}>
               {departments.map((department) => (
                 <option key={department.id} value={department.id}>
@@ -189,10 +205,10 @@ export default function DepartmentSettings({
             </select>
           </label>
           <label className="flex min-h-11 items-center gap-2 text-xs">
-            <input type="checkbox" name="active" defaultChecked />
-            Active
+            <input type="checkbox" name="active" defaultChecked />{" "}
+            {t("Active")}{" "}
           </label>
-          <AdminSubmit>Save assignment</AdminSubmit>
+          <AdminSubmit>{t("Save assignment")}</AdminSubmit>
         </form>
       </section>
     </>
