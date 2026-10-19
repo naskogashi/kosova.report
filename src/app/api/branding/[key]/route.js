@@ -12,6 +12,21 @@ export async function GET(request, { params }) {
       [item.key],
     );
     if (rows.length) {
+      const base = new URL(
+        process.env.R2_IMAGE_BASE_URL || "https://images.kosova.report",
+      );
+      if (
+        base.protocol === "https:" &&
+        base.hostname === "images.kosova.report"
+      ) {
+        return Response.redirect(
+          new URL(
+            rows[0].object_key.split("/").map(encodeURIComponent).join("/"),
+            base.href.replace(/\/$/, "") + "/",
+          ),
+          307,
+        );
+      }
       const object = await r2().send(
         new GetObjectCommand({ Bucket: bucketName(), Key: rows[0].object_key }),
       );

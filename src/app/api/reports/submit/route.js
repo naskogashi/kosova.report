@@ -153,7 +153,7 @@ export async function POST(request) {
     const imageBaseURL = new URL(
       (
         process.env.R2_IMAGE_BASE_URL ||
-        `https://${accountId}.r2.cloudflarestorage.com/${bucket}`
+        "https://images.kosova.report"
       ).replace(/\/$/, "") + "/",
     );
     if (imageBaseURL.protocol !== "https:")

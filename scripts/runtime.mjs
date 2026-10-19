@@ -73,7 +73,7 @@ export const objectURL = (key) =>
     key,
     (
       process.env.R2_IMAGE_BASE_URL ||
-      `https://${required("R2_ACCOUNT_ID")}.r2.cloudflarestorage.com/${bucket()}`
+      "https://images.kosova.report"
     ).replace(/\/$/, "") + "/",
   ).href;
 

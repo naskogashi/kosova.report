@@ -37,7 +37,7 @@ export async function GET(request, { params }) {
       const base = new URL(
           (
             process.env.R2_IMAGE_BASE_URL ||
-            `https://${required("R2_ACCOUNT_ID")}.r2.cloudflarestorage.com/${process.env.R2_BUCKET || "kosova-report-images"}`
+            "https://images.kosova.report"
           ).replace(/\/$/, "") + "/",
         ),
         url = new URL(image.image_url);

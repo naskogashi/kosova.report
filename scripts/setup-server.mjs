@@ -61,9 +61,14 @@ try {
   }
   if (dump.status !== 0) {
     unlinkSync(backup);
-    throw new Error(
-      "Database backup failed; no migration was run. Check mysqldump and database permissions.",
-    );
+    const detail = String(
+      dump.error?.message || dump.stderr || "Unknown mysqldump failure",
+    )
+      .split(config.password)
+      .join("[redacted]")
+      .trim()
+      .slice(0, 2000);
+    throw new Error(`Database backup failed; no migration was run. ${detail}`);
   }
   console.log(`Private database backup saved: ${backup}`);
   connection = await connect({ multipleStatements: true });
@@ -81,6 +86,7 @@ try {
     MYSQL_USER: config.user,
     MYSQL_DATABASE: config.database,
     R2_BUCKET: "kosova-report-images",
+    R2_IMAGE_BASE_URL: "https://images.kosova.report",
     R2_ACCOUNT_ID: "c268c9a22ef16f948948c241da7a9592",
   }))
     if (!process.env[key]) process.env[key] = value;

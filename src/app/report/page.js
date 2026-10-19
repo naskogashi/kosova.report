@@ -392,7 +392,7 @@ export default function Home() {
   return (
     <>
       <header className="sticky top-0 z-20 bg-[#062653] text-white shadow-sm">
-        <div className="mx-auto flex min-h-16 max-w-5xl items-center justify-between gap-3 px-4 sm:px-6">
+        <div className="mx-auto flex min-h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:px-8">
           <a
             href={`/?lang=${language}`}
             aria-label="kosova.report"
@@ -407,7 +407,7 @@ export default function Home() {
                 type="button"
                 onClick={() => changeLanguage(value)}
                 aria-pressed={language === value}
-                className={`min-h-10 min-w-10 rounded-md px-2 text-xs font-semibold ${language === value ? "bg-white/15 ring-1 ring-white/30" : "hover:bg-white/10"}`}
+                className={`min-h-11 rounded-lg px-3 text-xs font-semibold ${language === value ? "bg-white/15 ring-1 ring-white/30" : "hover:bg-white/10"}`}
               >
                 {value.toUpperCase()}
               </button>

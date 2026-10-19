@@ -179,7 +179,7 @@ test("submission stores relational URLs, commits before SMTP, escapes HTML and d
   );
   assert.match(
     image.values[1],
-    /^https:\/\/test.r2.cloudflarestorage.com\/kosova-report-images\/reports\//,
+    /^https:\/\/images\.kosova\.report\/reports\//,
   );
   assert.ok(app.events.indexOf("commit") < app.events.indexOf("send"));
   assert.equal(app.mail.attachments.length, 1);

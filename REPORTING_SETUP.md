@@ -100,3 +100,12 @@ OSM tiles retain attribution and an explicit referrer policy. If the domain/netw
 Run `npm test` and `npm run build`. Tests isolate MySQL, R2 and SMTP2Go, exercising one-time credentials, role/assignment enforcement, progress-token scope, idempotent municipal updates, report numbering and email payloads. Production service credentials and the live server are not accessible from this workspace; actual R2 transfers, MySQL migration execution and inbox delivery must be verified using the operator commands above.
 
 Keep Node 22 on port 3067 and Nginx client_max_body_size 52m with adequate timeouts. Original-image EXIF stripping/transcoding/scanning and persistent client idempotency across a lost submission response are not implemented.
+# Public branding, install support and privacy controls
+
+The public R2 custom domain is `https://images.kosova.report`. Connect that domain to the `kosova-report-images` bucket in Cloudflare. The deployment workflow supplies this as the default `R2_IMAGE_BASE_URL`; if a repository secret with that name exists, set it to the same URL. The R2 SDK continues using the account's S3 endpoint for authenticated uploads. Public branding uses the custom domain after migration. Existing report records are not rewritten by this change.
+
+Only expose objects intended for public access through a public bucket/custom domain. The authenticated report-image endpoint does not make an underlying public R2 object private. For confidential evidence, use a separate private bucket or a Worker that enforces authorization before serving evidence; keep only logos in the public bucket.
+
+The app links its manifest, supplies PNG and Apple icons, and registers a service worker in production. The worker caches only icons and the offline notice. It never caches report pages, admin pages, API responses, uploaded images, or map tiles. Reporting requires an internet connection. Install UI uses the browser's native prompt when available and otherwise explains browser-menu installation. Installed apps hide the install button.
+
+The multilingual privacy notice explains the admin security cookie, local notice acknowledgement and external map requests. There are no analytics or advertising tags or optional tracking categories. The notice can be reopened from the footer. If optional tracking is added later, implement prior opt-in before loading it. This notice is not a substitute for the operator's complete privacy policy, retention rules and data protection obligations.

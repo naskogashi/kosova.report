@@ -1,6 +1,62 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-body { margin: 0; font-family: system-ui, sans-serif; }
-button, input, select, textarea { font: inherit; }
-button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 3px solid #34d399; outline-offset: 3px; }
+body {
+  margin: 0;
+  font-family: system-ui, sans-serif;
+}
+body {
+  caret-color: transparent;
+}
+input,
+textarea,
+[contenteditable="true"] {
+  caret-color: auto;
+}
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    background-color 180ms ease,
+    color 180ms ease,
+    box-shadow 180ms ease,
+    transform 180ms ease;
+}
+button:not(:disabled),
+a {
+  cursor: pointer;
+}
+button:disabled {
+  cursor: not-allowed;
+}
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  button:not(:disabled):hover,
+  a.inline-flex:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 14px rgb(6 38 83 / 12%);
+  }
+  button:not(:disabled):active,
+  a.inline-flex:active {
+    transform: translateY(0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  button,
+  a {
+    transition: none;
+  }
+}
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 3px solid #34d399;
+  outline-offset: 3px;
+}

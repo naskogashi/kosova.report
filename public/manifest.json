@@ -2,10 +2,12 @@
   "name": "kosova.report",
   "short_name": "KosovaReport",
   "description": "Civic tech platform for democratic institutional accountability in Kosovo.",
+  "id": "/",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
-  "background_color": "#111827",
-  "theme_color": "#111827",
+  "background_color": "#f8fafc",
+  "theme_color": "#062653",
   "icons": [
     {
       "src": "/icons/icon-192.png",

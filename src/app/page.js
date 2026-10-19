@@ -163,6 +163,13 @@ export default function Welcome() {
             <p className="mt-5 max-w-xl text-base leading-relaxed text-slate-600 sm:text-lg">
               {t.intro}
             </p>
+            <p className="mt-5 rounded-xl border border-blue-200 bg-blue-50 px-4 py-3 text-sm font-medium text-blue-900">
+              {language === "sq"
+                ? "Aktualisht në Prishtinë. Së bashku, hap pas hapi — së shpejti edhe në qytete të tjera."
+                : language === "sr"
+                  ? "Trenutno u Prištini. Zajedno, korak po korak — uskoro i u drugim gradovima."
+                  : "Starting in Prishtina. Together, one neighborhood at a time — more cities will join in the future."}
+            </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <a
                 href={`/report?lang=${language}`}

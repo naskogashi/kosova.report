@@ -20,7 +20,7 @@ jobs:
           DEPLOY_R2_BUCKET: ${{ secrets.R2_BUCKET || 'kosova-report-images' }}
           DEPLOY_R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
           DEPLOY_R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
-          DEPLOY_R2_IMAGE_BASE_URL: ${{ secrets.R2_IMAGE_BASE_URL }}
+          DEPLOY_R2_IMAGE_BASE_URL: ${{ secrets.R2_IMAGE_BASE_URL || 'https://images.kosova.report' }}
           DEPLOY_SMTP2GO_API_KEY: ${{ secrets.SMTP2GO_API_KEY }}
           DEPLOY_SMTP_FROM: ${{ secrets.SMTP_FROM }}
         with:
