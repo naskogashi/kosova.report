@@ -3,7 +3,7 @@ import { saveDepartmentAction } from "../actions";
 import RouteAssignments from "./RouteAssignments";
 import AdminSubmit from "../AdminSubmit";
 const control =
-  "w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm";
+  "w-full rounded-sm border border-rule bg-card px-3 py-2.5 text-sm";
 export default async function DepartmentSettings({
   departments,
   municipalities,
@@ -14,13 +14,13 @@ export default async function DepartmentSettings({
     <>
       <section
         id="departments"
-        className="rounded-xl border border-slate-200 bg-white p-5 sm:p-6"
+        className="rounded-md border border-rule bg-card p-5 sm:p-6"
       >
-        <h2 className="text-xl font-bold text-[#102344]">
+        <h2 className="text-xl font-bold text-ink">
           {" "}
           {t("Departments and routing")}{" "}
         </h2>
-        <p className="mt-2 text-sm text-slate-500">
+        <p className="mt-2 text-sm text-pencil">
           {" "}
           {t(
             "Keep institutional contact details here. Assign each category to a department in the same municipality below.",
@@ -31,7 +31,7 @@ export default async function DepartmentSettings({
             <form
               key={department.id}
               action={saveDepartmentAction}
-              className="grid items-end gap-3 rounded-lg bg-slate-50 p-4 lg:grid-cols-[1fr_2fr_2fr_auto]"
+              className="grid items-end gap-3 rounded-sm bg-paper p-4 lg:grid-cols-[1fr_2fr_2fr_auto]"
             >
               <input type="hidden" name="id" value={department.id} />
               <input type="hidden" name="city_id" value={department.city_id} />

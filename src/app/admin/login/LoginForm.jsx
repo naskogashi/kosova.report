@@ -9,7 +9,7 @@ function Submit() {
   return (
     <button
       disabled={pending}
-      className="min-h-12 w-full rounded-lg bg-blue-700 px-5 py-3 font-semibold text-white disabled:opacity-50"
+      className="min-h-12 w-full rounded-sm bg-blue px-5 py-3 font-semibold text-on-blue disabled:opacity-50"
     >
       {pending ? t("Signing in\u2026") : t("Sign in")}
     </button>
@@ -29,7 +29,7 @@ export default function LoginForm() {
           required
           maxLength={254}
           autoComplete="username"
-          className="mt-2 w-full rounded-lg border border-slate-300 p-3"
+          className="mt-2 w-full rounded-sm border border-rule p-3"
         />
       </label>
       <label className="block text-sm font-semibold">
@@ -41,13 +41,13 @@ export default function LoginForm() {
           required
           maxLength={1024}
           autoComplete="current-password"
-          className="mt-2 w-full rounded-lg border border-slate-300 p-3"
+          className="mt-2 w-full rounded-sm border border-rule p-3"
         />
       </label>
       {state.error && (
         <p
           role="alert"
-          className="rounded-lg bg-red-50 p-3 text-sm text-red-800"
+          className="rounded-sm bg-error-wash p-3 text-sm text-error"
         >
           {t(state.error)}
         </p>

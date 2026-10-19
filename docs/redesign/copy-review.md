@@ -26,3 +26,12 @@ Every banned phrase from the brief (sq, sr, en lists, plus em dashes) was search
 - The example report number `PR-2026-000418` uses the seeded Prishtina code `PR`. If a different public ID prefix is set in admin, update the examples in `track.numberHint` and `track.invalidNumber`.
 - No response times, statistics or resolution counts appear anywhere. Add them only from real backend numbers.
 - Category and city guide pages need the real list of which department handles what in Prishtina.
+
+## Legal review (`TODO(legal)`)
+
+- `src/messages/*.json` → `privacy`: written from what the code does (fields stored, R2, SMTP2Go, map tiles, cookies, 90-day department links, one-year language cookie). A lawyer should check it, and the team should add: who the data controller is, how long reports and photos are kept, and server log retention.
+- Set `PRIVACY_CONTACT_EMAIL` on the server. Until then the "Questions and requests" section stays hidden.
+
+## Emails
+
+- The department and status emails carry all three languages because the database doesn't store the report's language. If a `language` column is added later, the emails can switch to the reporter's language.

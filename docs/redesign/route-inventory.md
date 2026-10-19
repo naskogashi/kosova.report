@@ -1,7 +1,7 @@
 # Route inventory — kosova.report
 
 Snapshot of `main` at `5c2f22b`, taken 2026-10-19. Every row gets ticked when its redesigned version ships.
-Legend: ☐ not started · ◐ in progress · ☑ redesigned and verified.
+Legend: ☐ not started, ☑ redesigned. Status on 2026-10-19: everything is redesigned except the two open rows. Public pages were checked in a browser at 360 and 1440 px, light and dark. Admin pages, emails and the PDF were checked by build, tests and sample output; the admin inbox with real data still needs a check on the server.
 
 ## Current stack
 
@@ -21,60 +21,60 @@ Legend: ☐ not started · ◐ in progress · ☑ redesigned and verified.
 
 ## Public routes
 
-| ☐ | Route | File | What it does | States found in code | States the brief adds |
+| ☑ | Route | File | What it does | States found in code | States the brief adds |
 | --- | --- | --- | --- | --- | --- |
-| ☐ | `/` | `src/app/page.js` | Landing | sq/sr/en via `?lang=`; "how it works" rendered **twice** (hero card + `#how` grid) | Map draw-in, categories index, after-submit timeline, supporters block, install CTA |
-| ☐ | `/report` | `src/app/report/page.js` | 3-step flow + success, all in one client component | **Options:** loading (no visible state), error (reuses the "category not configured" text). **Step 1 category:** none chosen (Continue disabled), chosen. **Step 2 details:** municipality select (auto-selected if only one city; auto-selected on pin drop if within 50 km), category not routed in this city, description 10–5000 chars with counter, map tile error, lat/lng number fields, photo limit error (≤10, ≤5 MB, JPEG/PNG/WebP), photo previews + remove, all validation errors joined into one alert. **Step 3 review:** summary list, thumbnails, anonymous checkbox (default on), email field. Submitting, submit error. | Category preselect via URL, geolocation (granted/denied/unavailable), address search, outside-city state, per-photo upload progress, compression + EXIF strip, draft restore, leave-confirmation, offline queue, slow network |
-| ☐ | (success view inside `/report`) | same | Public ID, tracking key in `<code>`, "notification pending" note, PDF download (loading, error), "report another" | **Refreshing the page loses the tracking key.** | Stamp moment, ticket stub, "I saved my key" check, share, install |
-| ☐ | `/track/[public_id]#key=…` | `src/app/track/[public_id]/page.js` → `src/components/ReportProgress.jsx` | Citizen progress view | no key in hash → error, loading, invalid/expired, loaded (Pending / In Progress / Resolved), refresh, PDF download. `noindex`. Key is stripped from the URL after reading. | Timeline from `created_at` → status → `resolved_at` |
-| ☐ | `/municipality/[public_id]#key=…` | `src/app/municipality/[public_id]/page.js` → `ReportProgress` | Department link from email (90-day token) | Same as track + "We are handling this", "Mark as resolved", saving, saved | Work-mode styling |
-| ☐ | **missing** — retrieve by key | — | Today a key can only be used through the emailed/copied link; there is nowhere to type it. | — | New route: report number + key input, paste/auto-format, invalid/expired states. Uses the existing tracking API, no backend change. |
-| ☐ | **missing** — privacy, cookies, about, FAQ | — | The cookie dialog is the only privacy text on the site. | — | New long-form pages. Legal text needs an owner (see open questions). |
+| ☑ | `/` | `src/app/page.js` | Landing | sq/sr/en via `?lang=`; "how it works" rendered **twice** (hero card + `#how` grid) | Map draw-in, categories index, after-submit timeline, supporters block, install CTA |
+| ☑ | `/report` | `src/app/report/page.js` | 3-step flow + success, all in one client component | **Options:** loading (no visible state), error (reuses the "category not configured" text). **Step 1 category:** none chosen (Continue disabled), chosen. **Step 2 details:** municipality select (auto-selected if only one city; auto-selected on pin drop if within 50 km), category not routed in this city, description 10–5000 chars with counter, map tile error, lat/lng number fields, photo limit error (≤10, ≤5 MB, JPEG/PNG/WebP), photo previews + remove, all validation errors joined into one alert. **Step 3 review:** summary list, thumbnails, anonymous checkbox (default on), email field. Submitting, submit error. | Category preselect via URL, geolocation (granted/denied/unavailable), address search, outside-city state, per-photo upload progress, compression + EXIF strip, draft restore, leave-confirmation, offline queue, slow network |
+| ☑ | (success view inside `/report`) | same | Public ID, tracking key in `<code>`, "notification pending" note, PDF download (loading, error), "report another" | **Refreshing the page loses the tracking key.** | Stamp moment, ticket stub, "I saved my key" check, share, install |
+| ☑ | `/track/[public_id]#key=…` | `src/app/track/[public_id]/page.js` → `src/components/ReportProgress.jsx` | Citizen progress view | no key in hash → error, loading, invalid/expired, loaded (Pending / In Progress / Resolved), refresh, PDF download. `noindex`. Key is stripped from the URL after reading. | Timeline from `created_at` → status → `resolved_at` |
+| ☑ | `/municipality/[public_id]#key=…` | `src/app/municipality/[public_id]/page.js` → `ReportProgress` | Department link from email (90-day token) | Same as track + "We are handling this", "Mark as resolved", saving, saved | Work-mode styling |
+| ☑ | **missing** — retrieve by key | — | Today a key can only be used through the emailed/copied link; there is nowhere to type it. | — | New route: report number + key input, paste/auto-format, invalid/expired states. Uses the existing tracking API, no backend change. |
+| ☑ | **missing** — privacy, cookies, about, FAQ | — | The cookie dialog is the only privacy text on the site. | — | New long-form pages. Legal text needs an owner (see open questions). |
 | ☐ | **missing** — category and city guide pages | — | — | — | Indexable "report a pothole in Prishtina" pages. Needs real department responsibilities (`TODO(data)`). |
-| ☐ | **new, requested** — news (`/sq/lajme`, `/sr/vesti`, `/en/news`) and article pages | — | Updates, articles and reports from the team for citizens. | — | Index, article, empty, not found. Needs a `news_posts` table, an admin editor and cover images in R2 (backend addition). |
+| ☑ | **new, requested** — news (`/sq/lajme`, `/sr/vesti`, `/en/news`) and article pages | — | Updates, articles and reports from the team for citizens. | — | Index, article, empty, not found. Needs a `news_posts` table, an admin editor and cover images in R2 (backend addition). |
 | ☐ | **missing** — `/design` | — | — | — | Dev-only system reference, `noindex`. |
 
 ## Admin / department routes (all `force-dynamic`, `noindex`, sq/en)
 
-| ☐ | Route | File | States found in code |
+| ☑ | Route | File | States found in code |
 | --- | --- | --- | --- |
-| ☐ | `/admin/login` | `src/app/admin/login/page.js`, `LoginForm.jsx` | idle, submitting, wrong credentials / expired temp password, setup not run, redirect if signed in |
-| ☐ | `/admin` | `src/app/admin/page.js` | inbox list, search `q`, status filter, pagination, empty ("No reports match your filters"), DB unavailable, `?saved` / `?saved=email_pending` / `?error` banners, selected report detail (`?report=`): status + internal note form, photos (`/api/admin/images/[id]`), history, department notification, assign checker (owner only), check/verify review, report not found |
-| ☐ | `/admin/settings` | `page.js`, `DepartmentSettings.jsx`, `RouteAssignments.jsx`, `CheckerForm.jsx` | countries and cities, municipality enable + map centre/zoom + ID prefix, departments, category routing table (edit, delete with inline confirm), reporting readiness per city, report checkers + one-time passwords, saved/error, unavailable |
-| ☐ | `/admin/stats` | `src/app/admin/stats/page.js` | totals, resolution rate, avg. days to resolve, new reports last 30 days, department performance, checker workload, empty period, unavailable |
-| ☐ | `/admin/account` | `page.js`, `AccountForm.jsx` | name/email, password change (≥14 chars), errors |
+| ☑ | `/admin/login` | `src/app/admin/login/page.js`, `LoginForm.jsx` | idle, submitting, wrong credentials / expired temp password, setup not run, redirect if signed in |
+| ☑ | `/admin` | `src/app/admin/page.js` | inbox list, search `q`, status filter, pagination, empty ("No reports match your filters"), DB unavailable, `?saved` / `?saved=email_pending` / `?error` banners, selected report detail (`?report=`): status + internal note form, photos (`/api/admin/images/[id]`), history, department notification, assign checker (owner only), check/verify review, report not found |
+| ☑ | `/admin/settings` | `page.js`, `DepartmentSettings.jsx`, `RouteAssignments.jsx`, `CheckerForm.jsx` | countries and cities, municipality enable + map centre/zoom + ID prefix, departments, category routing table (edit, delete with inline confirm), reporting readiness per city, report checkers + one-time passwords, saved/error, unavailable |
+| ☑ | `/admin/stats` | `src/app/admin/stats/page.js` | totals, resolution rate, avg. days to resolve, new reports last 30 days, department performance, checker workload, empty period, unavailable |
+| ☑ | `/admin/account` | `page.js`, `AccountForm.jsx` | name/email, password change (≥14 chars), errors |
 
 ## System pages
 
-| ☐ | Page | Today |
+| ☑ | Page | Today |
 | --- | --- | --- |
-| ☐ | 404 | Next.js default (no `not-found.js`) |
-| ☐ | 500 / error boundary | Next.js default (no `error.js` / `global-error.js`) |
-| ☐ | Loading | none (`loading.js` absent); map placeholder is a grey `animate-pulse` box |
-| ☐ | Offline | `public/offline.html`, trilingual static page, system font |
+| ☑ | 404 | Next.js default (no `not-found.js`) |
+| ☑ | 500 / error boundary | Next.js default (no `error.js` / `global-error.js`) |
+| ☑ | Loading | none (`loading.js` absent); map placeholder is a grey `animate-pulse` box |
+| ☑ | Offline | `public/offline.html`, trilingual static page, system font |
 
 ## Overlays and inline UI
 
-| ☐ | Element | Where | Today |
+| ☑ | Element | Where | Today |
 | --- | --- | --- | --- |
-| ☐ | Cookie notice | `AppControls.jsx` | `<dialog>` shown modally on first visit (blocks everything, including the report CTA), "Necessary only" + "Customise" expands a details box with no real toggles |
-| ☐ | Cookie re-open link | `AppControls.jsx` | Text button in the bar below the footer |
-| ☐ | Install prompt | `AppControls.jsx` | Button in that bar; uses `beforeinstallprompt`, otherwise toggles an inline iOS help paragraph |
-| ☐ | Language switcher | landing, report, track, admin | Four separate implementations |
-| ☐ | Map picker | `ReportMap.jsx` | Inline 340 px map, click to drop, draggable pin, tile error banner |
-| ☐ | Photo picker | `/report` step 2 | Native multi-file input, no `capture`, no camera-first |
-| ☐ | Confirmation dialogs | `RouteAssignments.jsx` | Inline "Confirm delete" only. No confirm on leaving a report draft. |
-| ☐ | Toasts | — | None. Feedback is inline `role="status"` / `role="alert"` paragraphs. |
+| ☑ | Cookie notice | `AppControls.jsx` | `<dialog>` shown modally on first visit (blocks everything, including the report CTA), "Necessary only" + "Customise" expands a details box with no real toggles |
+| ☑ | Cookie re-open link | `AppControls.jsx` | Text button in the bar below the footer |
+| ☑ | Install prompt | `AppControls.jsx` | Button in that bar; uses `beforeinstallprompt`, otherwise toggles an inline iOS help paragraph |
+| ☑ | Language switcher | landing, report, track, admin | Four separate implementations |
+| ☑ | Map picker | `ReportMap.jsx` | Inline 340 px map, click to drop, draggable pin, tile error banner |
+| ☑ | Photo picker | `/report` step 2 | Native multi-file input, no `capture`, no camera-first |
+| ☑ | Confirmation dialogs | `RouteAssignments.jsx` | Inline "Confirm delete" only. No confirm on leaving a report draft. |
+| ☑ | Toasts | — | None. Feedback is inline `role="status"` / `role="alert"` paragraphs. |
 
 ## Generated artifacts the user sees
 
-| ☐ | Artifact | Source | Today |
+| ☑ | Artifact | Source | Today |
 | --- | --- | --- | --- |
-| ☐ | PDF proof | `src/lib/report-pdf.js`, served by `/api/reports/[public_id]/pdf` (bearer key) | Navy header bar, trilingual labels in one line ("Category / Kategoria / Kategorija"), Noto Sans Regular, no map, no QR, no stamp |
-| ☐ | Private key display | success view | Raw 43-char key in `<code>`, one sentence above it |
-| ☐ | New-report email to department | `src/app/api/reports/submit/route.js` | Inline HTML, **English only**, inline photos, link to `/municipality/…` |
-| ☐ | Status emails (department + non-anonymous reporter) | `src/lib/report-notifications.js` | Inline HTML, **English only**, "Report status: Pending" |
-| ☐ | Manifest, icons, `theme-color` | `public/manifest.json`, `layout.js` | One theme colour, no dark variant |
+| ☑ | PDF proof | `src/lib/report-pdf.js`, served by `/api/reports/[public_id]/pdf` (bearer key) | Navy header bar, trilingual labels in one line ("Category / Kategoria / Kategorija"), Noto Sans Regular, no map, no QR, no stamp |
+| ☑ | Private key display | success view | Raw 43-char key in `<code>`, one sentence above it |
+| ☑ | New-report email to department | `src/app/api/reports/submit/route.js` | Inline HTML, **English only**, inline photos, link to `/municipality/…` |
+| ☑ | Status emails (department + non-anonymous reporter) | `src/lib/report-notifications.js` | Inline HTML, **English only**, "Report status: Pending" |
+| ☑ | Manifest, icons, `theme-color` | `public/manifest.json`, `layout.js` | One theme colour, no dark variant |
 
 ## SEO today
 

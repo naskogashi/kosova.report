@@ -21,7 +21,7 @@ export default function AccountForm({ account }) {
             required
             defaultValue={value}
             maxLength={name === "name" ? 120 : 254}
-            className="mt-2 w-full rounded-lg border p-3"
+            className="mt-2 w-full rounded-sm border p-3"
           />
         </label>
       ))}
@@ -34,7 +34,7 @@ export default function AccountForm({ account }) {
             type="password"
             required
             autoComplete="current-password"
-            className="mt-2 w-full rounded-lg border p-3"
+            className="mt-2 w-full rounded-sm border p-3"
           />
         </label>
       )}
@@ -51,18 +51,18 @@ export default function AccountForm({ account }) {
             maxLength={1024}
             required
             autoComplete="new-password"
-            className="mt-2 w-full rounded-lg border p-3"
+            className="mt-2 w-full rounded-sm border p-3"
           />
         </label>
       ))}
-      <p className="text-xs text-slate-500">
+      <p className="text-xs text-pencil">
         {" "}
         {t(
           "Use at least 14 characters. Saving signs out all other sessions.",
         )}{" "}
       </p>
       {state.error && (
-        <p role="alert" className="text-sm text-red-700">
+        <p role="alert" className="text-sm text-error">
           {t(state.error)}
         </p>
       )}

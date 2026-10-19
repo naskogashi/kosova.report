@@ -1,3 +1,4 @@
+import AdminNav from "../AdminNav";
 import { siteTitle } from "../../../lib/site-branding";
 import { adminTranslator, adminLanguage } from "../../../lib/admin-language";
 import { database } from "../../../lib/db";
@@ -23,13 +24,13 @@ export async function generateMetadata() {
   };
 }
 const input =
-  "mt-1 block w-full rounded-lg border border-slate-300 bg-white p-2.5 text-sm";
+  "mt-1 block w-full rounded-sm border border-rule bg-card p-2.5 text-sm";
 async function CityForm({ city, countries }) {
   const t = await adminTranslator();
   return (
     <form
       action={saveCityAction}
-      className="grid items-end gap-3 rounded-xl bg-slate-50 p-4 sm:grid-cols-2 lg:grid-cols-4"
+      className="grid items-end gap-3 rounded-md bg-paper p-4 sm:grid-cols-2 lg:grid-cols-4"
     >
       <input type="hidden" name="id" value={city?.id || ""} />
       <label className="text-xs font-semibold">
@@ -168,18 +169,14 @@ export default async function Settings(props) {
   }
   return (
     <div className="mx-auto w-full max-w-7xl space-y-7 px-4 py-8 sm:px-6">
-      <nav className="flex flex-wrap gap-5 text-sm font-semibold text-blue-800">
-        <a href="/admin">{t("Report inbox")}</a>
-        <a href="/admin/stats">{t("Statistics")}</a>
-        <a href="/admin/account">{t("My account")}</a>
-      </nav>
-      <h1 className="text-3xl font-bold text-[#102344]">
+      <AdminNav current="/admin/settings" t={t} owner />
+      <h1 className="text-3xl font-extrabold tracking-[-0.025em] text-ink">
         {t("Platform settings")}
       </h1>
       {searchParams.saved && (
         <p
           role="status"
-          className="rounded-lg bg-emerald-50 p-3 text-sm text-emerald-900"
+          className="rounded-sm bg-ok-wash p-3 text-sm text-ok"
         >
           {" "}
           {t("Changes saved.")}{" "}
@@ -188,7 +185,7 @@ export default async function Settings(props) {
       {searchParams.error && (
         <p
           role="alert"
-          className="rounded-lg bg-red-50 p-3 text-sm text-red-800"
+          className="rounded-sm bg-error-wash p-3 text-sm text-error"
         >
           {" "}
           {t(
@@ -198,10 +195,10 @@ export default async function Settings(props) {
       )}
       <section
         id="geography"
-        className="space-y-5 rounded-xl border bg-white p-5"
+        className="space-y-5 rounded-md border bg-card p-5"
       >
         <h2 className="text-xl font-bold">{t("Countries and cities")}</h2>
-        <p className="text-sm text-slate-500">
+        <p className="text-sm text-pencil">
           {" "}
           {t(
             "Only Prishtina starts enabled. Add countries/cities here and explicitly enable them when ready. A city also needs active department routes before citizens can report there.",
@@ -212,7 +209,7 @@ export default async function Settings(props) {
             <form
               key={country.id}
               action={saveCountryAction}
-              className="flex flex-wrap items-end gap-3 rounded-lg bg-slate-50 p-4"
+              className="flex flex-wrap items-end gap-3 rounded-sm bg-paper p-4"
             >
               <input name="id" type="hidden" value={country.id} />
               <label className="flex-1 text-xs font-semibold">
@@ -265,9 +262,9 @@ export default async function Settings(props) {
         <h3 className="font-semibold">{t("Add a city")}</h3>
         <CityForm countries={countries} />
       </section>
-      <section className="space-y-3 rounded-xl border border-blue-200 bg-blue-50 p-5">
+      <section className="space-y-3 rounded-md border border-rule bg-wash p-5">
         <h2 className="text-xl font-bold">{t("Reporting readiness")}</h2>
-        <p className="text-sm text-slate-600">
+        <p className="text-sm text-pencil">
           {t(
             "Choose an enabled city and assign each category to a department with a valid notification email. Creating a city alone does not configure its recipients.",
           )}
@@ -291,7 +288,7 @@ export default async function Settings(props) {
             (category) => !assigned.has(category),
           );
           return (
-            <div key={city.id} className="rounded-lg bg-white p-3 text-sm">
+            <div key={city.id} className="rounded-sm bg-card p-3 text-sm">
               <p className="font-semibold">
                 {city.name} ·{" "}
                 {Number(city.enabled) !== 1
@@ -301,7 +298,7 @@ export default async function Settings(props) {
                     : t("Ready for all categories")}
               </p>
               {!!missing.length && (
-                <p className="mt-1 text-slate-600">
+                <p className="mt-1 text-pencil">
                   {missing
                     .map((category) => t(category.replaceAll("_", " ")))
                     .join(", ")}
@@ -312,7 +309,7 @@ export default async function Settings(props) {
         })}
         <a
           href="#departments"
-          className="inline-flex min-h-11 items-center rounded-lg bg-blue-800 px-4 py-2 text-sm font-semibold text-white"
+          className="inline-flex min-h-11 items-center rounded-sm bg-blue-press px-4 py-2 text-sm font-semibold text-on-blue"
         >
           {t("Configure recipients")}
         </a>
@@ -324,10 +321,10 @@ export default async function Settings(props) {
       />
       <section
         id="checkers"
-        className="space-y-5 rounded-xl border bg-white p-5"
+        className="space-y-5 rounded-md border bg-card p-5"
       >
         <h2 className="text-xl font-bold">{t("Report checkers")}</h2>
-        <p className="text-sm text-slate-500">
+        <p className="text-sm text-pencil">
           {" "}
           {t(
             "Checkers can view and verify assigned reports. They cannot change platform settings, reassign reports, or mark municipal issues resolved.",
@@ -337,13 +334,13 @@ export default async function Settings(props) {
           {checkers.map((checker) => (
             <div
               key={checker.id}
-              className="space-y-4 rounded-xl bg-slate-50 p-4"
+              className="space-y-4 rounded-md bg-paper p-4"
             >
               <p className="font-semibold">{checker.name}</p>
-              <p className="break-all text-sm text-slate-600">
+              <p className="break-all text-sm text-pencil">
                 {checker.email}
               </p>
-              <p className="text-xs text-slate-500">
+              <p className="text-xs text-pencil">
                 {checker.must_change_password
                   ? t("First sign-in not finished")
                   : t("Account ready")}

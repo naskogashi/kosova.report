@@ -1,4 +1,5 @@
 export const adminAlbanian = {
+  "Keyboard: j and k move between reports, / searches.": "Tastiera: j dhe k lëvizin mes raporteve, / kërkon.",
   "News": "Lajme",
   "Updates, articles and reports for citizens.": "Përditësime, artikuj dhe raporte për qytetarët.",
   "Write a post": "Shkruaj një postim",

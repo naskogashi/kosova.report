@@ -3,12 +3,15 @@ import { adminTranslator, adminLanguage } from "../../lib/admin-language";
 import { database } from "../../lib/db";
 import { requireAdmin } from "../../lib/admin-session";
 import {
-  logoutAction,
   updateReportAction,
   assignCheckerAction,
   reviewReportAction,
 } from "./actions";
 import AdminSubmit from "./AdminSubmit";
+import AdminNav from "./AdminNav";
+import AdminShortcuts from "./AdminShortcuts";
+import { Icon, categoryStyle } from "../../components/icons";
+import { btn, field } from "../../components/ui";
 export const dynamic = "force-dynamic";
 export async function generateMetadata() {
   const t = await adminTranslator();
@@ -34,8 +37,6 @@ const labels = {
   education: "Education",
   safety: "Safety",
 };
-const control =
-  "w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm";
 const formatDate = (value, t) =>
   value
     ? new Date(value).toLocaleString("en-GB", {
@@ -178,440 +179,312 @@ export default async function AdminPage(props) {
     if (reportId) params.set("report", reportId);
     return `/admin?${params}`;
   };
+  const cityName = (code) =>
+    municipalities.find((item) => item.code === code)?.name || code;
+  const chip =
+    "inline-flex min-h-10 items-center gap-2 rounded-full px-3.5 text-sm font-bold transition-colors duration-120";
+  const card = "rounded-lg bg-card shadow-[0_0_0_1px_var(--color-rule)]";
   return (
-    <>
-      <header className="bg-[#062653] text-white">
-        <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3 px-5 py-4">
-          <div>
-            <a href="/" className="text-xl font-bold">
-              kosova.report
-            </a>
-            <p className="mt-1 text-xs text-blue-100">
-              {" "}
-              {t("Administration \xB7")} {admin.email}
-            </p>
-          </div>
-          <div className="flex items-center gap-4">
-            {owner && (
-              <a href="/admin/settings" className="text-sm">
-                {" "}
-                {t("Settings")}{" "}
-              </a>
-            )}
-            <a href="/admin/stats" className="text-sm">
-              {" "}
-              {t("Statistics")}{" "}
-            </a>
-            <a href="/admin/account" className="text-sm">
-              {" "}
-              {t("My account")}{" "}
-            </a>
-            <form action={logoutAction}>
-              <button className="rounded-lg border border-white/30 px-4 py-2 text-sm">
-                {" "}
-                {t("Sign out")}{" "}
-              </button>
-            </form>
-          </div>
-        </div>
-      </header>
-      <div className="mx-auto w-full max-w-7xl space-y-6 px-4 py-7 sm:px-6">
+    <div className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6">
+      <AdminNav current="/admin" t={t} owner={owner} />
+      <AdminShortcuts />
+      <div className="mt-6 flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-[#102344]">
-            {t("Report inbox")}
-          </h1>
-          <p className="mt-1 text-sm text-slate-500">
-            {" "}
-            {t(
-              "Review evidence, update report progress and configure institutional routing.",
-            )}{" "}
+          <h1 className="text-3xl font-extrabold tracking-[-0.025em]">{t("Report inbox")}</h1>
+          <p className="mt-1 text-pencil">
+            {t("Review evidence, update report progress and configure institutional routing.")}
           </p>
         </div>
-        {searchParams.saved && (
-          <p
-            role="status"
-            className="rounded-lg border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-900"
-          >
-            {searchParams.saved === "email_pending"
-              ? t("Changes saved. Some notification emails are pending.")
-              : t("Changes saved.")}
+        <p className="text-sm text-pencil">
+          {admin.email}
+          <span className="ml-3 hidden lg:inline">{t("Keyboard: j and k move between reports, / searches.")}</span>
+        </p>
+      </div>
+      {searchParams.saved && (
+        <p role="status" className="mt-5 rounded-md bg-ok-wash p-3 font-semibold text-ok">
+          {searchParams.saved === "email_pending"
+            ? t("Changes saved. Some notification emails are pending.")
+            : t("Changes saved.")}
+        </p>
+      )}
+      {searchParams.error && (
+        <p role="alert" className="mt-5 rounded-md bg-error-wash p-3 font-semibold text-error">
+          {t("Changes could not be saved. Check the database and try again.")}
+        </p>
+      )}
+      {unavailable ? (
+        <section role="alert" className="mt-6 rounded-lg bg-error-wash p-6">
+          <h2 className="font-extrabold">{t("Database unavailable")}</h2>
+          <p className="mt-2">
+            {t("Check the MySQL environment settings and run the platform setup command (migrations 004 and 005).")}
           </p>
-        )}
-        {searchParams.error && (
-          <p
-            role="alert"
-            className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-800"
-          >
-            {" "}
-            {t(
-              "Changes could not be saved. Check the database and try again.",
-            )}{" "}
-          </p>
-        )}
-        {unavailable ? (
-          <section
-            role="alert"
-            className="rounded-xl border border-amber-200 bg-amber-50 p-6 text-amber-900"
-          >
-            <h2 className="font-semibold">{t("Database unavailable")}</h2>
-            <p className="mt-2 text-sm">
-              {" "}
-              {t(
-                "Check the MySQL environment settings and run the platform setup command (migrations 004 and 005).",
-              )}{" "}
-            </p>
-          </section>
-        ) : (
-          <>
-            <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-              {Object.entries(statuses).map(([key, label]) => (
-                <a
-                  key={key}
-                  href={`/admin?status=${encodeURIComponent(key)}`}
-                  className="rounded-xl border border-slate-200 bg-white p-4"
-                >
-                  <p className="text-xs text-slate-500">{t(label)}</p>
-                  <p className="mt-2 text-2xl font-bold text-[#102344]">
-                    {Number(
-                      summary.find((row) => row.status === key)?.total || 0,
-                    )}
-                  </p>
-                </a>
-              ))}
-              <div className="rounded-xl border border-amber-200 bg-amber-50 p-4">
-                <p className="text-xs text-amber-800">
-                  {t("Pending email alerts")}
-                </p>
-                <p className="mt-2 text-2xl font-bold text-amber-900">
-                  {pending}
-                </p>
-              </div>
-            </div>
-            <form
-              method="GET"
-              action="/admin"
-              className="flex flex-col gap-3 sm:flex-row"
-            >
-              <label className="flex-1">
+        </section>
+      ) : (
+        <>
+          {/* Status filters as chips, with counts; the search sits beside them. */}
+          <div className="mt-6 flex flex-wrap items-center gap-2">
+            <a href="/admin" aria-current={!status ? "true" : undefined} className={`${chip} bg-card text-ink shadow-[0_0_0_1px_var(--color-rule)] aria-[current=true]:bg-ink aria-[current=true]:text-paper aria-[current=true]:shadow-none`}>
+              {t("All statuses")}
+            </a>
+            {Object.entries(statuses).map(([key, label]) => (
+              <a
+                key={key}
+                href={`/admin?status=${encodeURIComponent(key)}`}
+                aria-current={status === key ? "true" : undefined}
+                className={`${chip} bg-card text-ink shadow-[0_0_0_1px_var(--color-rule)] aria-[current=true]:bg-ink aria-[current=true]:text-paper aria-[current=true]:shadow-none`}
+              >
+                {t(label)}
+                <span className="tabular rounded-full bg-wash px-2 text-xs text-blue">
+                  {Number(summary.find((row) => row.status === key)?.total || 0)}
+                </span>
+              </a>
+            ))}
+            {pending > 0 && (
+              <span className={`${chip} bg-wash text-stamp`}>
+                {t("Pending email alerts")}
+                <span className="tabular">{pending}</span>
+              </span>
+            )}
+            <form method="GET" action="/admin" className="ml-auto flex w-full gap-2 sm:w-auto">
+              {status && <input type="hidden" name="status" value={status} />}
+              <label className="flex-1 sm:w-72">
                 <span className="sr-only">{t("Search reports")}</span>
                 <input
-                  className={control}
+                  id="admin-search"
+                  className={`${field.input} mt-0 min-h-11 py-2`}
                   name="q"
+                  type="search"
                   defaultValue={query}
                   maxLength={100}
                   placeholder={t("Search public ID or description")}
                 />
               </label>
-              <label>
-                <span className="sr-only">{t("Filter by status")}</span>
-                <select name="status" className={control} defaultValue={status}>
-                  <option value="">{t("All statuses")}</option>
-                  {Object.entries(statuses).map(([key, label]) => (
-                    <option value={key} key={key}>
-                      {t(label)}
-                    </option>
-                  ))}
-                </select>
-              </label>
-              <button className="rounded-lg bg-blue-700 px-5 py-2.5 text-sm font-semibold text-white">
-                {" "}
-                {t("Search")}{" "}
-              </button>
+              <button className={`${btn.primary} min-h-11 px-4 text-sm`}>{t("Search")}</button>
             </form>
-            <div
-              className={`grid items-start gap-6 ${report ? "xl:grid-cols-[1fr_1fr]" : ""}`}
-            >
-              <section className="min-w-0 overflow-hidden rounded-xl border border-slate-200 bg-white">
-                <div className="flex items-center justify-between border-b border-slate-100 px-4 py-3">
-                  <h2 className="font-semibold">{t("Reports")}</h2>
-                  <span className="text-xs text-slate-500">
-                    {total} {t("matching")}{" "}
-                  </span>
-                </div>
-                {!reports.length ? (
-                  <p className="p-6 text-sm text-slate-500">
-                    {" "}
-                    {t("No reports match your filters.")}{" "}
-                  </p>
-                ) : (
-                  <ul className="divide-y divide-slate-100">
-                    {reports.map((row) => (
-                      <li key={row.id}>
+          </div>
+
+          {/* Work mode: the list on the left, the selected report on the right. */}
+          <div className={`mt-6 grid items-start gap-6 ${report ? "lg:grid-cols-[minmax(0,26rem)_minmax(0,1fr)]" : ""}`}>
+            <section className={`${card} min-w-0 overflow-hidden`} aria-labelledby="inbox-list">
+              <div className="flex items-center justify-between px-4 py-3 shadow-[0_1px_0_var(--color-rule)]">
+                <h2 id="inbox-list" className="font-extrabold">{t("Reports")}</h2>
+                <span className="tabular text-sm text-pencil">
+                  {total} {t("matching")}
+                </span>
+              </div>
+              {!reports.length ? (
+                <p className="p-6 text-pencil">{t("No reports match your filters.")}</p>
+              ) : (
+                <ul data-inbox>
+                  {reports.map((row) => {
+                    const style = categoryStyle[row.category];
+                    const current = selected === String(row.id);
+                    return (
+                      <li key={row.id} className="shadow-[0_1px_0_var(--color-rule)] last:shadow-none">
                         <a
                           href={browse(page, row.id)}
-                          className={`block p-4 hover:bg-blue-50 ${selected === String(row.id) ? "bg-blue-50" : ""}`}
+                          aria-current={current ? "true" : undefined}
+                          data-inbox-item
+                          className="grid grid-cols-[2.5rem_1fr_auto] items-center gap-3 px-4 py-3 hover:bg-wash aria-[current=true]:bg-wash aria-[current=true]:shadow-[inset_4px_0_0_var(--color-blue)]"
                         >
-                          <div className="flex flex-wrap items-center justify-between gap-2">
-                            <span className="text-sm font-bold text-blue-900">
-                              {row.public_id}
+                          <span className={`flex size-10 items-center justify-center rounded-sm ${style?.text || "text-ink"} ${style?.tint || "bg-wash"}`}>
+                            {style && <Icon name={row.category} className="size-6" />}
+                          </span>
+                          <span className="min-w-0">
+                            <span className="tabular block font-extrabold">{row.public_id}</span>
+                            <span className="block truncate text-sm text-pencil">
+                              {t(labels[row.category] || row.category)}, {cityName(row.city_code)}
                             </span>
-                            <span className="rounded-full bg-slate-100 px-2.5 py-1 text-[11px] text-slate-600">
+                          </span>
+                          <span className="text-right text-xs">
+                            <span className={`inline-block rounded-full px-2 py-0.5 font-bold ${row.status === "Resolved" ? "bg-ok-wash text-ok" : row.status === "In Progress" ? "bg-wash text-blue" : "bg-paper text-pencil"}`}>
                               {t(statuses[row.status] || row.status)}
                             </span>
-                          </div>
-                          <p className="mt-2 text-sm">
-                            {t(labels[row.category] || row.category)} ·{" "}
-                            {municipalities.find(
-                              (item) => item.code === row.city_code,
-                            )?.name || row.city_code}
-                          </p>
-                          <p className="mt-1 text-xs text-slate-500">
-                            {formatDate(row.created_at, t)}
-                          </p>
+                            <span className="tabular mt-1 block text-pencil">{formatDate(row.created_at, t)}</span>
+                          </span>
                         </a>
                       </li>
-                    ))}
-                  </ul>
+                    );
+                  })}
+                </ul>
+              )}
+              <div className="flex items-center justify-between gap-3 px-4 py-3 text-sm shadow-[0_-1px_0_var(--color-rule)]">
+                {page > 1 ? (
+                  <a className={btn.link} href={browse(page - 1)}>
+                    {t("Previous")}
+                  </a>
+                ) : (
+                  <span />
                 )}
-                <div className="flex items-center justify-between gap-3 border-t border-slate-100 p-4 text-sm">
-                  {page > 1 ? (
-                    <a
-                      className="font-semibold text-blue-800"
-                      href={browse(page - 1)}
-                    >
-                      {" "}
-                      {t("Previous")}{" "}
-                    </a>
-                  ) : (
-                    <span />
-                  )}
-                  <span className="text-xs text-slate-500">
-                    {t("Page")} {page}
-                  </span>
-                  {page * 25 < total ? (
-                    <a
-                      className="font-semibold text-blue-800"
-                      href={browse(page + 1)}
-                    >
-                      {" "}
-                      {t("Next")}{" "}
-                    </a>
-                  ) : (
-                    <span />
-                  )}
-                </div>
-              </section>
-              {report && (
-                <section className="min-w-0 space-y-5 rounded-xl border border-slate-200 bg-white p-5">
-                  <div>
-                    <h2 className="text-xl font-bold text-[#102344]">
-                      {report.public_id}
-                    </h2>
-                    <p className="mt-1 text-xs text-slate-500">
-                      {" "}
-                      {t("Submitted")} {formatDate(report.created_at, t)}
-                    </p>
+                <span className="tabular text-pencil">
+                  {t("Page")} {page}
+                </span>
+                {page * 25 < total ? (
+                  <a className={btn.link} href={browse(page + 1)}>
+                    {t("Next")}
+                  </a>
+                ) : (
+                  <span />
+                )}
+              </div>
+            </section>
+
+            {report && (
+              <section className="grid min-w-0 gap-5" aria-labelledby="report-title">
+                {/* The report as the same slip citizens see. */}
+                <article className={`${card} p-5`}>
+                  <div className="flex flex-wrap items-start justify-between gap-3">
+                    <div>
+                      <h2 id="report-title" className="tabular text-2xl font-extrabold tracking-[-0.01em]">
+                        {report.public_id}
+                      </h2>
+                      <p className="mt-1 text-sm text-pencil">
+                        {t("Submitted")} {formatDate(report.created_at, t)}
+                      </p>
+                    </div>
+                    {categoryStyle[report.category] && (
+                      <span className={`inline-flex -rotate-2 items-center gap-2 rounded-sm border-[1.5px] border-current/45 px-3 py-1.5 font-extrabold ${categoryStyle[report.category].text} ${categoryStyle[report.category].tint}`}>
+                        <Icon name={report.category} className="size-6" />
+                        {t(labels[report.category] || report.category)}
+                      </span>
+                    )}
                   </div>
-                  <dl className="space-y-3 text-sm">
+                  <dl className="mt-5 grid gap-3 sm:grid-cols-2">
                     <div>
-                      <dt className="font-semibold text-slate-500">
-                        {" "}
-                        {t("Description")}{" "}
-                      </dt>
-                      <dd className="mt-1 whitespace-pre-wrap break-words">
-                        {report.description}
-                      </dd>
+                      <dt className="text-sm text-pencil">{t("Reporter")}</dt>
+                      <dd className="font-semibold break-words">{report.anonymous ? t("Anonymous") : report.contact_email}</dd>
                     </div>
                     <div>
-                      <dt className="font-semibold text-slate-500">
-                        {t("Reporter")}
-                      </dt>
-                      <dd className="mt-1 break-words">
-                        {report.anonymous
-                          ? t("Anonymous")
-                          : report.contact_email}
-                      </dd>
-                    </div>
-                    <div>
-                      <dt className="font-semibold text-slate-500">
-                        {" "}
-                        {t("Department notification")}{" "}
-                      </dt>
-                      <dd className="mt-1 break-words">
-                        {report.notification_email}
-                      </dd>
+                      <dt className="text-sm text-pencil">{t("Department notification")}</dt>
+                      <dd className="font-semibold break-words">{report.notification_email}</dd>
                     </div>
                   </dl>
+                  <p className="ruled mt-5 text-[1.0625rem] break-words whitespace-pre-wrap">{report.description}</p>
                   <a
-                    className="inline-flex items-center rounded-lg border border-blue-200 px-3 py-2 text-sm font-semibold text-blue-800"
+                    className={`${btn.soft} mt-5 min-h-11 px-4 text-sm`}
                     href={`https://www.openstreetmap.org/?mlat=${report.latitude}&mlon=${report.longitude}#map=17/${report.latitude}/${report.longitude}`}
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    {" "}
-                    {t("View location \xB7")} {report.latitude},{" "}
-                    {report.longitude}
+                    <Icon name="pin" className="size-5" />
+                    {t("View location \xB7")} <span className="tabular">{report.latitude}, {report.longitude}</span>
                   </a>
                   {photos.length > 0 && (
-                    <div>
-                      <h3 className="mb-3 text-sm font-semibold">
-                        {" "}
+                    <div className="mt-5">
+                      <h3 className="font-extrabold">
                         {t("Evidence \xB7")} {photos.length}
                       </h3>
-                      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+                      <ul className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3">
                         {photos.map((photo) => (
-                          <a
-                            key={photo.id}
-                            href={`/api/admin/images/${photo.id}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            <img
-                              src={`/api/admin/images/${photo.id}`}
-                              alt={t("Report evidence")}
-                              loading="lazy"
-                              className="aspect-square w-full rounded-lg border border-slate-200 object-cover"
-                            />
-                          </a>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                  {owner && (
-                    <form
-                      action={assignCheckerAction}
-                      className="space-y-3 border-t pt-4"
-                    >
-                      <input type="hidden" name="report_id" value={report.id} />
-                      <label className="block text-sm font-semibold">
-                        {" "}
-                        {t("Assign report checker")}{" "}
-                        <select
-                          name="account_id"
-                          required
-                          defaultValue={assignment || ""}
-                          className={`${control} mt-2`}
-                        >
-                          <option value="">{t("Choose a checker")}</option>
-                          {checkers.map((checker) => (
-                            <option key={checker.id} value={checker.id}>
-                              {checker.name} · {checker.email}
-                            </option>
-                          ))}
-                        </select>
-                      </label>
-                      <AdminSubmit>{t("Assign checker")}</AdminSubmit>
-                    </form>
-                  )}
-                  <form
-                    action={reviewReportAction}
-                    className="space-y-3 rounded-lg bg-blue-50 p-4"
-                  >
-                    <input type="hidden" name="report_id" value={report.id} />
-                    <label className="block text-sm font-semibold">
-                      {" "}
-                      {t("Check / verify report")}{" "}
-                      <textarea
-                        name="note"
-                        required
-                        rows={3}
-                        maxLength={5000}
-                        className={`${control} mt-2`}
-                      />
-                    </label>
-                    <AdminSubmit>{t("Mark report checked")}</AdminSubmit>
-                  </form>
-                  {reviews.length > 0 && (
-                    <ul className="space-y-2">
-                      {reviews.map((review, index) => (
-                        <li
-                          key={index}
-                          className="rounded-lg bg-emerald-50 p-3 text-xs"
-                        >
-                          <strong>{review.name}</strong> ·{" "}
-                          {formatDate(review.checked_at, t)}
-                          <p className="mt-1 whitespace-pre-wrap">
-                            {review.note}
-                          </p>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                  {owner && (
-                    <>
-                      {" "}
-                      <form
-                        action={updateReportAction}
-                        className="space-y-4 border-t border-slate-100 pt-5"
-                      >
-                        <input type="hidden" name="id" value={report.id} />
-                        <label className="block text-sm font-semibold">
-                          {" "}
-                          {t("Status")}{" "}
-                          <select
-                            className={`${control} mt-2`}
-                            name="status"
-                            defaultValue={report.status}
-                          >
-                            {Object.entries(statuses).map(([key, label]) => (
-                              <option key={key} value={key}>
-                                {t(label)}
-                              </option>
-                            ))}
-                          </select>
-                        </label>
-                        <label className="block text-sm font-semibold">
-                          {" "}
-                          {t("Internal note")}{" "}
-                          <textarea
-                            name="note"
-                            rows={4}
-                            maxLength={5000}
-                            defaultValue={report.admin_note || ""}
-                            className={`${control} mt-2`}
-                          />
-                          <span className="mt-1 block text-xs font-normal text-slate-500">
-                            {" "}
-                            {t(
-                              "For authorized staff. Every save is recorded in report history.",
-                            )}{" "}
-                          </span>
-                        </label>
-                        <AdminSubmit>{t("Save report")}</AdminSubmit>
-                      </form>
-                    </>
-                  )}
-
-                  {history.length > 0 && (
-                    <div className="border-t border-slate-100 pt-5">
-                      <h3 className="text-sm font-semibold">
-                        {t("Recent history")}
-                      </h3>
-                      <ul className="mt-3 space-y-3">
-                        {history.map((item, index) => (
-                          <li
-                            key={index}
-                            className="rounded-lg bg-slate-50 p-3 text-xs"
-                          >
-                            <p className="font-semibold">
-                              {t(statuses[item.previous_status])} →{" "}
-                              {t(statuses[item.new_status])}
-                            </p>
-                            <p className="mt-1 break-words text-slate-500">
-                              {item.actor_email} · {formatDate(item.created_at, t)}
-                            </p>
-                            {item.note && (
-                              <p className="mt-2 whitespace-pre-wrap break-words">
-                                {item.note}
-                              </p>
-                            )}
+                          <li key={photo.id}>
+                            <a href={`/api/admin/images/${photo.id}`} target="_blank" rel="noopener noreferrer" className="block overflow-hidden rounded-md">
+                              <img src={`/api/admin/images/${photo.id}`} alt={t("Report evidence")} loading="lazy" className="aspect-[4/3] w-full object-cover" />
+                            </a>
                           </li>
                         ))}
                       </ul>
                     </div>
                   )}
-                </section>
-              )}
-            </div>
-            {selected && !report && (
-              <p role="status" className="text-sm text-slate-500">
-                {" "}
-                {t("The selected report could not be found.")}{" "}
-              </p>
+                </article>
+
+                {owner && (
+                  <form action={updateReportAction} className={`${card} grid gap-4 p-5`}>
+                    <input type="hidden" name="id" value={report.id} />
+                    <fieldset>
+                      <legend className={field.label}>{t("Status")}</legend>
+                      <div className="mt-2 flex flex-wrap gap-2">
+                        {Object.entries(statuses).map(([key, label]) => (
+                          <label key={key} className="flex min-h-11 cursor-pointer items-center gap-2 rounded-full border-[1.5px] border-rule bg-card px-4 font-bold has-checked:border-blue has-checked:bg-wash has-checked:text-blue has-focus-visible:outline-3 has-focus-visible:outline-offset-2 has-focus-visible:outline-blue">
+                            <input type="radio" name="status" value={key} defaultChecked={report.status === key} className="sr-only" />
+                            {t(label)}
+                          </label>
+                        ))}
+                      </div>
+                    </fieldset>
+                    <label className={field.label}>
+                      {t("Internal note")}
+                      <span className={field.hint}>{t("For authorized staff. Every save is recorded in report history.")}</span>
+                      <textarea name="note" rows={4} maxLength={5000} defaultValue={report.admin_note || ""} className={field.input} />
+                    </label>
+                    <div>
+                      <AdminSubmit>{t("Save report")}</AdminSubmit>
+                    </div>
+                  </form>
+                )}
+
+                <div className="grid gap-5 xl:grid-cols-2">
+                  <form action={reviewReportAction} className={`${card} grid gap-3 p-5`}>
+                    <input type="hidden" name="report_id" value={report.id} />
+                    <label className={field.label}>
+                      {t("Check / verify report")}
+                      <textarea name="note" required rows={3} maxLength={5000} className={field.input} />
+                    </label>
+                    <div>
+                      <AdminSubmit>{t("Mark report checked")}</AdminSubmit>
+                    </div>
+                    {reviews.length > 0 && (
+                      <ul className="mt-2 grid gap-2">
+                        {reviews.map((review, index) => (
+                          <li key={index} className="rounded-md bg-ok-wash p-3 text-sm">
+                            <strong>{review.name}</strong>, <span className="tabular">{formatDate(review.checked_at, t)}</span>
+                            <p className="mt-1 whitespace-pre-wrap">{review.note}</p>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </form>
+                  {owner && (
+                    <form action={assignCheckerAction} className={`${card} grid gap-3 p-5`}>
+                      <input type="hidden" name="report_id" value={report.id} />
+                      <label className={field.label}>
+                        {t("Assign report checker")}
+                        <select name="account_id" required defaultValue={assignment || ""} className={field.input}>
+                          <option value="">{t("Choose a checker")}</option>
+                          {checkers.map((checker) => (
+                            <option key={checker.id} value={checker.id}>
+                              {checker.name} ({checker.email})
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+                      <div>
+                        <AdminSubmit>{t("Assign checker")}</AdminSubmit>
+                      </div>
+                    </form>
+                  )}
+                </div>
+
+                {history.length > 0 && (
+                  <section className={`${card} p-5`} aria-labelledby="history-title">
+                    <h3 id="history-title" className="font-extrabold">{t("Recent history")}</h3>
+                    <ol className="mt-3 grid gap-3">
+                      {history.map((item, index) => (
+                        <li key={index} className="grid grid-cols-[0.75rem_1fr] gap-3">
+                          <span aria-hidden="true" className="mt-1.5 size-3 rounded-full bg-blue" />
+                          <span className="text-sm">
+                            <span className="block font-bold">
+                              {t(statuses[item.previous_status])} → {t(statuses[item.new_status])}
+                            </span>
+                            <span className="block break-words text-pencil">
+                              {item.actor_email}, <span className="tabular">{formatDate(item.created_at, t)}</span>
+                            </span>
+                            {item.note && <span className="mt-1 block whitespace-pre-wrap break-words">{item.note}</span>}
+                          </span>
+                        </li>
+                      ))}
+                    </ol>
+                  </section>
+                )}
+              </section>
             )}
-          </>
-        )}
-      </div>
-    </>
+          </div>
+          {selected && !report && (
+            <p role="status" className="mt-4 text-pencil">
+              {t("The selected report could not be found.")}
+            </p>
+          )}
+        </>
+      )}
+    </div>
   );
 }

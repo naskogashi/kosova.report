@@ -1,3 +1,4 @@
+import AdminNav from "../AdminNav";
 import { siteTitle } from "../../../lib/site-branding";
 import { adminTranslator, adminLanguage } from "../../../lib/admin-language";
 import { database } from "../../../lib/db";
@@ -57,11 +58,8 @@ export default async function Stats() {
   }
   return (
     <div className="mx-auto w-full max-w-6xl space-y-7 px-5 py-8">
-      <nav className="flex gap-5 text-sm text-blue-800">
-        <a href="/admin">{t("Report inbox")}</a>
-        {owner && <a href="/admin/settings">{t("Settings")}</a>}
-      </nav>
-      <h1 className="text-3xl font-bold">
+      <AdminNav current="/admin/stats" t={t} owner={owner} />
+      <h1 className="text-3xl font-extrabold tracking-[-0.025em]">
         {owner ? t("Platform statistics") : t("My assigned reports")}
       </h1>
       <div className="grid grid-cols-2 gap-3 md:grid-cols-5">
@@ -77,15 +75,15 @@ export default async function Stats() {
               : Number(totals.resolution_days).toFixed(1),
           ],
         ].map(([label, value]) => (
-          <div key={t(label)} className="rounded-xl border bg-white p-5">
-            <p className="text-xs text-slate-500">{t(label)}</p>
-            <p className="mt-3 text-2xl font-bold text-blue-900">
+          <div key={t(label)} className="rounded-md border bg-card p-5">
+            <p className="text-xs text-pencil">{t(label)}</p>
+            <p className="mt-3 text-2xl font-bold text-ink">
               {value ?? 0}
             </p>
           </div>
         ))}
       </div>
-      <section className="rounded-xl border bg-white p-5">
+      <section className="rounded-md border bg-card p-5">
         <h2 className="text-xl font-semibold">
           {" "}
           {t("Checker workload and completed checks")}{" "}
@@ -104,7 +102,7 @@ export default async function Stats() {
                 <tr key={index} className="border-b">
                   <td className="py-3">
                     {checker.name}
-                    <span className="block text-xs text-slate-500">
+                    <span className="block text-xs text-pencil">
                       {checker.email}
                     </span>
                   </td>
@@ -116,7 +114,7 @@ export default async function Stats() {
           </table>
         </div>
       </section>
-      <section className="rounded-xl border bg-white p-5">
+      <section className="rounded-md border bg-card p-5">
         <h2 className="text-xl font-semibold">{t("Department performance")}</h2>
         <div className="mt-4 overflow-x-auto">
           <table className="w-full text-left text-sm">
@@ -148,7 +146,7 @@ export default async function Stats() {
           </table>
         </div>
       </section>
-      <section className="rounded-xl border bg-white p-5">
+      <section className="rounded-md border bg-card p-5">
         <h2 className="text-xl font-semibold">
           {" "}
           {t("New reports \xB7 last 30 days (UTC)")}{" "}
@@ -160,9 +158,9 @@ export default async function Stats() {
               className="grid grid-cols-[100px_1fr_40px] items-center gap-3 text-xs"
             >
               <span>{new Date(day.day).toISOString().slice(0, 10)}</span>
-              <div className="h-4 rounded bg-blue-50">
+              <div className="h-4 rounded bg-wash">
                 <div
-                  className="h-4 rounded bg-blue-600"
+                  className="h-4 rounded bg-blue"
                   style={{
                     width: `${Math.max(2, (Number(day.total) / Math.max(...daily.map((item) => Number(item.total)))) * 100)}%`,
                   }}
@@ -172,7 +170,7 @@ export default async function Stats() {
             </div>
           ))}
           {!daily.length && (
-            <p className="text-sm text-slate-500">
+            <p className="text-sm text-pencil">
               {t("No reports in this period.")}
             </p>
           )}

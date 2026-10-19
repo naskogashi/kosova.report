@@ -25,7 +25,7 @@ export default async function Footer({ locale, staff = false }) {
       <div className={`${wrap} pt-10`}>
         <ul
           aria-label={t("partners")}
-          className="flex flex-wrap items-center justify-center gap-x-8 gap-y-5"
+          className="flex flex-wrap items-center justify-center gap-x-8 gap-y-5 rounded-lg dark:bg-[oklch(0.97_0.008_255)] dark:px-4 dark:py-5"
         >
           {partners.map((asset) => (
             <li key={asset.key} className="flex h-14 w-28 items-center justify-center">
@@ -54,7 +54,7 @@ export default async function Footer({ locale, staff = false }) {
             target="_blank"
             rel="noopener noreferrer"
             aria-label={`CODON (${t("newTab")})`}
-            className="rounded-sm"
+            className="rounded-sm dark:rounded-md dark:bg-[oklch(0.97_0.008_255)] dark:px-4 dark:py-2"
           >
             <BrandingImage asset={codon} className="h-9 w-auto max-w-28 object-contain" />
           </a>

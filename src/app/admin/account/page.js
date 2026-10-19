@@ -1,3 +1,4 @@
+import AdminNav from "../AdminNav";
 import { siteTitle } from "../../../lib/site-branding";
 import { adminTranslator, adminLanguage } from "../../../lib/admin-language";
 import { requireAdmin } from "../../../lib/admin-session";
@@ -19,15 +20,12 @@ export default async function Account() {
     allowPasswordChange: true,
   });
   return (
-    <div className="mx-auto w-full max-w-lg px-5 py-10">
-      <a href="/admin" className="text-sm text-blue-800">
-        {" "}
-        {t("Admin panel")}{" "}
-      </a>
-      <section className="mt-5 rounded-xl border bg-white p-6">
+    <div className="mx-auto w-full max-w-5xl px-4 py-8 sm:px-6">
+      <AdminNav current="/admin/account" t={t} owner={account.role === "owner"} />
+      <section className="mt-8 max-w-lg rounded-lg bg-card p-6 shadow-[0_0_0_1px_var(--color-rule)]">
         <h1 className="text-2xl font-bold">{t("My account")}</h1>
         {Boolean(account.must_change_password) && (
-          <p className="mt-4 rounded-lg bg-amber-50 p-3 text-sm text-amber-900">
+          <p className="mt-4 rounded-sm bg-wash p-3 text-sm text-stamp">
             {" "}
             {t(
               "Replace your one-time password to finish signing in. This temporary session expires in 30 minutes.",

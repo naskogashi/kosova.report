@@ -33,9 +33,9 @@ export default function AdminLanguage({ initialLanguage, children }) {
     <LanguageContext.Provider value={language}>
       <nav
         aria-label="Admin language / Gjuha e administrimit"
-        className="flex items-center justify-end gap-2 border-b border-slate-200 bg-white px-5 py-2 text-sm"
+        className="flex items-center justify-end gap-2 px-4 pt-3 text-sm sm:px-6"
       >
-        <span className="mr-2 text-slate-500">
+        <span className="mr-1 text-pencil">
           {language === "sq" ? "Gjuha e panelit" : "Admin language"}
         </span>
         {[
@@ -47,7 +47,7 @@ export default function AdminLanguage({ initialLanguage, children }) {
             key={value}
             aria-pressed={language === value}
             onClick={() => change(value)}
-            className={`min-h-10 rounded-lg px-3 font-semibold ${language === value ? "bg-blue-900 text-white" : "text-blue-900 hover:bg-blue-50"}`}
+            className={`min-h-10 rounded-full px-3.5 font-bold ${language === value ? "bg-card text-blue shadow-soft" : "text-pencil hover:text-ink"}`}
           >
             {label}
           </button>

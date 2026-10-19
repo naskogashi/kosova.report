@@ -7,7 +7,7 @@ import AdminSubmit from "../AdminSubmit";
 import { deleteRouteAction, saveRouteAction } from "../actions";
 import { categories } from "../../../lib/report-options";
 const control =
-  "w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm";
+  "w-full rounded-sm border border-rule bg-card px-3 py-2.5 text-sm";
 const label = (category) => category.replaceAll("_", " ");
 export default function RouteAssignments({
   departments,
@@ -72,22 +72,22 @@ export default function RouteAssignments({
       {notice && (
         <p
           role={notice.error ? "alert" : "status"}
-          className={`fixed bottom-5 right-5 z-50 max-w-sm rounded-lg p-4 text-sm font-semibold shadow-lg ${notice.error ? "bg-red-700 text-white" : "bg-emerald-700 text-white"}`}
+          className={`fixed bottom-5 right-5 z-50 max-w-sm rounded-sm p-4 text-sm font-semibold shadow-lift ${notice.error ? "bg-error text-on-blue" : "bg-ok text-on-blue"}`}
         >
           {t(notice.error || notice.saved)}
         </p>
       )}
       <h3 className="mt-8 font-semibold">{t("Category assignments")}</h3>
       {!routes.length ? (
-        <p className="mt-2 rounded-lg bg-amber-50 p-3 text-sm text-amber-900">
+        <p className="mt-2 rounded-sm bg-wash p-3 text-sm text-stamp">
           {t(
             "No categories are routed yet. Add assignments to enable public reporting.",
           )}
         </p>
       ) : (
-        <div className="mt-4 overflow-x-auto rounded-lg border border-slate-200">
+        <div className="mt-4 overflow-x-auto rounded-sm border border-rule">
           <table className="w-full min-w-[640px] text-left text-sm">
-            <thead className="bg-slate-50 text-xs uppercase text-slate-500">
+            <thead className="bg-paper text-xs uppercase text-pencil">
               <tr>
                 <th className="px-4 py-3">{t("Municipality")}</th>
                 <th className="px-4 py-3">{t("Category")}</th>
@@ -96,7 +96,7 @@ export default function RouteAssignments({
                 <th className="px-4 py-3 text-right">{t("Actions")}</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-wash">
               {routes.map((route) => {
                 const key = `${route.city_id}-${route.category}`;
                 const department = departments.find(
@@ -106,7 +106,7 @@ export default function RouteAssignments({
                 );
                 const active = Number(route.active) === 1 && department;
                 return (
-                  <tr key={key} className={active ? "" : "text-slate-500"}>
+                  <tr key={key} className={active ? "" : "text-pencil"}>
                     <td className="px-4 py-3 font-semibold">
                       {cityName(route.city_id) || route.city_code}
                     </td>
@@ -114,14 +114,14 @@ export default function RouteAssignments({
                     <td className="px-4 py-3">
                       {department?.name || "—"}
                       {department && (
-                        <span className="block text-xs text-slate-500">
+                        <span className="block text-xs text-pencil">
                           {department.notification_email}
                         </span>
                       )}
                     </td>
                     <td className="px-4 py-3">
                       <span
-                        className={`rounded-full px-2.5 py-1 text-xs font-semibold ${active ? "bg-emerald-50 text-emerald-800" : "bg-slate-100 text-slate-600"}`}
+                        className={`rounded-full px-2.5 py-1 text-xs font-semibold ${active ? "bg-ok-wash text-ok" : "bg-wash text-pencil"}`}
                       >
                         {active ? t("Active") : t("Inactive")}
                       </span>
@@ -145,11 +145,11 @@ export default function RouteAssignments({
                           <button
                             type="button"
                             onClick={() => setConfirming(null)}
-                            className="min-h-11 rounded-lg px-3 text-sm font-semibold text-slate-700 hover:bg-slate-100"
+                            className="min-h-11 rounded-sm px-3 text-sm font-semibold text-ink hover:bg-wash"
                           >
                             {t("Cancel")}
                           </button>
-                          <AdminSubmit className="bg-red-700">
+                          <AdminSubmit className="bg-error">
                             {t("Confirm delete")}
                           </AdminSubmit>
                         </form>
@@ -158,14 +158,14 @@ export default function RouteAssignments({
                           <button
                             type="button"
                             onClick={() => edit(route)}
-                            className="min-h-11 rounded-lg border border-slate-300 px-3 text-sm font-semibold text-blue-900 hover:bg-blue-50"
+                            className="min-h-11 rounded-sm border border-rule px-3 text-sm font-semibold text-ink hover:bg-wash"
                           >
                             {t("Edit")}
                           </button>
                           <button
                             type="button"
                             onClick={() => setConfirming(key)}
-                            className="min-h-11 rounded-lg border border-red-200 px-3 text-sm font-semibold text-red-700 hover:bg-red-50"
+                            className="min-h-11 rounded-sm border border-error px-3 text-sm font-semibold text-error hover:bg-error-wash"
                           >
                             {t("Delete")}
                           </button>
@@ -183,7 +183,7 @@ export default function RouteAssignments({
         {t("Add or update category assignment")}
       </h3>
       {editing && (
-        <p className="mt-2 text-sm text-blue-900">
+        <p className="mt-2 text-sm text-ink">
           {t(
             "This municipality and category already have an assignment. Saving will update it.",
           )}
@@ -249,7 +249,7 @@ export default function RouteAssignments({
             ))}
           </select>
           {!options.length && (
-            <span className="mt-1 block font-normal text-amber-800">
+            <span className="mt-1 block font-normal text-stamp">
               {t(
                 "No departments in this municipality yet. Add one above first.",
               )}

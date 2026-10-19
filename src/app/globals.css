@@ -27,7 +27,6 @@
   --color-error-wash: oklch(0.96 0.025 27);
   --color-ok: oklch(0.48 0.1 155);
   --color-ok-wash: oklch(0.96 0.03 155);
-  --color-white: oklch(1 0 0);
   --color-transparent: transparent;
   --color-current: currentColor;
 
@@ -148,49 +147,14 @@
   font-weight: 500;
 }
 
-/*
- * TEMPORARY: the staff panel still uses stock colour names. They point at the
- * new tokens until the admin redesign removes them. Do not use in new code.
- */
-@theme {
-  --color-slate-50: var(--color-paper);
-  --color-slate-100: var(--color-wash);
-  --color-slate-200: var(--color-rule);
-  --color-slate-300: var(--color-rule);
-  --color-slate-400: var(--color-pencil);
-  --color-slate-500: var(--color-pencil);
-  --color-slate-600: var(--color-pencil);
-  --color-slate-700: var(--color-ink);
-  --color-slate-800: var(--color-ink);
-  --color-slate-900: var(--color-ink);
-  --color-slate-950: var(--color-ink);
-  --color-blue-50: var(--color-wash);
-  --color-blue-100: var(--color-wash);
-  --color-blue-200: var(--color-rule);
-  --color-blue-500: var(--color-blue);
-  --color-blue-600: var(--color-blue);
-  --color-blue-700: var(--color-blue);
-  --color-blue-800: var(--color-blue-press);
-  --color-blue-900: var(--color-ink);
-  --color-blue-950: var(--color-ink);
-  --color-red-50: var(--color-error-wash);
-  --color-red-200: var(--color-error);
-  --color-red-600: var(--color-error);
-  --color-red-700: var(--color-error);
-  --color-red-800: var(--color-error);
-  --color-amber-50: var(--color-wash);
-  --color-amber-200: var(--color-rule);
-  --color-amber-800: var(--color-stamp);
-  --color-amber-900: var(--color-stamp);
-  --color-emerald-50: var(--color-ok-wash);
-  --color-emerald-200: var(--color-ok);
-  --color-emerald-600: var(--color-ok);
-  --color-emerald-700: var(--color-ok);
-  --color-emerald-800: var(--color-ok);
-  --color-emerald-900: var(--color-ok);
-}
-
 @layer base {
+  /* Tailwind v4 draws a bare `border` in currentColor; ours default to the rule colour. */
+  *,
+  ::before,
+  ::after,
+  ::backdrop {
+    border-color: var(--color-rule);
+  }
   html {
     -webkit-text-size-adjust: 100%;
     text-size-adjust: 100%;

@@ -23,7 +23,7 @@ export default function CheckerForm({ id }) {
               name="name"
               required
               maxLength={120}
-              className="mt-1 w-full rounded-lg border p-3"
+              className="mt-1 w-full rounded-sm border p-3"
             />
           </label>
           <label className="block text-xs font-semibold">
@@ -34,20 +34,20 @@ export default function CheckerForm({ id }) {
               type="email"
               required
               maxLength={254}
-              className="mt-1 w-full rounded-lg border p-3"
+              className="mt-1 w-full rounded-sm border p-3"
             />
           </label>
         </>
       )}
       {state.error && (
-        <p role="alert" className="text-sm text-red-700">
+        <p role="alert" className="text-sm text-error">
           {t(state.error)}
         </p>
       )}
       {state.password && (
         <div
           role="status"
-          className="rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm"
+          className="rounded-sm border border-rule bg-wash p-3 text-sm"
         >
           <p>
             {" "}
