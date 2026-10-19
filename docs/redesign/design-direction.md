@@ -56,6 +56,12 @@ Fluid scale with `clamp()`: 14 / 16 / 18 / 22 / 28 / 36 / 52 / 76 px at the top 
 - Mobile (designed at 360 px): one left-aligned column, primary action in a sticky bottom bar, the receipt peeks from the top of the report flow.
 - Desktop: asymmetric 7/6 grid; the receipt lies on the right, rotated −1.5°.
 
+## Kept as they are (restyled only)
+
+- **Footer:** same content as today. Partner logos (CIVICUS, Metamorphosis Foundation, TechSoup, Digital Activism Program, Sbunker), the CIVICUS DDI support line, and the CODON / Progon LLC credit with its logo. It gets the new type, colours and spacing, plus the non-emergency line and `112`.
+- **Cookie notice:** still shown on first visit, with "Necessary only" and "Customise". It becomes a bottom sheet that leaves the "Report" button reachable instead of a full-screen modal.
+- **PWA install offer:** still shown wherever the app isn't installed, using `beforeinstallprompt`, with the iPhone/iPad "Share → Add to Home Screen" help.
+
 ## Wordmark
 
 `kosova.report` in Sofia Sans 800, lowercase, the full stop replaced by a small gold map pin (also the favicon and app icon).
