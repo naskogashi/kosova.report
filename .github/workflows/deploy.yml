@@ -17,7 +17,7 @@ jobs:
         uses: appleboy/ssh-action@master
         with:
           host: 37.27.210.123
-          username: site-user # VAIHDA tähän CloudPanelin antama todellinen Site User -tunnuksesi
+          username: kosova # VAIHDA tähän CloudPanelin antama todellinen Site User -tunnuksesi
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 22
           script: |
