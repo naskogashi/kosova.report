@@ -59,7 +59,7 @@ Legend: ☐ not started · ◐ in progress · ☑ redesigned and verified.
 | ☐ | Cookie notice | `AppControls.jsx` | `<dialog>` shown modally on first visit (blocks everything, including the report CTA), "Necessary only" + "Customise" expands a details box with no real toggles |
 | ☐ | Cookie re-open link | `AppControls.jsx` | Text button in the bar below the footer |
 | ☐ | Install prompt | `AppControls.jsx` | Button in that bar; uses `beforeinstallprompt`, otherwise toggles an inline iOS help paragraph |
-| ☐ | Language switcher | landing, report, track, admin | Four separate implementations; SR has no Latin/Cyrillic choice |
+| ☐ | Language switcher | landing, report, track, admin | Four separate implementations |
 | ☐ | Map picker | `ReportMap.jsx` | Inline 340 px map, click to drop, draggable pin, tile error banner |
 | ☐ | Photo picker | `/report` step 2 | Native multi-file input, no `capture`, no camera-first |
 | ☐ | Confirmation dialogs | `RouteAssignments.jsx` | Inline "Confirm delete" only. No confirm on leaving a report draft. |
@@ -88,5 +88,5 @@ Legend: ☐ not started · ◐ in progress · ☑ redesigned and verified.
 2. **Address search / reverse geocoding** needs a geocoder. Nominatim is a third party and its usage policy forbids autocomplete. Options: self-hosted, a licensed provider, or a local Prishtina street index built from OSM at build time (search only, no reverse lookup).
 3. **"Notify me when my city launches"** needs storage for emails. Without it, the outside-city state can only explain and link to the emergency/municipality contacts.
 4. **QR code in the PDF**: if it carries the key, the PDF becomes a bearer credential. Safer default: QR opens the retrieval page with the report number filled in, key typed by hand.
-5. **Emails are English-only.** `reports.language` is already stored (`CHAR(2)`), so reporter emails can be localised without a schema change. `sr-Cyrl` would need a wider column or a separate flag.
+5. **Emails are English-only.** `reports.language` is already stored (`CHAR(2)`), so reporter emails can be localised without a schema change. Serbian is Latin only, so `sr` fits as is.
 6. **Status history for citizens**: the tracking API returns `status`, `created_at`, `resolved_at` only. Enough for an honest three-point timeline; the "In progress since" date would need the audit log exposed.

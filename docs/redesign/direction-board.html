@@ -2,35 +2,39 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,400..600;1,7..72,400&family=Sofia+Sans+Extra+Condensed:wght@600..900&family=Sofia+Sans:wght@400..700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sofia+Sans+Extra+Condensed:wght@800..900&family=Sofia+Sans:wght@400..800&display=swap">
 <style>
-/* Layout: one left-aligned column on phones; from 960px an asymmetric 7/5 grid where the receipt lies on the right like paper on a desk. */
+/* Layout: one left-aligned column on phones; from 960px an asymmetric 7/6 grid with the receipt lying on the right. Friendly: soft radii, clean light ground, civic blue for actions. */
 :root {
-  --paper: oklch(0.972 0.010 88);
-  --card: oklch(0.993 0.004 90);
+  --paper: oklch(0.982 0.006 255);
+  --wash: oklch(0.95 0.028 255);
+  --card: oklch(1 0 0);
   --ink: oklch(0.265 0.085 258);
-  --pencil: oklch(0.47 0.035 258);
-  --rule: oklch(0.86 0.018 250);
+  --pencil: oklch(0.48 0.035 258);
+  --rule: oklch(0.90 0.018 255);
+  --blue: oklch(0.47 0.19 262);
+  --blue-press: oklch(0.41 0.18 262);
+  --on-blue: oklch(1 0 0);
   --gold: oklch(0.80 0.125 84);
   --stamp: oklch(0.53 0.105 72);
-  --error: oklch(0.52 0.17 27);
-  --map-minor: oklch(0.86 0.018 250);
-  --map-major: oklch(0.70 0.035 250);
-  --shadow: oklch(0.265 0.085 258 / 0.16);
-  --grain: 0.5;
+  --map-minor: oklch(0.86 0.03 255);
+  --map-major: oklch(0.74 0.06 258);
+  --shadow: oklch(0.47 0.19 262 / 0.12);
   --stamp-blend: multiply;
-  --c-infra: oklch(0.55 0.12 48);
-  --c-env: oklch(0.52 0.10 148);
-  --c-pub: oklch(0.52 0.08 215);
-  --c-admin: oklch(0.49 0.10 302);
-  --c-health: oklch(0.53 0.12 18);
+  --c-infra: oklch(0.55 0.13 48);
+  --c-env: oklch(0.52 0.11 148);
+  --c-pub: oklch(0.52 0.09 215);
+  --c-admin: oklch(0.49 0.11 302);
+  --c-health: oklch(0.53 0.13 18);
   --c-edu: oklch(0.54 0.10 105);
-  --c-safety: oklch(0.52 0.07 240);
+  --c-safety: oklch(0.52 0.08 240);
+  --tint: 11%;
   --btn-border: transparent;
 
-  --display: "Sofia Sans Extra Condensed", "Arial Narrow", "Roboto Condensed", sans-serif;
+  --r-sm: 10px; --r-md: 14px; --r-lg: 22px; --r-pill: 999px;
+
   --ui: "Sofia Sans", "Segoe UI", system-ui, sans-serif;
-  --read: "Literata", Georgia, "Times New Roman", serif;
+  --stampface: "Sofia Sans Extra Condensed", "Arial Narrow", sans-serif;
 
   --ease-out-quint: cubic-bezier(.22, 1, .36, 1);
   --spring-snappy: linear(0, 0.24 7%, 0.82 21%, 1.06 33%, 1.03 45%, 0.995 62%, 1);
@@ -39,65 +43,72 @@
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     --paper: oklch(0.205 0.045 258);
-    --card: oklch(0.265 0.05 258);
-    --ink: oklch(0.94 0.015 88);
-    --pencil: oklch(0.76 0.03 250);
-    --rule: oklch(0.38 0.045 258);
+    --wash: oklch(0.25 0.05 258);
+    --card: oklch(0.27 0.05 258);
+    --ink: oklch(0.95 0.01 250);
+    --pencil: oklch(0.78 0.03 250);
+    --rule: oklch(0.36 0.045 258);
+    --blue: oklch(0.72 0.13 262);
+    --blue-press: oklch(0.66 0.13 262);
+    --on-blue: oklch(0.205 0.045 258);
     --gold: oklch(0.82 0.13 84);
     --stamp: oklch(0.80 0.12 82);
-    --error: oklch(0.72 0.15 27);
-    --map-minor: oklch(0.32 0.045 258);
-    --map-major: oklch(0.48 0.05 255);
-    --shadow: oklch(0.08 0.03 258 / 0.6);
-    --grain: 0.18;
+    --map-minor: oklch(0.33 0.045 258);
+    --map-major: oklch(0.50 0.07 258);
+    --shadow: oklch(0.08 0.03 258 / 0.55);
     --stamp-blend: normal;
-    --c-infra: oklch(0.76 0.11 50);
-    --c-env: oklch(0.76 0.10 148);
-    --c-pub: oklch(0.76 0.08 215);
-    --c-admin: oklch(0.74 0.09 302);
-    --c-health: oklch(0.75 0.10 18);
-    --c-edu: oklch(0.78 0.10 105);
-    --c-safety: oklch(0.76 0.07 240);
+    --c-infra: oklch(0.77 0.11 50);
+    --c-env: oklch(0.77 0.10 148);
+    --c-pub: oklch(0.77 0.08 215);
+    --c-admin: oklch(0.76 0.09 302);
+    --c-health: oklch(0.76 0.10 18);
+    --c-edu: oklch(0.79 0.10 105);
+    --c-safety: oklch(0.77 0.07 240);
+    --tint: 16%;
     color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
   --paper: oklch(0.205 0.045 258);
-  --card: oklch(0.265 0.05 258);
-  --ink: oklch(0.94 0.015 88);
-  --pencil: oklch(0.76 0.03 250);
-  --rule: oklch(0.38 0.045 258);
+  --wash: oklch(0.25 0.05 258);
+  --card: oklch(0.27 0.05 258);
+  --ink: oklch(0.95 0.01 250);
+  --pencil: oklch(0.78 0.03 250);
+  --rule: oklch(0.36 0.045 258);
+  --blue: oklch(0.72 0.13 262);
+  --blue-press: oklch(0.66 0.13 262);
+  --on-blue: oklch(0.205 0.045 258);
   --gold: oklch(0.82 0.13 84);
   --stamp: oklch(0.80 0.12 82);
-  --error: oklch(0.72 0.15 27);
-  --map-minor: oklch(0.32 0.045 258);
-  --map-major: oklch(0.48 0.05 255);
-  --shadow: oklch(0.08 0.03 258 / 0.6);
-  --grain: 0.18;
+  --map-minor: oklch(0.33 0.045 258);
+  --map-major: oklch(0.50 0.07 258);
+  --shadow: oklch(0.08 0.03 258 / 0.55);
   --stamp-blend: normal;
-  --c-infra: oklch(0.76 0.11 50);
-  --c-env: oklch(0.76 0.10 148);
-  --c-pub: oklch(0.76 0.08 215);
-  --c-admin: oklch(0.74 0.09 302);
-  --c-health: oklch(0.75 0.10 18);
-  --c-edu: oklch(0.78 0.10 105);
-  --c-safety: oklch(0.76 0.07 240);
+  --c-infra: oklch(0.77 0.11 50);
+  --c-env: oklch(0.77 0.10 148);
+  --c-pub: oklch(0.77 0.08 215);
+  --c-admin: oklch(0.76 0.09 302);
+  --c-health: oklch(0.76 0.10 18);
+  --c-edu: oklch(0.79 0.10 105);
+  --c-safety: oklch(0.77 0.07 240);
+  --tint: 16%;
   color-scheme: dark;
 }
-/* Sunlight mode: one tap from the header. Pure white, darkest ink, no grain, no faint linework. */
+/* Sunlight mode: one tap from the header. Pure white, darkest ink, bolder text, outlined buttons. */
 :root[data-sun] {
   --paper: oklch(1 0 0);
+  --wash: oklch(1 0 0);
   --card: oklch(1 0 0);
   --ink: oklch(0.18 0.07 260);
   --pencil: oklch(0.30 0.04 258);
   --rule: oklch(0.55 0.03 258);
-  --gold: oklch(0.80 0.14 84);
+  --blue: oklch(0.38 0.17 262);
+  --blue-press: oklch(0.32 0.15 262);
+  --on-blue: oklch(1 0 0);
   --stamp: oklch(0.45 0.10 70);
-  --error: oklch(0.45 0.18 27);
-  --map-minor: oklch(0.80 0.02 258);
-  --map-major: oklch(0.45 0.04 258);
+  --map-minor: oklch(0.78 0.02 258);
+  --map-major: oklch(0.42 0.05 258);
   --shadow: transparent;
-  --grain: 0;
   --stamp-blend: multiply;
   --c-infra: oklch(0.45 0.12 48);
   --c-env: oklch(0.42 0.10 148);
@@ -106,10 +117,12 @@
   --c-health: oklch(0.43 0.12 18);
   --c-edu: oklch(0.42 0.09 105);
   --c-safety: oklch(0.42 0.07 240);
+  --tint: 0%;
   --btn-border: oklch(0.18 0.07 260);
   color-scheme: light;
 }
 :root[data-sun] body { font-weight: 500; }
+:root[data-sun] .map { border: 2px solid var(--ink); }
 
 *, *::before, *::after { box-sizing: border-box; }
 body {
@@ -118,25 +131,11 @@ body {
   font-family: var(--ui);
   font-size: 1rem;
   line-height: 1.55;
-  font-optical-sizing: auto;
   -webkit-font-smoothing: antialiased;
 }
-/* Paper grain: a tiny SVG noise tile, off in sunlight mode. */
-body::after {
-  content: "";
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 50;
-  opacity: var(--grain);
-  mix-blend-mode: multiply;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .15 0 0 0 0 .14 0 0 0 0 .12 0 0 0 .09 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-}
 :focus-visible {
-  outline: 3px solid var(--ink);
+  outline: 3px solid var(--blue);
   outline-offset: 3px;
-  box-shadow: 0 0 0 7px var(--gold);
-  border-radius: 2px;
 }
 .wrap {
   max-width: 76rem;
@@ -150,10 +149,10 @@ p { margin: 0; }
 
 /* Wordmark: the full stop is a gold pin. */
 .wm {
-  font-family: var(--display);
-  font-weight: 900;
-  font-size: 1.75rem;
-  letter-spacing: -0.01em;
+  font-family: var(--ui);
+  font-weight: 800;
+  font-size: 1.5rem;
+  letter-spacing: -0.02em;
   line-height: 1;
   display: inline-flex;
   align-items: baseline;
@@ -161,14 +160,13 @@ p { margin: 0; }
 }
 .wm .dot {
   display: inline-block;
-  width: 0.34em;
-  height: 0.46em;
-  margin-inline: 0.04em 0.05em;
+  width: 0.36em;
+  height: 0.5em;
+  margin-inline: 0.05em 0.06em;
   background: var(--gold);
   clip-path: path("M5 14C5 14 0 8 0 5a5 5 0 0 1 10 0c0 3-5 9-5 9Z");
-  transform: translateY(0.02em) scale(1);
 }
-.wm.small { font-size: 1.15rem; }
+.wm.small { font-size: 1.05rem; }
 
 /* Board header */
 .board-head {
@@ -178,59 +176,47 @@ p { margin: 0; }
   justify-content: space-between;
   gap: 12px 24px;
   padding-block: 18px;
-  border-bottom: 1px solid var(--rule);
 }
 .board-head .meta { color: var(--pencil); font-size: 0.875rem; }
-.seg { display: inline-flex; border: 1.5px solid var(--ink); border-radius: 2px; }
-.seg button {
-  font: 600 0.875rem/1 var(--ui);
+.seg { display: inline-flex; flex-wrap: wrap; gap: 4px; padding: 4px; background: var(--wash); border-radius: var(--r-pill); }
+.seg button, .langs button {
+  font: 700 0.875rem/1 var(--ui);
   color: var(--ink);
   background: transparent;
   border: 0;
-  min-height: 44px;
+  min-height: 40px;
   padding: 0 14px;
+  border-radius: var(--r-pill);
   cursor: pointer;
 }
-.seg button + button { border-left: 1.5px solid var(--ink); }
-.seg button[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
+.seg button[aria-pressed="true"], .langs button[aria-pressed="true"] { background: var(--card); box-shadow: 0 1px 4px var(--shadow); color: var(--blue); }
 
-/* Hero */
+/* Hero: a soft blue band, like the original, with the city map inside it */
+.hero-band { background: var(--wash); }
 .hero {
   display: grid;
-  gap: 28px;
-  padding-block: 32px 48px;
+  gap: 32px;
+  padding-block: 36px 52px;
 }
 @media (min-width: 960px) {
-  .hero { grid-template-columns: 7fr 6fr; align-items: center; gap: 48px; padding-block: 56px 72px; }
+  .hero { grid-template-columns: 7fr 6fr; align-items: center; gap: 56px; padding-block: 60px 72px; }
 }
+.langs { display: inline-flex; gap: 4px; padding: 4px; margin-bottom: 24px; background: var(--card); border-radius: var(--r-pill); }
+.langs button { min-width: 48px; min-height: 44px; }
 .hero h1 {
-  font-family: var(--display);
-  font-weight: 900;
-  font-size: clamp(3.25rem, 2rem + 6vw, 6.5rem);
-  line-height: 0.9;
-  letter-spacing: -0.015em;
+  font-weight: 800;
+  font-size: clamp(2.6rem, 1.7rem + 4.4vw, 4.75rem);
+  line-height: 1.02;
+  letter-spacing: -0.03em;
 }
 .hero .lede {
-  font-family: var(--read);
-  font-size: clamp(1.0625rem, 1rem + 0.3vw, 1.25rem);
-  line-height: 1.65;
-  max-width: 34em;
-  margin-top: 22px;
-}
-.langs { display: flex; gap: 6px; margin-bottom: 22px; flex-wrap: wrap; }
-.langs button {
-  font: 700 0.9375rem/1 var(--ui);
-  min-width: 48px;
-  min-height: 44px;
-  padding: 0 10px;
+  font-size: clamp(1.0625rem, 1rem + 0.35vw, 1.3rem);
+  line-height: 1.6;
+  max-width: 33em;
+  margin-top: 20px;
   color: var(--pencil);
-  background: none;
-  border: 0;
-  border-bottom: 2px solid transparent;
-  cursor: pointer;
 }
-.langs button[aria-pressed="true"] { color: var(--ink); border-bottom-color: var(--gold); }
-.cta-row { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 22px; margin-top: 30px; }
+.cta-row { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: 30px; }
 .btn {
   display: inline-flex;
   align-items: center;
@@ -239,61 +225,80 @@ p { margin: 0; }
   min-height: 56px;
   padding: 0 26px;
   font: 700 1.0625rem/1 var(--ui);
-  color: oklch(0.265 0.085 258);
-  background: var(--gold);
+  color: var(--on-blue);
+  background: var(--blue);
   border: 2px solid var(--btn-border);
-  border-radius: 2px;
+  border-radius: var(--r-md);
   text-decoration: none;
   cursor: pointer;
-  box-shadow: 0 3px 0 0 oklch(0.53 0.105 72);
-  transition: transform var(--d1) var(--ease-out-quint), box-shadow var(--d1) var(--ease-out-quint);
+  box-shadow: 0 6px 18px -6px var(--shadow);
+  transition: transform var(--d1) var(--ease-out-quint), background-color var(--d1);
 }
-.btn:active { transform: translateY(3px); box-shadow: 0 0 0 0 oklch(0.53 0.105 72); }
-.btn-quiet {
-  min-height: 48px;
-  padding: 0 4px;
-  font: 600 1rem/1 var(--ui);
-  color: var(--ink);
-  background: none;
-  border: 0;
-  text-decoration: underline;
-  text-underline-offset: 5px;
-  text-decoration-thickness: 1.5px;
+.btn:hover { background: var(--blue-press); }
+.btn:active { transform: scale(0.98); }
+.btn-soft {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 56px;
+  padding: 0 22px;
+  font: 700 1rem/1 var(--ui);
+  color: var(--blue);
+  background: var(--card);
+  border: 1.5px solid var(--rule);
+  border-radius: var(--r-md);
+  text-decoration: none;
   cursor: pointer;
 }
-.disclaimer {
-  margin-top: 26px;
-  padding-left: 14px;
-  border-left: 3px solid var(--ink);
-  font-size: 0.9375rem;
-  max-width: 34em;
+.btn-link {
+  min-height: 44px;
+  padding: 0 4px;
+  font: 700 1rem/1 var(--ui);
+  color: var(--blue);
+  background: none;
+  border: 0;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  text-decoration-thickness: 1.5px;
 }
-.disclaimer a { font-weight: 700; font-variant-numeric: tabular-nums; }
+.disclaimer {
+  margin-top: 24px;
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  max-width: 33em;
+  font-size: 0.9375rem;
+  color: var(--ink);
+}
+.disclaimer svg { flex: none; width: 20px; height: 20px; margin-top: 2px; color: var(--blue); }
+.disclaimer a { font-weight: 800; color: var(--blue); font-variant-numeric: tabular-nums; }
 
 /* The map window */
 .map {
   position: relative;
   aspect-ratio: 1 / 1;
   max-width: 100%;
+  background: var(--card);
+  border-radius: var(--r-lg);
+  box-shadow: 0 20px 50px -24px var(--shadow);
+  overflow: hidden;
 }
-.map svg.streets { width: 100%; height: 100%; display: block; overflow: visible; }
+.map svg.streets { width: 100%; height: 100%; display: block; }
 .streets .minor { stroke: var(--map-minor); stroke-width: 1; }
-.streets .major { stroke: var(--map-major); stroke-width: 2.4; }
+.streets .major { stroke: var(--map-major); stroke-width: 2.6; }
 .streets use { fill: none; vector-effect: non-scaling-stroke; stroke-linecap: round; stroke-linejoin: round; }
 .coord {
-  font: 500 0.75rem/1 var(--ui);
+  font: 600 0.75rem/1 var(--ui);
   font-variant-numeric: tabular-nums;
   color: var(--pencil);
-  letter-spacing: 0.02em;
 }
-.map .tick { position: absolute; }
-.map .t-n { top: -18px; left: 0; }
-.map .t-s { bottom: -18px; right: 0; }
-.map .t-w { left: -4px; bottom: 0; writing-mode: vertical-rl; transform: rotate(180deg) translateX(100%); }
-.map .t-e { right: -4px; top: 0; writing-mode: vertical-rl; transform: translateX(100%); }
-.map .osm { position: absolute; left: 0; bottom: -40px; font-size: 0.75rem; color: var(--pencil); }
-.pin path { stroke: var(--paper); stroke-width: 1.5; vector-effect: non-scaling-stroke; }
-.pin circle { fill: var(--paper); }
+.map .tick { position: absolute; padding: 4px 8px; background: var(--card); border-radius: var(--r-pill); }
+.map .t-n { top: 12px; left: 12px; }
+.map .t-s { bottom: 12px; right: 12px; }
+.map .osm { position: absolute; left: 12px; bottom: 12px; font-size: 0.6875rem; color: var(--pencil); background: var(--card); padding: 3px 8px; border-radius: var(--r-pill); }
+.pin path, .pin use { stroke: var(--card); stroke-width: 1.5; vector-effect: non-scaling-stroke; }
+.pin circle { fill: var(--card); }
 
 @media (prefers-reduced-motion: no-preference) {
   .drawing .major { stroke-dasharray: 1; stroke-dashoffset: 1; animation: draw 900ms var(--ease-out-quint) forwards; }
@@ -303,133 +308,122 @@ p { margin: 0; }
 }
 @keyframes draw { to { stroke-dashoffset: 0; } }
 @keyframes drop { from { opacity: 0; translate: 0 -26px; } 40% { opacity: 1; } to { opacity: 1; translate: 0 0; } }
-@keyframes settle { from { opacity: 0; transform: rotate(-1.5deg) translateY(14px); } to { opacity: 1; transform: rotate(-1.5deg); } }
+@keyframes settle { from { opacity: 0; transform: rotate(-2deg) translateY(14px); } to { opacity: 1; transform: rotate(-2deg); } }
 
 .mini-receipt {
   position: absolute;
-  left: 53%;
+  left: 54%;
   top: 22%;
-  width: min(44%, 230px);
+  width: min(42%, 220px);
   padding: 12px 14px 14px;
   background: var(--card);
-  box-shadow: 0 1px 0 var(--rule), 0 10px 30px -12px var(--shadow);
-  transform: rotate(-1.5deg);
+  border-radius: var(--r-md);
+  box-shadow: 0 12px 30px -10px var(--shadow), 0 0 0 1px var(--rule);
+  transform: rotate(-2deg);
   font-size: 0.8125rem;
   line-height: 1.35;
 }
-.mini-receipt .ref { font-size: 1.05rem; }
+.mini-receipt .ref { font-size: 1rem; }
 .mini-receipt p + p { margin-top: 4px; }
-.mini-receipt .cat { color: var(--c-infra); font-weight: 700; display: flex; align-items: center; gap: 6px; }
+.mini-receipt .cat { color: var(--c-infra); font-weight: 800; display: flex; align-items: center; gap: 6px; }
 .mini-receipt .cat svg { width: 18px; height: 18px; }
-.mini-receipt::before {
-  content: "";
-  position: absolute;
-  left: -14px;
-  top: 28px;
-  width: 14px;
-  border-top: 1.5px dashed var(--ink);
-}
 
 /* Section scaffolding */
-.sec { padding-block: 56px; border-top: 1px solid var(--rule); }
-.sec-head { display: grid; gap: 10px; margin-bottom: 30px; max-width: 44rem; }
+.sec { padding-block: 64px 24px; }
+.sec-head { display: grid; gap: 10px; margin-bottom: 32px; max-width: 44rem; }
 .sec-head h2 {
-  font-family: var(--display);
   font-weight: 800;
-  font-size: clamp(2rem, 1.4rem + 2.6vw, 3.25rem);
-  line-height: 0.95;
+  font-size: clamp(1.75rem, 1.3rem + 1.9vw, 2.75rem);
+  line-height: 1.08;
+  letter-spacing: -0.025em;
 }
-.sec-head p { color: var(--pencil); max-width: 40em; }
+.sec-head p { color: var(--pencil); font-size: 1.0625rem; max-width: 40em; }
 
 /* The receipt */
 .object { display: grid; gap: 40px; }
 @media (min-width: 960px) { .object { grid-template-columns: 5fr 6fr; align-items: start; } }
-.notes { display: grid; gap: 18px; max-width: 36rem; }
-.notes h3 { font: 700 1.125rem/1.3 var(--ui); }
-.notes p { color: var(--pencil); }
-.desk { justify-self: center; width: 100%; max-width: 440px; filter: drop-shadow(0 18px 28px var(--shadow)); }
+.notes { display: grid; gap: 20px; max-width: 36rem; }
+.notes h3 { font: 800 1.125rem/1.3 var(--ui); }
+.notes p { color: var(--pencil); margin-top: 4px; }
+.desk { justify-self: center; width: 100%; max-width: 440px; filter: drop-shadow(0 20px 30px var(--shadow)); }
 @media (min-width: 960px) { .desk { transform: rotate(-1.5deg); justify-self: end; } }
 .slip {
   position: relative;
   background: var(--card);
-  padding: 30px 26px 26px;
-  /* zigzag tear at the top, like a slip off a roll */
-  -webkit-mask: conic-gradient(from 135deg at top, #0000, #000 1deg 89deg, #0000 90deg) 50% / 14px 100%;
-          mask: conic-gradient(from 135deg at top, #0000, #000 1deg 89deg, #0000 90deg) 50% / 14px 100%;
+  padding: 26px 26px 26px;
+  border-radius: var(--r-lg) var(--r-lg) 0 0;
   overflow: hidden;
 }
-.slip-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
-.sample { font-size: 0.8125rem; color: var(--pencil); font-style: italic; font-family: var(--read); }
+.slip-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.sample { font-size: 0.75rem; font-weight: 700; color: var(--pencil); background: var(--wash); padding: 4px 10px; border-radius: var(--r-pill); }
 .slip-kind { margin-top: 18px; color: var(--pencil); font-size: 0.875rem; }
 .ref {
-  font-family: var(--ui);
-  font-weight: 700;
+  font-weight: 800;
   font-size: 1.75rem;
   line-height: 1.1;
   font-variant-numeric: tabular-nums;
-  letter-spacing: 0.01em;
+  letter-spacing: -0.01em;
 }
 .ruled { border: 0; border-top: 1px solid var(--rule); margin: 18px 0; }
 .cat-stamp {
   --c: var(--c-infra);
   display: inline-flex;
   align-items: center;
-  gap: 10px;
-  padding: 6px 12px 6px 8px;
+  gap: 8px;
+  padding: 7px 14px 7px 9px;
   color: var(--c);
-  border: 2px solid var(--c);
-  border-radius: 2px;
-  font: 800 1.375rem/1 var(--display);
+  background: color-mix(in oklch, var(--c) var(--tint), var(--card));
+  border: 1.5px solid color-mix(in oklch, var(--c) 45%, transparent);
+  border-radius: var(--r-sm);
+  font: 800 1.0625rem/1 var(--ui);
   transform: rotate(-2deg);
-  mix-blend-mode: var(--stamp-blend);
 }
-.cat-stamp svg { width: 28px; height: 28px; }
+.cat-stamp svg { width: 24px; height: 24px; }
 .fields { display: grid; gap: 14px; margin: 18px 0 0; }
-.fields div { display: grid; grid-template-columns: 6.5rem 1fr; gap: 12px; }
+.fields div { display: grid; grid-template-columns: 6rem 1fr; gap: 12px; }
 .fields dt { color: var(--pencil); font-size: 0.875rem; padding-top: 2px; }
-.fields dd { margin: 0; min-width: 0; }
+.fields dd { margin: 0; min-width: 0; font-weight: 600; }
 .fields .coord { display: block; margin-top: 4px; }
-.snippet { margin: 14px 0 0; border: 1px solid var(--rule); aspect-ratio: 11 / 7; max-width: 100%; }
+.snippet { margin: 14px 0 0; border-radius: var(--r-md); overflow: hidden; aspect-ratio: 11 / 6; max-width: 100%; background: var(--paper); }
 .snippet svg { width: 100%; height: 100%; display: block; }
 .testimony {
   margin: 18px 0 0;
-  font-family: var(--read);
   font-size: 1.0625rem;
-  line-height: 1.65;
-  background-image: repeating-linear-gradient(to bottom, transparent 0 calc(1.65em - 1px), var(--rule) calc(1.65em - 1px) 1.65em);
-  padding-bottom: 2px;
+  line-height: 1.7;
+  background-image: repeating-linear-gradient(to bottom, transparent 0 calc(1.7em - 1px), var(--rule) calc(1.7em - 1px) 1.7em);
 }
-.clips { display: flex; gap: 14px; margin-top: 20px; }
+.clips { display: flex; gap: 14px; margin-top: 22px; }
 .clip {
   position: relative;
-  width: 108px;
+  width: 104px;
   aspect-ratio: 4 / 3;
   background:
-    repeating-linear-gradient(135deg, oklch(0.7 0.02 250 / .25) 0 6px, transparent 6px 12px),
-    oklch(0.62 0.02 250 / .35);
+    repeating-linear-gradient(135deg, oklch(0.7 0.03 250 / .22) 0 6px, transparent 6px 12px),
+    oklch(0.7 0.03 250 / .25);
   border: 4px solid var(--card);
-  outline: 1px solid var(--rule);
+  border-radius: var(--r-sm);
+  box-shadow: 0 0 0 1px var(--rule), 0 6px 14px -8px var(--shadow);
   transform: rotate(-3deg);
   display: grid;
   place-items: end start;
   padding: 4px 6px;
   font-size: 0.75rem;
-  color: var(--ink);
+  font-weight: 700;
 }
 .clip:nth-child(2) { transform: rotate(2.5deg); }
 .clip svg.paperclip { position: absolute; top: -14px; left: 14px; width: 14px; height: 34px; color: var(--pencil); }
 .meta-row { display: flex; flex-wrap: wrap; gap: 8px 22px; margin-top: 20px; font-size: 0.875rem; }
 .meta-row span { color: var(--pencil); }
-.meta-row b { font-weight: 600; font-variant-numeric: tabular-nums; color: var(--ink); }
+.meta-row b { font-weight: 700; font-variant-numeric: tabular-nums; color: var(--ink); }
 
 .big-stamp {
   position: absolute;
-  right: 8px;
-  bottom: 70px;
-  width: 168px;
+  right: 6px;
+  bottom: 64px;
+  width: 160px;
   color: var(--stamp);
   mix-blend-mode: var(--stamp-blend);
-  opacity: 0.92;
+  opacity: 0.9;
   transform: rotate(-12deg);
   pointer-events: none;
 }
@@ -438,10 +432,11 @@ p { margin: 0; }
 .stub {
   position: relative;
   background: var(--card);
-  padding: 22px 26px 30px;
+  padding: 22px 26px 26px;
   border-top: 2px dashed var(--rule);
+  border-radius: 0 0 var(--r-lg) var(--r-lg);
 }
-/* Perforation notches on both sides, teeth along the bottom. */
+/* Perforation notches on both sides of the tear line. */
 .stub::before, .stub .notch {
   content: "";
   position: absolute;
@@ -453,25 +448,20 @@ p { margin: 0; }
 }
 .stub::before { left: -10px; }
 .stub .notch { right: -10px; }
-.stub::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: -7px;
-  height: 7px;
-  background: conic-gradient(from 135deg at top, var(--card) 90deg, #0000 0) 0 0 / 14px 100%;
-}
-.stub-label { font: 800 1.25rem/1 var(--display); letter-spacing: 0.06em; text-transform: uppercase; }
+.stub-label { font: 900 1.25rem/1 var(--stampface); letter-spacing: 0.06em; text-transform: uppercase; color: var(--blue); }
 .key {
   margin-top: 10px;
-  font: 600 1.125rem/1.5 var(--ui);
+  font: 700 1.125rem/1.5 var(--ui);
   font-variant-numeric: tabular-nums;
   word-spacing: 0.35em;
   overflow-wrap: anywhere;
+  padding: 10px 12px;
+  background: var(--wash);
+  border-radius: var(--r-sm);
 }
 .stub-note { margin-top: 10px; font-size: 0.9375rem; }
-.stub-actions { display: flex; flex-wrap: wrap; gap: 10px 18px; margin-top: 16px; }
+.stub-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
+.stub-actions .btn, .stub-actions .btn-soft { min-height: 48px; padding: 0 18px; font-size: 0.9375rem; }
 
 @media (prefers-reduced-motion: no-preference) {
   .stamping .big-stamp { animation: stamp-hit var(--d3) var(--spring-snappy) 150ms both; }
@@ -480,51 +470,63 @@ p { margin: 0; }
 @keyframes stamp-hit {
   from { opacity: 0; transform: rotate(-4deg) scale(1.7); filter: blur(3px); }
   60% { opacity: 0.95; filter: blur(0); }
-  to { opacity: 0.92; transform: rotate(-12deg) scale(1); }
+  to { opacity: 0.9; transform: rotate(-12deg) scale(1); }
 }
 @keyframes tear {
   from { transform: none; }
-  to { transform: translateY(14px) rotate(1.2deg); }
+  to { transform: translateY(12px) rotate(1deg); }
 }
-.stub.torn { transform: translateY(14px) rotate(1.2deg); }
-.replay-row { margin-top: 30px; display: flex; justify-content: center; }
+.stub.torn { transform: translateY(12px) rotate(1deg); }
+.replay-row { margin-top: 34px; display: flex; justify-content: center; }
 
 /* Colour chips */
-.chips { display: grid; gap: 0; grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr)); border-top: 1px solid var(--rule); }
-.chip { display: grid; grid-template-columns: 56px 1fr; gap: 14px; padding: 16px 0; border-bottom: 1px solid var(--rule); padding-right: 16px; }
-.chip i { display: block; width: 56px; height: 56px; background: var(--sw); border: 1px solid var(--rule); }
-.chip b { display: block; font-weight: 700; }
+.chips { display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr)); }
+.chip { display: grid; grid-template-columns: 52px 1fr; gap: 14px; align-items: center; padding: 12px; background: var(--card); border-radius: var(--r-md); }
+.chip i { display: block; width: 52px; height: 52px; background: var(--sw); border-radius: var(--r-sm); box-shadow: inset 0 0 0 1px var(--rule); }
+.chip b { display: block; font-weight: 800; }
 .chip span { display: block; font-size: 0.875rem; color: var(--pencil); }
-.chip code { font: 500 0.8125rem/1.4 var(--ui); font-variant-numeric: tabular-nums; color: var(--pencil); }
+.chip code { font: 600 0.8125rem/1.4 var(--ui); font-variant-numeric: tabular-nums; color: var(--pencil); }
 
 /* Type specimen */
 .specimen { display: grid; gap: 30px; }
 .spec { display: grid; gap: 8px; }
 .spec .who { font-size: 0.875rem; color: var(--pencil); }
-.spec .d1 { font: 900 clamp(3rem, 1.8rem + 6vw, 6rem)/0.9 var(--display); letter-spacing: -0.015em; }
-.spec .d2 { font: 800 clamp(1.75rem, 1.2rem + 2.4vw, 3rem)/1 var(--display); }
-.spec .r1 { font: 400 1.125rem/1.65 var(--read); max-width: 36em; }
-.spec .u1 { font: 600 1.25rem/1.4 var(--ui); font-variant-numeric: tabular-nums; }
+.spec .d1 { font-weight: 800; font-size: clamp(2.5rem, 1.6rem + 4.4vw, 4.75rem); line-height: 1.02; letter-spacing: -0.03em; }
+.spec .d2 { font-weight: 800; font-size: clamp(1.5rem, 1.1rem + 1.8vw, 2.5rem); line-height: 1.1; letter-spacing: -0.02em; }
+.spec .r1 { font-size: 1.125rem; line-height: 1.65; max-width: 36em; }
+.spec .u1 { font-weight: 700; font-size: 1.25rem; line-height: 1.4; font-variant-numeric: tabular-nums; }
+.spec .s1 { font: 900 2rem/1 var(--stampface); letter-spacing: 0.06em; color: var(--stamp); }
 .scale { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 22px; color: var(--pencil); }
-.scale span { font-family: var(--display); font-weight: 800; color: var(--ink); line-height: 1; }
+.scale span { font-weight: 800; color: var(--ink); line-height: 1; letter-spacing: -0.02em; }
 
 /* Category index */
-.index { list-style: none; margin: 0; padding: 0; border-top: 2px solid var(--ink); }
-.index li { border-bottom: 1px solid var(--rule); }
+.index { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
 .index a {
   display: grid;
-  grid-template-columns: 40px 1fr;
-  gap: 4px 18px;
-  padding: 18px 4px;
+  grid-template-columns: 52px 1fr;
+  gap: 2px 16px;
+  padding: 14px 16px 14px 14px;
   text-decoration: none;
-  align-items: start;
+  align-items: center;
+  border-radius: var(--r-md);
+  transition: background-color var(--d1);
 }
-@media (min-width: 760px) { .index a { grid-template-columns: 48px minmax(12rem, 18rem) 1fr; align-items: baseline; } }
-.index svg { width: 36px; height: 36px; color: var(--c); grid-row: span 2; }
-@media (min-width: 760px) { .index svg { grid-row: auto; align-self: center; } }
-.index .name { font: 800 clamp(1.625rem, 1.3rem + 1.4vw, 2.25rem)/1 var(--display); }
-.index .ex { font-family: var(--read); color: var(--pencil); min-width: 0; }
-.index a:hover .name, .index a:focus-visible .name { text-decoration: underline; text-decoration-color: var(--c); text-decoration-thickness: 3px; text-underline-offset: 6px; }
+.index a:hover { background: var(--card); }
+@media (min-width: 760px) { .index a { grid-template-columns: 52px minmax(12rem, 16rem) 1fr; } }
+.index .ico {
+  width: 52px;
+  height: 52px;
+  display: grid;
+  place-items: center;
+  color: var(--c);
+  background: color-mix(in oklch, var(--c) var(--tint), var(--card));
+  border-radius: var(--r-md);
+  grid-row: span 2;
+}
+@media (min-width: 760px) { .index .ico { grid-row: auto; } }
+.index .ico svg { width: 30px; height: 30px; }
+.index .name { font-weight: 800; font-size: 1.375rem; letter-spacing: -0.015em; line-height: 1.15; }
+.index .ex { color: var(--pencil); min-width: 0; }
 
 /* Phone mock */
 .flow { display: grid; gap: 40px; }
@@ -532,88 +534,91 @@ p { margin: 0; }
 .phone {
   width: 100%;
   max-width: 360px;
-  border: 1.5px solid var(--ink);
-  border-radius: 28px;
+  border-radius: 34px;
   padding: 10px;
-  background: var(--paper);
+  background: var(--ink);
   justify-self: center;
 }
-.screen { border-radius: 20px; overflow: hidden; background: var(--paper); border: 1px solid var(--rule); display: grid; grid-template-rows: auto 1fr auto; height: 700px; max-height: 80vh; }
+.screen { border-radius: 26px; overflow: hidden; background: var(--paper); display: grid; grid-template-rows: auto 1fr auto; height: 700px; max-height: 80vh; }
 .peek {
   margin: 10px 10px 0;
-  padding: 10px 12px 12px;
+  padding: 12px 14px 14px;
   background: var(--card);
-  box-shadow: 0 6px 16px -10px var(--shadow);
+  border-radius: var(--r-md);
+  box-shadow: 0 8px 20px -12px var(--shadow);
   display: grid;
-  gap: 8px;
+  gap: 10px;
 }
 .peek .row { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 0.8125rem; color: var(--pencil); }
-.peek .row b { color: var(--ink); font-weight: 700; }
+.peek .row b { color: var(--ink); font-weight: 800; font-size: 0.9375rem; }
 .parts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; }
-.parts span { height: 4px; background: var(--rule); }
-.parts span.on { background: var(--ink); }
-.peek-cat { min-height: 34px; display: flex; align-items: center; }
-.peek-cat .cat-stamp { font-size: 1.05rem; padding: 3px 8px 3px 5px; }
+.parts span { height: 6px; border-radius: var(--r-pill); background: var(--wash); }
+.parts span.on { background: var(--blue); }
+.peek-cat { min-height: 38px; display: flex; align-items: center; }
+.peek-cat .cat-stamp { font-size: 0.9375rem; padding: 5px 10px 5px 7px; }
 .peek-cat .cat-stamp svg { width: 20px; height: 20px; }
-.peek-empty { font-size: 0.875rem; color: var(--pencil); font-style: italic; font-family: var(--read); }
-.screen-body { overflow-y: auto; padding: 18px 14px 12px; }
-.screen-body h3 { font: 900 2rem/0.95 var(--display); }
+.peek-empty { font-size: 0.875rem; color: var(--pencil); }
+.screen-body { overflow-y: auto; padding: 20px 14px 12px; }
+.screen-body h3 { font-weight: 800; font-size: 1.625rem; line-height: 1.1; letter-spacing: -0.02em; }
 .screen-body .sub { margin-top: 6px; font-size: 0.9375rem; color: var(--pencil); }
-.choices { list-style: none; margin: 16px 0 0; padding: 0; display: grid; gap: 0; }
+.choices { list-style: none; margin: 16px 0 0; padding: 0; display: grid; gap: 8px; }
 .choices button {
   --c: var(--ink);
   width: 100%;
   display: grid;
-  grid-template-columns: 34px 1fr;
+  grid-template-columns: 42px 1fr;
   gap: 2px 12px;
   text-align: left;
-  padding: 12px 6px;
+  padding: 10px 12px 10px 10px;
   min-height: 64px;
-  background: none;
+  background: var(--card);
   color: var(--ink);
-  border: 0;
-  border-bottom: 1px solid var(--rule);
+  border: 1.5px solid var(--rule);
+  border-radius: var(--r-md);
   cursor: pointer;
   font: inherit;
+  align-items: center;
 }
-.choices button svg { width: 30px; height: 30px; color: var(--c); grid-row: span 2; align-self: center; }
-.choices .n { font: 800 1.3rem/1.1 var(--display); }
+.choices .ico { width: 42px; height: 42px; display: grid; place-items: center; color: var(--c); background: color-mix(in oklch, var(--c) var(--tint), var(--card)); border-radius: var(--r-sm); grid-row: span 2; }
+.choices .ico svg { width: 26px; height: 26px; }
+.choices .n { font-weight: 800; font-size: 1.0625rem; line-height: 1.2; }
 .choices .e { font-size: 0.8125rem; color: var(--pencil); line-height: 1.35; }
-.choices button[aria-pressed="true"] { background: color-mix(in oklch, var(--c) 10%, transparent); box-shadow: inset 4px 0 0 var(--c); }
+.choices button[aria-pressed="true"] { border-color: var(--c); background: color-mix(in oklch, var(--c) var(--tint), var(--card)); }
 .bar {
   display: grid;
   grid-template-columns: auto 1fr;
   gap: 10px;
   padding: 10px 10px 14px;
-  border-top: 1px solid var(--rule);
   background: var(--paper);
+  box-shadow: 0 -1px 0 var(--rule);
 }
-.bar .btn { min-height: 52px; width: 100%; }
+.bar .btn, .bar .btn-soft { min-height: 52px; width: 100%; }
 .bar .btn[disabled] { opacity: 0.45; cursor: not-allowed; box-shadow: none; }
 @media (prefers-reduced-motion: no-preference) {
   .peek-cat .cat-stamp { animation: cat-hit var(--d2) var(--spring-snappy) both; }
 }
-@keyframes cat-hit { from { transform: rotate(4deg) scale(1.25); opacity: 0; filter: blur(1.5px); } to { transform: rotate(-2deg) scale(1); opacity: 1; filter: none; } }
+@keyframes cat-hit { from { transform: rotate(4deg) scale(1.25); opacity: 0; } to { transform: rotate(-2deg) scale(1); opacity: 1; } }
 
 /* Moments table */
-.table-scroll { overflow-x: auto; }
-table { border-collapse: collapse; width: 100%; min-width: 40rem; }
+.table-scroll { overflow-x: auto; background: var(--card); border-radius: var(--r-md); padding: 4px 18px; }
+table { border-collapse: collapse; width: 100%; min-width: 38rem; }
 th, td { text-align: left; padding: 12px 16px 12px 0; border-bottom: 1px solid var(--rule); vertical-align: top; }
+tr:last-child td { border-bottom: 0; }
 th { font-weight: 700; font-size: 0.875rem; color: var(--pencil); }
-td:first-child { font-weight: 700; white-space: nowrap; }
+td:first-child { font-weight: 800; white-space: nowrap; }
 td.num { font-variant-numeric: tabular-nums; white-space: nowrap; }
 
-.changes { display: grid; gap: 18px; max-width: 46rem; padding: 0; margin: 0; list-style: none; }
-.changes li { padding-left: 18px; border-left: 3px solid var(--gold); }
+.changes { display: grid; gap: 12px; max-width: 48rem; padding: 0; margin: 0; list-style: none; }
+.changes li { padding: 14px 18px; background: var(--card); border-radius: var(--r-md); }
 .changes b { display: block; }
 .changes span { color: var(--pencil); }
 
-footer.board-foot { padding-block: 30px 60px; color: var(--pencil); font-size: 0.875rem; border-top: 1px solid var(--rule); }
+footer.board-foot { margin-top: 56px; padding-block: 28px 60px; color: var(--pencil); font-size: 0.875rem; border-top: 1px solid var(--rule); }
 
 ::view-transition-old(root), ::view-transition-new(root) { animation-duration: var(--d2); }
 @media (prefers-reduced-motion: reduce) {
   ::view-transition-old(root), ::view-transition-new(root) { animation: none; }
-  .btn { transition: none; }
+  .btn, .index a { transition: none; }
 }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 </style>
@@ -626,89 +631,90 @@ footer.board-foot { padding-block: 30px 60px; color: var(--pencil); font-size: 0
     <!-- Category icons: one 24px grid, 1.75 stroke, round caps. -->
     <symbol id="i-infra" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 21 9 3M17.5 21 15 3M12 4v2.2M12 9v2.2"/><path d="M8.6 17.2c0-1.2 1.5-2.1 3.4-2.1s3.4.9 3.4 2.1-1.5 2.1-3.4 2.1-3.4-.9-3.4-2.1Z"/><path d="m10.4 15.3-.7-1.2M13.8 19.2l.8 1.3"/></symbol>
     <symbol id="i-env" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15.5c-3.6 0-6-2.3-6-5.3 0-2.2 1.3-3.6 2.7-4.1C9.3 4.1 10.6 3 12 3s2.7 1.1 3.3 3.1C16.7 6.6 18 8 18 10.2c0 3-2.4 5.3-6 5.3Z"/><path d="M12 21V11.5M12 15l-2.4-2M12 13.5l2-1.6M8 21h8"/></symbol>
-    <symbol id="i-pub" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="15" rx="2"/><path d="M5 11h14M8.5 6h7M8 18v2.5M16 18v2.5"/><path d="M8.5 14.5h.01M15.5 14.5h.01" stroke-width="2.4"/></symbol>
+    <symbol id="i-pub" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="15" rx="2.5"/><path d="M5 11h14M8.5 6h7M8 18v2.5M16 18v2.5"/><path d="M8.5 14.5h.01M15.5 14.5h.01" stroke-width="2.4"/></symbol>
     <symbol id="i-admin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6.5v18h11V6.5L14 3Z"/><path d="M14 3v3.5h3.5M9 10h6M9 13h3.5"/><circle cx="14.2" cy="17" r="2"/></symbol>
     <symbol id="i-health" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 4h5v5.5H20v5h-5.5V20h-5v-5.5H4v-5h5.5V4Z"/></symbol>
     <symbol id="i-edu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 5l9 5.5"/><path d="M5.5 9v11.5h13V9M10 20.5V16h4v4.5M3.5 20.5h17"/><circle cx="12" cy="11.2" r="1.4"/></symbol>
     <symbol id="i-safety" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 19 5.8v5.4c0 4.4-2.9 7.9-7 9.8-4.1-1.9-7-5.4-7-9.8V5.8L12 3Z"/><path d="M12 6.5v11.5"/></symbol>
+    <symbol id="i-info" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v5.5M12 7.6h.01"/></symbol>
   </defs>
 </svg>
 
 <div class="wrap">
   <header class="board-head">
-    <div style="display:grid;gap:4px">
+    <div style="display:grid;gap:6px">
       <span class="wm" aria-label="kosova.report">kosova<span class="dot" aria-hidden="true"></span>report</span>
-      <span class="meta">Civic Evidence. Design direction, draft 1, 19.10.2026</span>
+      <span class="meta">Design direction, draft 2 (friendlier), 19.10.2026</span>
     </div>
     <div class="seg" role="group" aria-label="Preview mode">
       <button type="button" data-mode="system" aria-pressed="true">System</button>
-      <button type="button" data-mode="light" aria-pressed="false">Paper</button>
-      <button type="button" data-mode="dark" aria-pressed="false">Night ink</button>
+      <button type="button" data-mode="light" aria-pressed="false">Light</button>
+      <button type="button" data-mode="dark" aria-pressed="false">Dark</button>
       <button type="button" data-mode="sun" aria-pressed="false">Sunlight</button>
     </div>
   </header>
+</div>
 
-  <!-- Landing opening, as it would ship -->
-  <section class="hero" aria-labelledby="hero-title">
-    <div>
-      <div class="langs" role="group" aria-label="Gjuha">
-        <button type="button" data-lang="sq" aria-pressed="true" lang="sq">SQ</button>
-        <button type="button" data-lang="sr" aria-pressed="false" lang="sr-Latn">SR</button>
-        <button type="button" data-lang="sr-Cyrl" aria-pressed="false" lang="sr-Cyrl">СР</button>
-        <button type="button" data-lang="en" aria-pressed="false" lang="en">EN</button>
-      </div>
-      <div id="hero-copy" lang="sq">
-        <h1 id="hero-title" data-k="title">Zëri yt. Një qytet më i mirë.</h1>
-        <p class="lede" data-k="lede">Gropa në Dardani, ndriçimi i fikur në Ulpianë, kontejnerët plot afër stacionit të autobusëve. Raporto atë që sheh, me foto dhe vendndodhje, dhe raporti shkon te departamenti që e mbulon.</p>
-        <div class="cta-row">
-          <a class="btn" href="#flow" data-k="cta">Raporto një problem</a>
-          <a class="btn-quiet" href="#object" data-k="how">Shiko si duket raporti</a>
+<!-- Landing opening, as it would ship -->
+<div class="hero-band">
+  <div class="wrap">
+    <section class="hero" aria-labelledby="hero-title">
+      <div>
+        <div class="langs" role="group" aria-label="Gjuha">
+          <button type="button" data-lang="sq" aria-pressed="true" lang="sq">SQ</button>
+          <button type="button" data-lang="sr" aria-pressed="false" lang="sr">SR</button>
+          <button type="button" data-lang="en" aria-pressed="false" lang="en">EN</button>
         </div>
-        <p class="disclaimer"><span data-k="note">Nuk është shërbim emergjence. Për urgjenca thirr</span> <a href="tel:112">112</a>.</p>
+        <div id="hero-copy" lang="sq">
+          <h1 id="hero-title" data-k="title">Zëri yt. Një qytet më i mirë.</h1>
+          <p class="lede" data-k="lede">Gropa në Dardani, ndriçimi i fikur në Ulpianë, kontejnerët plot afër stacionit të autobusëve. Raporto atë që sheh, me foto dhe vendndodhje, dhe raporti shkon te departamenti që e mbulon.</p>
+          <div class="cta-row">
+            <a class="btn" href="#flow" data-k="cta">Raporto një problem</a>
+            <a class="btn-soft" href="#object" data-k="how">Shiko si duket raporti</a>
+          </div>
+          <p class="disclaimer"><svg aria-hidden="true"><use href="#i-info"/></svg><span><span data-k="note">Nuk është shërbim emergjence. Për urgjenca thirr</span> <a href="tel:112">112</a>.</span></p>
+        </div>
       </div>
-    </div>
 
-    <div class="map drawing" id="map">
-      <svg class="streets" viewBox="230 200 520 520" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Central Prishtina street map with sample report pins">
-        <use href="#st-minor" class="minor"/>
-        <use href="#st-major" class="major"/>
-        <g class="pin">
-          <g style="--i:0;color:var(--c-edu)" transform="translate(468 261)"><use href="#pin-shape" fill="currentColor"/><circle cy="-20" r="4"/></g>
-          <g style="--i:1;color:var(--c-env)" transform="translate(418 381)"><use href="#pin-shape" fill="currentColor"/><circle cy="-20" r="4"/></g>
-          <g style="--i:2;color:var(--c-admin)" transform="translate(431 416)"><use href="#pin-shape" fill="currentColor"/><circle cy="-20" r="4"/></g>
-          <g style="--i:3;color:var(--c-pub)" transform="translate(361 498)"><use href="#pin-shape" fill="currentColor"/><circle cy="-20" r="4"/></g>
-          <g style="--i:4;color:var(--c-safety)" transform="translate(382 557)"><use href="#pin-shape" fill="currentColor"/><circle cy="-20" r="4"/></g>
-          <g style="--i:5;color:var(--c-health)" transform="translate(603 594)"><use href="#pin-shape" fill="currentColor"/><circle cy="-20" r="4"/></g>
-          <g style="--i:6;color:var(--gold)" transform="translate(489 353) scale(1.35)"><use href="#pin-shape" fill="currentColor"/><circle cy="-20" r="4" style="fill:var(--ink)"/></g>
-        </g>
-      </svg>
-      <span class="tick coord t-n">42.669° N</span>
-      <span class="tick coord t-s">42.652° N</span>
-      <span class="tick coord t-w">21.153° E</span>
-      <span class="tick coord t-e">21.177° E</span>
-      <div class="mini-receipt" aria-hidden="true">
-        <p class="ref">PRI-2026-000418</p>
-        <p class="cat"><svg><use href="#i-infra"/></svg>Infrastrukturë</p>
-        <p>Rruga Agim Ramadani</p>
-        <p class="coord">42.6643° N, 21.1650° E</p>
+      <div class="map drawing" id="map">
+        <svg class="streets" viewBox="230 200 520 520" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Central Prishtina street map with sample report pins">
+          <use href="#st-minor" class="minor"/>
+          <use href="#st-major" class="major"/>
+          <g class="pin">
+            <g style="--i:0;color:var(--c-edu)" transform="translate(468 261)"><use href="#pin-shape" fill="currentColor"/><circle cy="-20" r="4"/></g>
+            <g style="--i:1;color:var(--c-env)" transform="translate(418 381)"><use href="#pin-shape" fill="currentColor"/><circle cy="-20" r="4"/></g>
+            <g style="--i:2;color:var(--c-admin)" transform="translate(431 416)"><use href="#pin-shape" fill="currentColor"/><circle cy="-20" r="4"/></g>
+            <g style="--i:3;color:var(--c-pub)" transform="translate(361 498)"><use href="#pin-shape" fill="currentColor"/><circle cy="-20" r="4"/></g>
+            <g style="--i:4;color:var(--c-safety)" transform="translate(382 557)"><use href="#pin-shape" fill="currentColor"/><circle cy="-20" r="4"/></g>
+            <g style="--i:5;color:var(--c-health)" transform="translate(603 594)"><use href="#pin-shape" fill="currentColor"/><circle cy="-20" r="4"/></g>
+            <g style="--i:6;color:var(--gold)" transform="translate(489 353) scale(1.35)"><use href="#pin-shape" fill="currentColor"/><circle cy="-20" r="4" style="fill:var(--ink)"/></g>
+          </g>
+        </svg>
+        <span class="tick coord t-n">42.669° N, 21.153° E</span>
+        <div class="mini-receipt" aria-hidden="true">
+          <p class="ref">PRI-2026-000418</p>
+          <p class="cat"><svg><use href="#i-infra"/></svg>Infrastrukturë</p>
+          <p>Rruga Agim Ramadani</p>
+          <p class="coord">42.6643° N, 21.1650° E</p>
+        </div>
+        <p class="osm">© OpenStreetMap contributors</p>
       </div>
-      <p class="osm">Rrugët © OpenStreetMap contributors</p>
-    </div>
-  </section>
+    </section>
+  </div>
 </div>
 
 <div class="wrap">
   <section class="sec" id="object" aria-labelledby="object-title">
     <div class="sec-head">
       <h2 id="object-title">The receipt is the product</h2>
-      <p>The same slip appears in the flow, on the success screen, on the tracking page and in the PDF. It grows as the citizen fills it in, then gets stamped.</p>
+      <p>The same slip appears in the flow, on the success screen, on the tracking page and in the PDF. It fills in as the citizen goes, then gets stamped.</p>
     </div>
     <div class="object">
       <div class="notes">
-        <div><h3>Citizen's words in Literata</h3><p>The description is set in the reading serif on ruled lines, so it reads as testimony. Form chrome stays in Sofia Sans.</p></div>
-        <div><h3>Stamp in ochre ink</h3><p>The ring text carries the six stars of the flag as separators. It multiplies into the paper in light mode and turns bright gold at night.</p></div>
-        <div><h3>Key on a tear-off stub</h3><p>Grouped in fives so it can be read aloud or copied by hand. The stub tears free after the stamp. Leaving needs an "I saved my key" tick.</p></div>
-        <div><h3>No invented data</h3><p>Everything on this slip is a field the backend already stores: public ID, category, municipality, coordinates, description, photo count, submitted time, anonymous flag.</p></div>
+        <div><h3>Friendly first, official second</h3><p>Rounded corners, white paper and the familiar blue keep it approachable. The stamp and the perforated stub are what make it feel like it counts.</p></div>
+        <div><h3>A stamp in warm gold ink</h3><p>The ring carries the six stars of the flag as separators. It's the one moment of ceremony in the product.</p></div>
+        <div><h3>The key on a tear-off stub</h3><p>Grouped in fives so it's easy to read aloud or copy by hand. Leaving the page asks for an "I saved my key" tick.</p></div>
+        <div><h3>No invented data</h3><p>Every line on the slip is a field the backend already stores: report number, category, municipality, coordinates, description, photos, time, anonymous or not.</p></div>
       </div>
 
       <div>
@@ -726,10 +732,10 @@ footer.board-foot { padding-block: 30px 60px; color: var(--pencil); font-size: 0
               <div><dt>Vendi</dt><dd>Rruga Agim Ramadani, Prishtinë<span class="coord">42.6643° N, 21.1650° E</span></dd></div>
             </dl>
             <figure class="snippet">
-              <svg class="streets" viewBox="434 318 110 70" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+              <svg class="streets" viewBox="434 323 110 60" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
                 <use href="#st-minor" class="minor"/>
                 <use href="#st-major" class="major"/>
-                <g class="pin" transform="translate(489 353) scale(.5)" style="color:var(--gold)"><use href="#pin-shape" fill="currentColor"/><circle cy="-20" r="4" style="fill:var(--ink)"/></g>
+                <g class="pin" transform="translate(489 356) scale(.55)" style="color:var(--gold)"><use href="#pin-shape" fill="currentColor"/><circle cy="-20" r="4" style="fill:var(--ink)"/></g>
               </svg>
             </figure>
             <p class="testimony">Gropë e thellë përballë hyrjes së shkollës. Makinat e anashkalojnë duke dalë në korsinë tjetër. Është aty që nga reshjet e javës së kaluar.</p>
@@ -745,7 +751,7 @@ footer.board-foot { padding-block: 30px 60px; color: var(--pencil); font-size: 0
               <svg viewBox="0 0 160 160">
                 <defs>
                   <path id="ring" d="M80 80m-60 0a60 60 0 1 1 120 0a60 60 0 1 1-120 0"/>
-                  <filter id="ink-edge" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency=".8" numOctaves="2" seed="7"/><feDisplacementMap in="SourceGraphic" scale="2.6"/></filter>
+                  <filter id="ink-edge" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency=".8" numOctaves="2" seed="7"/><feDisplacementMap in="SourceGraphic" scale="2.2"/></filter>
                 </defs>
                 <g filter="url(#ink-edge)">
                   <circle cx="80" cy="80" r="75" fill="none" stroke="currentColor" stroke-width="3.5"/>
@@ -763,52 +769,54 @@ footer.board-foot { padding-block: 30px 60px; color: var(--pencil); font-size: 0
             <p class="key">q7HcV 2LwXa 9fPkT mR4zE uY8bN cJ3sD wG6hQ x1Lp</p>
             <p class="stub-note">Ruaje tani. Nëse e humb, nuk mund ta rikthejmë.</p>
             <div class="stub-actions">
-              <button type="button" class="btn-quiet">Kopjo çelësin</button>
-              <button type="button" class="btn-quiet">Shkarko PDF-në</button>
+              <button type="button" class="btn">Kopjo çelësin</button>
+              <button type="button" class="btn-soft">Shkarko PDF-në</button>
             </div>
           </div>
         </div>
-        <div class="replay-row"><button type="button" class="btn-quiet" id="replay-stamp">Replay the submission stamp</button></div>
+        <div class="replay-row"><button type="button" class="btn-link" id="replay-stamp">Replay the submission stamp</button></div>
       </div>
     </div>
   </section>
 
   <section class="sec" aria-labelledby="colour-title">
     <div class="sec-head">
-      <h2 id="colour-title">Navy ink, flag gold, paper</h2>
-      <p>Gold is the only signal: the primary button, the pin, the wordmark dot. Red is kept for errors, because this is not an emergency service. Contrast is measured against the page.</p>
+      <h2 id="colour-title">Navy, civic blue, a touch of gold</h2>
+      <p>The original's blue stays as the action colour. Gold is kept small: the pin, the wordmark dot and the stamp. Red is only for errors, because this isn't an emergency service.</p>
     </div>
     <div class="chips">
-      <div class="chip" style="--sw:var(--ink)"><i></i><div><b>Ink</b><span>Text, wordmark. Evolved #062653.</span><code>oklch(0.265 0.085 258), 14.2:1</code></div></div>
-      <div class="chip" style="--sw:var(--paper)"><i></i><div><b>Paper</b><span>Page ground</span><code>oklch(0.972 0.010 88)</code></div></div>
-      <div class="chip" style="--sw:var(--card)"><i></i><div><b>Slip</b><span>The receipt</span><code>oklch(0.993 0.004 90)</code></div></div>
-      <div class="chip" style="--sw:var(--pencil)"><i></i><div><b>Pencil</b><span>Captions, coordinates</span><code>oklch(0.47 0.035 258), 6.3:1</code></div></div>
-      <div class="chip" style="--sw:var(--gold)"><i></i><div><b>Gold</b><span>Primary action, pin. Ink text on it.</span><code>oklch(0.80 0.125 84), 8.2:1</code></div></div>
-      <div class="chip" style="--sw:var(--stamp)"><i></i><div><b>Stamp ink</b><span>Official stamp only</span><code>oklch(0.53 0.105 72), 5.0:1</code></div></div>
+      <div class="chip" style="--sw:var(--ink)"><i></i><div><b>Navy ink</b><span>Text, wordmark. #062653, kept.</span><code>14.6:1 on page</code></div></div>
+      <div class="chip" style="--sw:var(--blue)"><i></i><div><b>Civic blue</b><span>Buttons and links. Close to the original #0843b5.</span><code>White text 7.1:1</code></div></div>
+      <div class="chip" style="--sw:var(--wash)"><i></i><div><b>Sky wash</b><span>Hero band, key box, soft fills</span><code>Navy on it 13.3:1</code></div></div>
+      <div class="chip" style="--sw:var(--paper)"><i></i><div><b>Page</b><span>Light, a hint of blue</span><code>oklch(0.982 0.006 255)</code></div></div>
+      <div class="chip" style="--sw:var(--pencil)"><i></i><div><b>Pencil</b><span>Secondary text, coordinates</span><code>6.2:1 on page</code></div></div>
+      <div class="chip" style="--sw:var(--gold)"><i></i><div><b>Flag gold</b><span>Pin, dot, highlights</span><code>Decorative</code></div></div>
+      <div class="chip" style="--sw:var(--stamp)"><i></i><div><b>Stamp ink</b><span>Official stamp only</span><code>5.0:1 on white</code></div></div>
     </div>
-    <div class="chips" style="margin-top:28px">
-      <div class="chip" style="--sw:var(--c-infra)"><i></i><div><b>Infrastrukturë</b><span>Rust, road works</span><code>4.7:1</code></div></div>
-      <div class="chip" style="--sw:var(--c-env)"><i></i><div><b>Mjedis</b><span>Gërmia green</span><code>4.9:1</code></div></div>
-      <div class="chip" style="--sw:var(--c-pub)"><i></i><div><b>Shërbime publike</b><span>Water mains</span><code>4.9:1</code></div></div>
-      <div class="chip" style="--sw:var(--c-admin)"><i></i><div><b>Administratë</b><span>Office stamp-pad violet</span><code>6.0:1</code></div></div>
-      <div class="chip" style="--sw:var(--c-health)"><i></i><div><b>Shëndetësi</b><span>Muted brick, not alarm red</span><code>5.2:1</code></div></div>
-      <div class="chip" style="--sw:var(--c-edu)"><i></i><div><b>Arsim</b><span>School-desk olive</span><code>4.6:1</code></div></div>
-      <div class="chip" style="--sw:var(--c-safety)"><i></i><div><b>Siguri</b><span>Steel blue</span><code>5.0:1</code></div></div>
+    <div class="chips" style="margin-top:12px">
+      <div class="chip" style="--sw:var(--c-infra)"><i></i><div><b>Infrastrukturë</b><span>Rust, road works</span></div></div>
+      <div class="chip" style="--sw:var(--c-env)"><i></i><div><b>Mjedis</b><span>Gërmia green</span></div></div>
+      <div class="chip" style="--sw:var(--c-pub)"><i></i><div><b>Shërbime publike</b><span>Water mains</span></div></div>
+      <div class="chip" style="--sw:var(--c-admin)"><i></i><div><b>Administratë</b><span>Stamp-pad violet</span></div></div>
+      <div class="chip" style="--sw:var(--c-health)"><i></i><div><b>Shëndetësi</b><span>Muted brick, not alarm red</span></div></div>
+      <div class="chip" style="--sw:var(--c-edu)"><i></i><div><b>Arsim</b><span>School-desk olive</span></div></div>
+      <div class="chip" style="--sw:var(--c-safety)"><i></i><div><b>Siguri</b><span>Steel blue</span></div></div>
     </div>
   </section>
 
   <section class="sec" aria-labelledby="type-title">
     <div class="sec-head">
-      <h2 id="type-title">Tall letters, plain reading</h2>
-      <p>Sofia Sans Extra Condensed for headlines and stamps, Sofia Sans for the interface, Literata for anything a person reads at length. All three cover Latin Extended and Cyrillic.</p>
+      <h2 id="type-title">One friendly family</h2>
+      <p>Sofia Sans does everything: headlines, interface and reading text. Its narrow sibling appears only on the stamp and the ticket stub. Both render Albanian ë and ç and Serbian č, ć, đ, š, ž well.</p>
     </div>
     <div class="specimen">
-      <div class="spec"><span class="who">Sofia Sans Extra Condensed 900, display</span><p class="d1" lang="sq">Çështje e hapur në Ulpianë</p></div>
-      <div class="spec"><span class="who">Same face, Serbian Cyrillic and Latin</span><p class="d2" lang="sr-Cyrl">Пријавите проблем у свом крају</p><p class="d2" lang="sr-Latn">Prijavite problem u svom kraju</p></div>
-      <div class="spec"><span class="who">Literata 400, reading</span><p class="r1" lang="sq">Po, zgjat rreth dy minuta. Shumica e kohës shkon te gjetja e vendit të saktë në hartë. Një foto e mirë dhe një shenjë e saktë e bëjnë raportin shumë më të lehtë për t’u përcjellë te zyra e duhur.</p></div>
-      <div class="spec"><span class="who">Sofia Sans 600, tabular figures</span><p class="u1">PRI-2026-000418&emsp;19.10.2026&emsp;14:32&emsp;42.6643° N</p></div>
+      <div class="spec"><span class="who">Sofia Sans 800, headlines</span><p class="d1" lang="sq">Çështje e hapur në Ulpianë</p></div>
+      <div class="spec"><span class="who">Serbian Latin: č, ć, đ, š, ž</span><p class="d2" lang="sr">Prijavite problem u svom kraju. Đubre, rupe, ugašena svetla.</p></div>
+      <div class="spec"><span class="who">Sofia Sans 400, reading</span><p class="r1" lang="sq">Po, zgjat rreth dy minuta. Shumica e kohës shkon te gjetja e vendit të saktë në hartë. Një foto e mirë dhe një shenjë e saktë e bëjnë raportin shumë më të lehtë për t’u përcjellë te zyra e duhur.</p></div>
+      <div class="spec"><span class="who">Sofia Sans 700, tabular figures</span><p class="u1">PRI-2026-000418&emsp;19.10.2026&emsp;14:32&emsp;42.6643° N</p></div>
+      <div class="spec"><span class="who">Sofia Sans Extra Condensed 900, stamp and stub only</span><p class="s1" lang="sq">DËRGUAR ★ ÇELËSI PRIVAT</p></div>
       <div class="spec"><span class="who">Fluid scale, px at the large end</span>
-        <div class="scale"><span style="font-size:14px">14</span><span style="font-size:16px">16</span><span style="font-size:18px">18</span><span style="font-size:22px">22</span><span style="font-size:28px">28</span><span style="font-size:36px">36</span><span style="font-size:52px">52</span><span style="font-size:84px">84</span></div>
+        <div class="scale"><span style="font-size:14px">14</span><span style="font-size:16px">16</span><span style="font-size:18px">18</span><span style="font-size:22px">22</span><span style="font-size:28px">28</span><span style="font-size:36px">36</span><span style="font-size:52px">52</span><span style="font-size:76px">76</span></div>
       </div>
     </div>
   </section>
@@ -816,16 +824,16 @@ footer.board-foot { padding-block: 30px 60px; color: var(--pencil); font-size: 0
   <section class="sec" aria-labelledby="cat-title">
     <div class="sec-head">
       <h2 id="cat-title">Seven categories, one line each</h2>
-      <p>The landing page index. Each row deep-links into the flow with the category chosen. Icons are drawn on one 24px grid with a 1.75 stroke. Example problems are drafts for native review.</p>
+      <p>The landing page index. Each row opens the report flow with that category already chosen. Icons are drawn for this project on one 24px grid. Examples are drafts for native review.</p>
     </div>
     <ul class="index" lang="sq">
-      <li><a href="#flow" style="--c:var(--c-infra)"><svg aria-hidden="true"><use href="#i-infra"/></svg><span class="name">Infrastrukturë</span><span class="ex">Gropë në rrugë, trotuar i thyer, ndriçim publik që nuk punon, tabelë që mungon.</span></a></li>
-      <li><a href="#flow" style="--c:var(--c-env)"><svg aria-hidden="true"><use href="#i-env"/></svg><span class="name">Mjedis</span><span class="ex">Kontejnerë të mbushur, mbeturina të hedhura në lëndinë, pemë të prera pa leje.</span></a></li>
-      <li><a href="#flow" style="--c:var(--c-pub)"><svg aria-hidden="true"><use href="#i-pub"/></svg><span class="name">Shërbime publike</span><span class="ex">Ujë i ndërprerë pa njoftim, autobus që nuk vjen, kanalizim i bllokuar.</span></a></li>
-      <li><a href="#flow" style="--c:var(--c-admin)"><svg aria-hidden="true"><use href="#i-admin"/></svg><span class="name">Administratë</span><span class="ex">Dokument që vonohet, sportel që nuk përgjigjet, informacion që mungon në faqe.</span></a></li>
-      <li><a href="#flow" style="--c:var(--c-health)"><svg aria-hidden="true"><use href="#i-health"/></svg><span class="name">Shëndetësi</span><span class="ex">QKMF pa mjek në orar pune, pritje e gjatë pa informacion, mungesë barnash bazë.</span></a></li>
-      <li><a href="#flow" style="--c:var(--c-edu)"><svg aria-hidden="true"><use href="#i-edu"/></svg><span class="name">Arsim</span><span class="ex">Shkollë pa ngrohje, oborr i rrezikshëm, tualete të prishura.</span></a></li>
-      <li><a href="#flow" style="--c:var(--c-safety)"><svg aria-hidden="true"><use href="#i-safety"/></svg><span class="name">Siguri</span><span class="ex">Kryqëzim pa semafor, park pa ndriçim në mbrëmje, qen endacakë afër shkollës.</span></a></li>
+      <li><a href="#flow" style="--c:var(--c-infra)"><span class="ico"><svg aria-hidden="true"><use href="#i-infra"/></svg></span><span class="name">Infrastrukturë</span><span class="ex">Gropë në rrugë, trotuar i thyer, ndriçim publik që nuk punon, tabelë që mungon.</span></a></li>
+      <li><a href="#flow" style="--c:var(--c-env)"><span class="ico"><svg aria-hidden="true"><use href="#i-env"/></svg></span><span class="name">Mjedis</span><span class="ex">Kontejnerë të mbushur, mbeturina të hedhura në lëndinë, pemë të prera pa leje.</span></a></li>
+      <li><a href="#flow" style="--c:var(--c-pub)"><span class="ico"><svg aria-hidden="true"><use href="#i-pub"/></svg></span><span class="name">Shërbime publike</span><span class="ex">Ujë i ndërprerë pa njoftim, autobus që nuk vjen, kanalizim i bllokuar.</span></a></li>
+      <li><a href="#flow" style="--c:var(--c-admin)"><span class="ico"><svg aria-hidden="true"><use href="#i-admin"/></svg></span><span class="name">Administratë</span><span class="ex">Dokument që vonohet, sportel që nuk përgjigjet, informacion që mungon në faqe.</span></a></li>
+      <li><a href="#flow" style="--c:var(--c-health)"><span class="ico"><svg aria-hidden="true"><use href="#i-health"/></svg></span><span class="name">Shëndetësi</span><span class="ex">QKMF pa mjek në orar pune, pritje e gjatë pa informacion, mungesë barnash bazë.</span></a></li>
+      <li><a href="#flow" style="--c:var(--c-edu)"><span class="ico"><svg aria-hidden="true"><use href="#i-edu"/></svg></span><span class="name">Arsim</span><span class="ex">Shkollë pa ngrohje, oborr i rrezikshëm, tualete të prishura.</span></a></li>
+      <li><a href="#flow" style="--c:var(--c-safety)"><span class="ico"><svg aria-hidden="true"><use href="#i-safety"/></svg></span><span class="name">Siguri</span><span class="ex">Kryqëzim pa semafor, park pa ndriçim në mbrëmje, qen endacakë afër shkollës.</span></a></li>
     </ul>
   </section>
 
@@ -840,11 +848,11 @@ footer.board-foot { padding-block: 30px 60px; color: var(--pencil); font-size: 0
           </div>
           <div class="screen-body">
             <h3>Çfarë po raporton?</h3>
-            <p class="sub">Zgjidh më të afërtën. Departamenti mund ta rikategorizojë.</p>
+            <p class="sub">Zgjidh më të afërtën. Departamenti mund ta ndryshojë më vonë.</p>
             <ul class="choices" id="choices"></ul>
           </div>
           <div class="bar">
-            <button type="button" class="btn-quiet">Prapa</button>
+            <button type="button" class="btn-soft">Prapa</button>
             <button type="button" class="btn" id="next" disabled>Vazhdo</button>
           </div>
         </div>
@@ -852,19 +860,19 @@ footer.board-foot { padding-block: 30px 60px; color: var(--pencil); font-size: 0
       <div>
         <div class="sec-head">
           <h2 id="flow-title">The flow at 360 px</h2>
-          <p>Tap a category on the phone. Its mark stamps onto the receipt peeking at the top, and the first of three parts fills in. Back and Continue sit in the thumb zone.</p>
+          <p>Tap a category on the phone. Its badge stamps onto the receipt at the top, and the first of three parts fills in. Back and Continue sit where the thumb reaches.</p>
         </div>
         <div class="table-scroll">
           <table>
             <caption class="sr-only">Signature moments, in the order a citizen meets them</caption>
             <thead><tr><th scope="col">Moment</th><th scope="col">What moves</th><th scope="col">Time</th><th scope="col">Reduced motion</th></tr></thead>
             <tbody>
-              <tr><td>Map draw-in</td><td>Real street lines draw with <code>stroke-dashoffset</code>, then pins drop. Once per session.</td><td class="num">1.6 s</td><td>Static map, pins in place</td></tr>
-              <tr><td>Category stamp</td><td>Mark presses onto the receipt with a spring and a short blur.</td><td class="num">220 ms</td><td>Appears instantly</td></tr>
-              <tr><td>Pin drop</td><td>Pin falls, coordinates type in, 10 ms vibration where supported.</td><td class="num">400 ms</td><td>Pin and text appear</td></tr>
-              <tr><td>Photo clip</td><td>Thumbnail lands at ±3° under a paper clip.</td><td class="num">220 ms</td><td>Appears instantly</td></tr>
-              <tr><td>Submission stamp</td><td>Stamp hits, perforation tears, key stub slides free, PDF button appears. Tap to skip.</td><td class="num">1.1 s</td><td>Final state, no movement</td></tr>
-              <tr><td>Language switch</td><td>View Transition cross-fade of text only. No layout shift.</td><td class="num">220 ms</td><td>Instant swap</td></tr>
+              <tr><td>Map draw-in</td><td>Real streets draw themselves, then pins drop. Once per session.</td><td class="num">1.6 s</td><td>Static map, pins in place</td></tr>
+              <tr><td>Category stamp</td><td>Badge presses onto the receipt with a small bounce.</td><td class="num">220 ms</td><td>Appears instantly</td></tr>
+              <tr><td>Pin drop</td><td>Pin falls, coordinates type in, short vibration where supported.</td><td class="num">400 ms</td><td>Pin and text appear</td></tr>
+              <tr><td>Photo clip</td><td>Thumbnail lands at a slight angle under a paper clip.</td><td class="num">220 ms</td><td>Appears instantly</td></tr>
+              <tr><td>Submission stamp</td><td>Stamp lands, the stub tears free, the PDF button appears. Tap to skip.</td><td class="num">1.1 s</td><td>Final state, no movement</td></tr>
+              <tr><td>Language switch</td><td>Text cross-fades. Nothing jumps.</td><td class="num">220 ms</td><td>Instant swap</td></tr>
             </tbody>
           </table>
         </div>
@@ -874,14 +882,14 @@ footer.board-foot { padding-block: 30px 60px; color: var(--pencil); font-size: 0
 
   <section class="sec" aria-labelledby="changes-title">
     <div class="sec-head">
-      <h2 id="changes-title">What changed after checking the plan</h2>
-      <p>Parts of the first plan that looked like defaults, and what replaced them.</p>
+      <h2 id="changes-title">What changed from draft 1</h2>
+      <p>Draft 1 felt too formal. Draft 2 brings back what made the original approachable and keeps what makes kosova.report its own.</p>
     </div>
     <ul class="changes">
-      <li><b>Vermilion stamp became ochre ink.</b><span>Red would contradict the non-emergency message, and vermilion on navy is a stock look.</span></li>
-      <li><b>Serif display became condensed sans.</b><span>A big serif on warm paper is the most common generated look and holds up worse in sunlight. The serif moved to the citizen's own words.</span></li>
-      <li><b>Headline-plus-card hero became the map.</b><span>The map is the hero. The card is pinned to a real street, Rruga Agim Ramadani.</span></li>
-      <li><b>Numbered steps became the receipt assembling.</b><span>The sequence is shown by the object filling in, once, without circles.</span></li>
+      <li><b>Blue buttons are back.</b><span>Gold was a strong signal but felt unfamiliar. Civic blue, close to the original, now carries every action, at 7.1:1 contrast.</span></li>
+      <li><b>Rounded corners, no paper grain.</b><span>Soft radii on buttons, tiles and the receipt. Clean light ground with a sky-blue hero band, like the original.</span></li>
+      <li><b>One sans family instead of condensed plus serif.</b><span>Sofia Sans for everything. The narrow cut survives only on the stamp and the key stub, where it reads as a real stamp.</span></li>
+      <li><b>Kept from draft 1:</b><span>the receipt that fills in, the stamp, the tear-off key, the real Prishtina map and the category colours and icons.</span></li>
     </ul>
   </section>
 
@@ -893,7 +901,6 @@ footer.board-foot { padding-block: 30px 60px; color: var(--pencil); font-size: 0
 <script>
 (() => {
   const root = document.documentElement;
-  // Preview mode
   const modeButtons = document.querySelectorAll("[data-mode]");
   modeButtons.forEach((button) => button.addEventListener("click", () => {
     const mode = button.dataset.mode;
@@ -904,11 +911,9 @@ footer.board-foot { padding-block: 30px 60px; color: var(--pencil); font-size: 0
     modeButtons.forEach((b) => b.setAttribute("aria-pressed", String(b === button)));
   }));
 
-  // Language switch with a View Transition where supported
   const copy = {
     sq: { title: "Zëri yt. Një qytet më i mirë.", lede: "Gropa në Dardani, ndriçimi i fikur në Ulpianë, kontejnerët plot afër stacionit të autobusëve. Raporto atë që sheh, me foto dhe vendndodhje, dhe raporti shkon te departamenti që e mbulon.", cta: "Raporto një problem", how: "Shiko si duket raporti", note: "Nuk është shërbim emergjence. Për urgjenca thirr" },
     sr: { title: "Vaš glas. Bolji grad.", lede: "Rupa u Dardaniji, ugašeno svetlo u Ulpijani, prepuni kontejneri kod autobuske stanice. Prijavite ono što vidite, sa fotografijom i lokacijom, a prijava ide odeljenju koje je za to nadležno.", cta: "Prijavite problem", how: "Pogledajte kako izgleda prijava", note: "Ovo nije služba za hitne slučajeve. Za hitne slučajeve pozovite" },
-    "sr-Cyrl": { title: "Ваш глас. Бољи град.", lede: "Рупа у Дарданији, угашено светло у Улпијани, препуни контејнери код аутобуске станице. Пријавите оно што видите, са фотографијом и локацијом, а пријава иде одељењу које је за то надлежно.", cta: "Пријавите проблем", how: "Погледајте како изгледа пријава", note: "Ово није служба за хитне случајеве. За хитне случајеве позовите" },
     en: { title: "Your voice. A better city.", lede: "A pothole in Dardania, a dead street light in Ulpiana, bins overflowing by the bus station. Report what you see, with a photo and the exact spot, and it goes to the department that handles it.", cta: "Report a problem", how: "See what a report looks like", note: "This is not an emergency service. In an emergency, call" },
   };
   const hero = document.getElementById("hero-copy");
@@ -916,7 +921,7 @@ footer.board-foot { padding-block: 30px 60px; color: var(--pencil); font-size: 0
   langButtons.forEach((button) => button.addEventListener("click", () => {
     const lang = button.dataset.lang;
     const apply = () => {
-      hero.lang = lang === "sr" ? "sr-Latn" : lang;
+      hero.lang = lang;
       hero.querySelectorAll("[data-k]").forEach((el) => { el.textContent = copy[lang][el.dataset.k]; });
       langButtons.forEach((b) => b.setAttribute("aria-pressed", String(b === button)));
     };
@@ -924,11 +929,9 @@ footer.board-foot { padding-block: 30px 60px; color: var(--pencil); font-size: 0
     else apply();
   }));
 
-  // Replay map draw-in when the map is clicked (it plays once on load)
   const map = document.getElementById("map");
   map.addEventListener("dblclick", () => { map.classList.remove("drawing"); void map.offsetWidth; map.classList.add("drawing"); });
 
-  // Submission stamp replay
   const desk = document.getElementById("desk");
   const stub = desk.querySelector(".stub");
   document.getElementById("replay-stamp").addEventListener("click", () => {
@@ -941,7 +944,6 @@ footer.board-foot { padding-block: 30px 60px; color: var(--pencil); font-size: 0
     if (event.animationName === "tear") { desk.classList.remove("stamping"); stub.classList.add("torn"); }
   });
 
-  // Phone: category choice stamps onto the peeking receipt
   const categories = [
     ["infra", "Infrastrukturë", "Gropë, trotuar i thyer, ndriçim që nuk punon"],
     ["env", "Mjedis", "Kontejnerë plot, mbeturina, pemë të prera"],
@@ -956,7 +958,7 @@ footer.board-foot { padding-block: 30px 60px; color: var(--pencil); font-size: 0
   const next = document.getElementById("next");
   categories.forEach(([key, name, example]) => {
     const li = document.createElement("li");
-    li.innerHTML = `<button type="button" aria-pressed="false" style="--c:var(--c-${key})"><svg aria-hidden="true"><use href="#i-${key}"/></svg><span class="n">${name}</span><span class="e">${example}</span></button>`;
+    li.innerHTML = `<button type="button" aria-pressed="false" style="--c:var(--c-${key})"><span class="ico"><svg aria-hidden="true"><use href="#i-${key}"/></svg></span><span class="n">${name}</span><span class="e">${example}</span></button>`;
     li.firstElementChild.addEventListener("click", (event) => {
       list.querySelectorAll("button").forEach((b) => b.setAttribute("aria-pressed", String(b === event.currentTarget)));
       peek.innerHTML = `<span class="cat-stamp" style="--c:var(--c-${key})"><svg aria-hidden="true"><use href="#i-${key}"/></svg>${name}</span>`;
