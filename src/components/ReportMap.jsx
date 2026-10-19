@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { divIcon } from "leaflet";
 import {
   MapContainer,
@@ -17,14 +17,22 @@ const pinIcon = divIcon({
 });
 function Pin({ position, onChange, center, zoom }) {
   const map = useMap();
-  useEffect(() => {
-    map.setView(center, zoom);
-  }, [map, center[0], center[1], zoom]);
   const valid =
     position &&
     position.every(Number.isFinite) &&
     Math.abs(position[0]) <= 90 &&
     Math.abs(position[1]) <= 180;
+  const pinned = useRef(null);
+  pinned.current = valid ? position : null;
+  useEffect(() => {
+    // Keep an existing pin visible when the municipality (and centre) changes.
+    if (pinned.current)
+      map.fitBounds([center, pinned.current], {
+        maxZoom: zoom,
+        padding: [40, 40],
+      });
+    else map.setView(center, zoom);
+  }, [map, center[0], center[1], zoom]);
   useMapEvents({
     click(event) {
       onChange([event.latlng.lat, event.latlng.lng]);

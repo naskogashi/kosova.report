@@ -380,7 +380,9 @@ export async function saveDepartmentAction(form) {
     `/admin/settings?${failed ? "error=department" : "saved=department"}#departments`,
   );
 }
-export async function saveRouteAction(form) {
+const routeSaveError =
+  "Could not save the assignment. The department must belong to the selected municipality.";
+export async function saveRouteAction(previous, form) {
   assertOrigin();
   await requireOwner();
   const cityId = value(form, "city_id", 10),
@@ -388,12 +390,11 @@ export async function saveRouteAction(form) {
     category = value(form, "category", 100),
     active = form.get("active") === "on";
   if (
-    !/^[1-9]\d{0,9}$/.test(cityId) ||
-    !/^[1-9]\d{0,9}$/.test(departmentId) ||
+    !validId(cityId) ||
+    !validId(departmentId) ||
     !categories.includes(category)
   )
-    throw new Error("Invalid routing assignment.");
-  let failed = false;
+    return { error: routeSaveError, at: Date.now() };
   try {
     const [departments] = await database().execute(
       "SELECT id FROM departments WHERE id=? AND city_id=?",
@@ -409,12 +410,31 @@ export async function saveRouteAction(form) {
     console.error("Routing update failed", {
       code: error.code || "UPDATE_ERROR",
     });
-    failed = true;
+    return { error: routeSaveError, at: Date.now() };
   }
   revalidatePath("/admin/settings");
-  redirect(
-    `/admin/settings?${failed ? "error=route" : "saved=route"}#departments`,
-  );
+  return { saved: "Assignment saved.", at: Date.now() };
+}
+export async function deleteRouteAction(previous, form) {
+  assertOrigin();
+  await requireOwner();
+  const cityId = value(form, "city_id", 10),
+    category = value(form, "category", 100);
+  if (!validId(cityId) || !categories.includes(category))
+    return { error: "Could not delete the assignment.", at: Date.now() };
+  try {
+    await database().execute(
+      "DELETE FROM department_routes WHERE city_id=? AND category=?",
+      [cityId, category],
+    );
+  } catch (error) {
+    console.error("Routing delete failed", {
+      code: error.code || "DELETE_ERROR",
+    });
+    return { error: "Could not delete the assignment.", at: Date.now() };
+  }
+  revalidatePath("/admin/settings");
+  return { saved: "Assignment deleted.", at: Date.now() };
 }
 export async function saveCountryAction(form) {
   assertOrigin();

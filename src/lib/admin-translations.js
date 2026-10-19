@@ -183,6 +183,21 @@ export const adminAlbanian = {
   health: "Shëndetësi",
   education: "Arsim",
   safety: "Siguri",
+  "Assignment saved.": "Caktimi u ruajt.",
+  "Assignment deleted.": "Caktimi u fshi.",
+  "Could not save the assignment. The department must belong to the selected municipality.":
+    "Caktimi nuk u ruajt. Departamenti duhet t’i përkasë komunës së zgjedhur.",
+  "Could not delete the assignment.": "Caktimi nuk u fshi.",
+  "This municipality and category already have an assignment. Saving will update it.":
+    "Kjo komunë dhe kategori kanë tashmë një caktim. Ruajtja do ta përditësojë.",
+  "No departments in this municipality yet. Add one above first.":
+    "Kjo komunë nuk ka ende departamente. Shtoni një më lart.",
+  Inactive: "Joaktiv",
+  Actions: "Veprimet",
+  Edit: "Ndrysho",
+  Delete: "Fshi",
+  Cancel: "Anulo",
+  "Confirm delete": "Konfirmo fshirjen",
 };
 export function translateAdmin(text, language) {
   return language === "sq" && typeof text === "string"

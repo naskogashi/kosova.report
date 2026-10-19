@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import { categories } from "../../lib/report-options";
 import { siteTitle } from "../../lib/site-branding";
+import { localizedCityName } from "../../lib/municipality-names";
 
 const ReportMap = dynamic(() => import("../../components/ReportMap"), {
   ssr: false,
@@ -84,8 +85,11 @@ const translations = {
     pdf: "Shkarko kopjen e raportit (PDF)",
     another: "Raporto tjetër",
     error: "Kontrolloni të dhënat dhe provoni përsëri.",
-    detailsError:
-      "Zgjidhni komunën, vendosni shenjën brenda zonës së Kosovës dhe shkruani 10–5000 karaktere.",
+    detailsErrors: {
+      city: "Zgjidhni komunën.",
+      pin: "Vendosni shenjën në hartë ose shkruani koordinata të vlefshme.",
+      description: "Shkruani 10–5000 karaktere në përshkrim.",
+    },
     pdfError: "PDF-ja nuk u shkarkua. Provoni përsëri.",
     pending: "Raporti u ruajt. Njoftimi i departamentit është në pritje.",
     photos: "Dëshmi",
@@ -139,8 +143,11 @@ const translations = {
     pdf: "Preuzmite kopiju prijave (PDF)",
     another: "Prijavite drugi problem",
     error: "Proverite podatke i pokušajte ponovo.",
-    detailsError:
-      "Izaberite opštinu, postavite oznaku u oblasti Kosova i unesite 10–5000 znakova.",
+    detailsErrors: {
+      city: "Izaberite opštinu.",
+      pin: "Postavite oznaku na mapi ili unesite ispravne koordinate.",
+      description: "Unesite 10–5000 znakova u opis.",
+    },
     pdfError: "Preuzimanje PDF-a nije uspelo. Pokušajte ponovo.",
     pending: "Prijava je sačuvana. Obaveštenje odeljenju je na čekanju.",
     photos: "Dokazi",
@@ -194,8 +201,11 @@ const translations = {
     pdf: "Download copy of report (PDF)",
     another: "Report another problem",
     error: "Check your information and try again.",
-    detailsError:
-      "Choose a municipality, place a pin in the Kosovo area and enter 10–5000 characters.",
+    detailsErrors: {
+      city: "Choose a municipality.",
+      pin: "Place a pin on the map or enter valid coordinates.",
+      description: "Enter 10–5000 characters in the description.",
+    },
     pdfError: "PDF download failed. Please try again.",
     pending: "Report saved. Department notification is pending.",
     photos: "Evidence",
@@ -205,6 +215,17 @@ const translations = {
 };
 const inputClass =
   "mt-2 block w-full rounded-lg border border-slate-300 bg-white px-3 py-3 text-sm text-slate-900 outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100";
+// A dropped pin selects the nearest enabled municipality when none is chosen yet.
+const autoSelectRadiusKm = 50;
+function distanceKm([lat1, lng1], [lat2, lng2]) {
+  const rad = Math.PI / 180;
+  const a =
+    Math.sin(((lat2 - lat1) * rad) / 2) ** 2 +
+    Math.cos(lat1 * rad) *
+      Math.cos(lat2 * rad) *
+      Math.sin(((lng2 - lng1) * rad) / 2) ** 2;
+  return 12742 * Math.asin(Math.sqrt(a));
+}
 const primaryClass =
   "inline-flex min-h-12 items-center justify-center gap-2 rounded-lg bg-[#0843b5] px-5 py-3 text-sm font-semibold text-white shadow-sm hover:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-50";
 
@@ -278,25 +299,45 @@ export default function Home() {
     setLanguage(value);
     setError("");
   }
+  const selectedCity = municipalities.find((item) => item.code === city);
+  const cityName = (item) => localizedCityName(item?.name, language);
+  function placePin(point) {
+    setPosition(point);
+    if (city || !point.every(Number.isFinite)) return;
+    const nearest = municipalities
+      .map((item) => ({
+        item,
+        distance: distanceKm(point, [item.latitude, item.longitude]),
+      }))
+      .filter(({ distance }) => distance <= autoSelectRadiusKm)
+      .sort((a, b) => a.distance - b.distance)[0];
+    if (nearest) setCity(nearest.item.code);
+  }
+  function detailsErrors() {
+    const errors = [];
+    if (!selectedCity) errors.push(t.detailsErrors.city);
+    else if (!selectedCity.categories.includes(category))
+      errors.push(optionMessages[language]);
+    if (
+      !position ||
+      !position.every(Number.isFinite) ||
+      Math.abs(position[0]) > 90 ||
+      Math.abs(position[1]) > 180
+    )
+      errors.push(t.detailsErrors.pin);
+    const length = description.trim().length;
+    if (length < 10 || length > 5000) errors.push(t.detailsErrors.description);
+    return errors;
+  }
   function advance(event) {
     event.preventDefault();
     if (step === 0 && !category) return;
-    if (
-      step === 1 &&
-      (!municipalities.some(
-        (item) => item.code === city && item.categories.includes(category),
-      ) ||
-        !position ||
-        !position.every(Number.isFinite) ||
-        position[0] < -90 ||
-        position[0] > 90 ||
-        position[1] < -180 ||
-        position[1] > 180 ||
-        description.trim().length < 10 ||
-        description.trim().length > 5000)
-    ) {
-      setError(t.detailsError);
-      return;
+    if (step === 1) {
+      const errors = detailsErrors();
+      if (errors.length) {
+        setError(errors.join(" "));
+        return;
+      }
     }
     setError("");
     setStep((value) => value + 1);
@@ -563,11 +604,8 @@ export default function Home() {
                         <span className="text-red-600"> *</span>
                         {(optionsState === "error" ||
                           (optionsState === "ready" &&
-                            !municipalities.some(
-                              (item) =>
-                                item.code === city &&
-                                item.categories.includes(category),
-                            ))) && (
+                            selectedCity &&
+                            !selectedCity.categories.includes(category))) && (
                           <span
                             role="status"
                             className="mt-2 block rounded-lg bg-amber-50 p-3 text-xs font-normal text-amber-900"
@@ -578,16 +616,12 @@ export default function Home() {
                         <select
                           className={inputClass}
                           value={city}
-                          onChange={(event) => {
-                            setCity(event.target.value);
-                            setPosition(null);
-                          }}
+                          onChange={(event) => setCity(event.target.value)}
                         >
                           <option value="">{t.choose}</option>
                           {municipalities.map((value) => (
                             <option key={value.code} value={value.code}>
-                              {value.name}{" "}
-                              {value.country ? `· ${value.country}` : ""}
+                              {cityName(value)}
                             </option>
                           ))}
                         </select>
@@ -620,18 +654,13 @@ export default function Home() {
                         <div className="overflow-hidden rounded-xl border border-slate-200">
                           <ReportMap
                             center={[
-                              municipalities.find((item) => item.code === city)
-                                ?.latitude || 42.6629,
-                              municipalities.find((item) => item.code === city)
-                                ?.longitude || 21.1655,
+                              selectedCity?.latitude || 42.6629,
+                              selectedCity?.longitude || 21.1655,
                             ]}
-                            zoom={
-                              municipalities.find((item) => item.code === city)
-                                ?.zoom || 13
-                            }
+                            zoom={selectedCity?.zoom || 13}
                             language={language}
                             position={position}
-                            onChange={setPosition}
+                            onChange={placePin}
                           />
                         </div>
                         <div className="mt-3 grid grid-cols-2 gap-3">
@@ -657,7 +686,7 @@ export default function Home() {
                                     event.target.value === ""
                                       ? NaN
                                       : Number(event.target.value);
-                                  setPosition(updated);
+                                  placePin(updated);
                                 }}
                               />
                             </label>
@@ -730,8 +759,7 @@ export default function Home() {
                           ],
                           [
                             t.city,
-                            municipalities.find((item) => item.code === city)
-                              ?.name,
+                            cityName(selectedCity),
                           ],
                           [
                             t.location,
