@@ -18,7 +18,7 @@ jobs:
         with:
           host: 37.27.210.123
           username: kosova
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          password: ${{ secrets.SSH_PASSWORD }} # <-- Vaihdettu avain salasanaksi!
           port: 22
           script: |
             export PATH=/home/kosova/.nvm/versions/node/v22.23.3/bin:$PATH
@@ -28,5 +28,7 @@ jobs:
             git fetch --all
             git reset --hard origin/main
             
-            # Asennetaan paketit
             npm install --legacy-peer-deps
+            npm run build
+            pm2 restart kosova-report || pm2 start npm --name "kosova-report" -- run start -- -p 3067
+            pm2 save
