@@ -17,11 +17,14 @@ jobs:
         uses: appleboy/ssh-action@master
         with:
           host: 37.27.210.123
-          username: kosova # VAIHDA tähän CloudPanelin antama todellinen Site User -tunnuksesi
+          username: kosova
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 22
           script: |
-            cd /home/site-user/htdocs/kosova.report
+            export PATH=$PATH:/home/kosova/.nvm/versions/node/v20.11.0/bin:/usr/local/bin
+            cd /home/kosova/htdocs/kosova.report
+            git config --global --add safe.directory /home/kosova/htdocs/kosova.report
+            git reset --hard
             git pull origin main
             npm install
             npm run build
