@@ -253,12 +253,6 @@ export default function Welcome() {
         <p className="max-w-3xl text-xs leading-relaxed text-slate-500">
           {t.note}
         </p>
-        <a
-          href="/admin"
-          className="mt-6 inline-block py-3 text-xs font-semibold text-slate-500 underline underline-offset-4"
-        >
-          {t.admin}
-        </a>
       </section>
     </>
   );

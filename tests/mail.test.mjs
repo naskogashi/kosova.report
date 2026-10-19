@@ -81,8 +81,24 @@ test("public municipality options come from actual active database routes", asyn
       database: () => ({
         execute: async () => [
           [
-            { code: "PR", name: "Prishtinë", category: "infrastructure" },
-            { code: "PR", name: "Prishtinë", category: "environment" },
+            {
+              code: "PR",
+              name: "Prishtinë",
+              category: "infrastructure",
+              country: "Kosovo",
+              latitude: 42.6629,
+              longitude: 21.1655,
+              zoom_level: 13,
+            },
+            {
+              code: "PR",
+              name: "Prishtinë",
+              category: "environment",
+              country: "Kosovo",
+              latitude: 42.6629,
+              longitude: 21.1655,
+              zoom_level: 13,
+            },
           ],
         ],
       }),
@@ -97,6 +113,10 @@ test("public municipality options come from actual active database routes", asyn
       {
         code: "PR",
         name: "Prishtinë",
+        country: "Kosovo",
+        latitude: 42.6629,
+        longitude: 21.1655,
+        zoom: 13,
         categories: ["infrastructure", "environment"],
       },
     ],

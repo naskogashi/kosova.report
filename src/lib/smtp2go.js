@@ -21,7 +21,7 @@ export async function sendDepartmentEmail(
       html_body: message.html,
       text_body: message.text,
       custom_headers: [{ header: "Message-ID", value: message.messageId }],
-      inlines: message.attachments.map((image) => ({
+      inlines: (message.attachments || []).map((image) => ({
         filename: image.cid,
         fileblob: image.content.toString("base64"),
         mimetype: image.contentType,

@@ -9,7 +9,8 @@ export async function GET(request, { params }) {
     "X-Content-Type-Options": "nosniff",
     "Referrer-Policy": "no-referrer",
   };
-  if (!currentAdmin())
+  const account = await currentAdmin();
+  if (!account || account.must_change_password)
     return Response.json(
       { error: "Authentication required" },
       { status: 401, headers },
@@ -21,8 +22,8 @@ export async function GET(request, { params }) {
     );
   try {
     const [rows] = await database().execute(
-      "SELECT i.image_url,storage.object_key,storage.mime_type FROM report_images i LEFT JOIN report_image_storage storage ON storage.report_image_id=i.id WHERE i.id=? LIMIT 1",
-      [params.id],
+      "SELECT i.image_url,storage.object_key,storage.mime_type FROM report_images i LEFT JOIN report_image_storage storage ON storage.report_image_id=i.id WHERE i.id=? AND (?=1 OR EXISTS(SELECT 1 FROM report_assignments a WHERE a.report_id=i.report_id AND a.account_id=?)) LIMIT 1",
+      [params.id, account.role === "owner" ? 1 : 0, account.id],
     );
     const image = rows[0];
     if (!image)

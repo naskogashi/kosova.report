@@ -1,116 +1,102 @@
-# kosova.report deployment and configuration
+# kosova.report operator guide
 
-## Existing production database
-The application now targets the existing `kosova` schema supplied from the server:
-
-- `reports.id`: signed INT AUTO_INCREMENT. Foreign keys use `city_id` and `department_id`.
-- Coordinates: `lat`, `lng`. Reporter fields: `is_anonymous`, `reporter_email`.
-- Existing status values remain `Pending`, `In Progress`, and `Resolved`.
-- `cities`: integer ID, country_id, name, code. `departments`: integer ID, city_id, name, notification_email.
-- `report_images`: integer ID, integer report_id, image_url. Existing image rows and URLs are preserved.
-
-**Do not execute migrations 001, 002 or 003 against this database.** Those files document a superseded draft schema. The original 003 failed on its first ALTER statement, so it did not install the supporting admin tables.
-
-Deploy the updated code and apply only `sql/004_existing_schema.sql`. It is repeatable: it conditionally adds `reports.admin_note` and creates missing supporting tables with integer foreign keys. It does not rename or drop core columns, change report statuses, reset IDs, modify countries, replace department emails, or change the existing `admins` table. A database with a different core schema needs its own compatibility review.
-
-On the server:
+## Deploy and activate this version
+Push the saved changes to main to run the existing CloudPanel deployment. Then sign in to the server as kosova and run:
 
 ```bash
 cd /home/kosova/htdocs/kosova.report
-umask 077
-mysqldump -u kosova -p --single-transaction --no-tablespaces kosova > "$HOME/kosova-backup-$(date +%Y%m%d-%H%M%S).sql"
-# Continue only after the backup succeeds.
-mysql -u kosova -p kosova < sql/004_existing_schema.sql
+npm run setup:server -- --email admin@kosova.report
+pm2 restart kosova-report --update-env
+npm run migrate:images -- --apply
+```
+
+You can replace `admin@kosova.report` with your own administrator email before running the command. The setup command:
+
+1. Loads existing server settings and, when necessary, the kosova-report PM2 environment without printing keys.
+2. Privately prompts for the MySQL password if it has not been configured.
+3. Runs mysqldump into a mode-600 file in `~/kosova-backups`; it refuses to migrate if the backup fails.
+4. Applies repeatable migrations 004 and 005 to your existing integer-ID database.
+5. Saves the existing runtime settings to `~/.config/kosova-report/runtime.json` (directory mode 700, file mode 600), outside the Git checkout. Next.js uses it only as a fallback to actual environment/dotenv values.
+6. Creates the first owner account and prints a random **one-time password on the SSH terminal**. It is not committed, stored in plaintext, or printed by CI. It expires in 24 hours and permits one sign-in only.
+
+Open `https://kosova.report/admin/login`, use that email and one-time password, and replace it at `/admin/account`. A first-login session expires in 30 minutes and cannot access reports before replacement. The account page lets you change name, email and password. Later changes require your current password and revoke other sessions.
+
+The old `ADMIN_EMAIL`, `ADMIN_PASSWORD_HASH` and `ADMIN_SESSION_SECRET` variables are no longer required. The pre-existing `admins` table is preserved; this version uses new staff_accounts/staff_sessions tables and does not guess the old password format.
+
+If an owner already exists, setup preserves it and does not print a replacement password. To recover an expired/consumed password from the server terminal, explicitly run:
+
+```bash
+npm run setup:server -- --email your-existing-owner-email --reset-owner
 pm2 restart kosova-report --update-env
 ```
 
-Migration 004 adds city/year counters, category-to-department routing, private image metadata, durable notification records, login throttling and report audit history. Official numbering locks a city/year counter and checks the largest existing matching public ID before incrementing. It therefore continues old sequences even if the counter table is new.
+Use the owner's actual current email. Resetting revokes existing owner sessions. No public registration or universal default password exists.
 
-## Required server environment
-Store settings in the existing server environment or `.env.production.local` in the application directory. Do not commit secrets. `.env.example` lists all names. Existing PM2 environment variables take precedence over dotenv files; update a setting in the place it was originally defined.
+## Existing MySQL schema
+The database/user are both kosova. Core reports/cities/departments/report_images use signed integer IDs. Reports retain lat, lng, is_anonymous, reporter_email, and the exact statuses Pending / In Progress / Resolved. Countries retain their existing integer IDs, name and code fields. Existing reports, IDs, country records, department addresses and image rows are not replaced.
 
-```dotenv
-APP_URL=https://kosova.report
-MYSQL_HOST=127.0.0.1
-MYSQL_PORT=3306
-MYSQL_USER=kosova
-MYSQL_DATABASE=kosova
-```
+Do not run legacy draft migrations 001–003. Migration 004 adds routing, counters, image metadata, audits and login throttling. Migration 005 adds staff accounts, server-side sessions, report assignments/reviews, municipality configuration, public branding references and progress-notification records. Both migrations are run by setup; do not manually rerun historical migrations.
 
-Set `MYSQL_PASSWORD` to the actual database password. Keep existing valid database configuration. Protect a server environment file with `chmod 600 .env.production.local`.
+## Prishtina now; other cities and countries later
+On first installation of migration 005, only the existing Prishtina/PR city is enabled. Its initial map center is 42.6629, 21.1655 at zoom 13. Other existing cities remain in the database but are not offered for public reporting. Re-running setup preserves later choices.
 
-## Cloudflare R2
-The selected account is `c268c9a22ef16f948948c241da7a9592`; the selected bucket is **kosova-report-images**. Set:
+Under `/admin/settings`:
 
-- `R2_ACCOUNT_ID=c268c9a22ef16f948948c241da7a9592`
-- `R2_BUCKET=kosova-report-images` (also the code's default)
-- `R2_ACCESS_KEY_ID` and `R2_SECRET_ACCESS_KEY`: R2 S3 API credentials with object read/write/delete access scoped to that bucket.
+- Add or edit countries using their real names/codes.
+- Add cities with a country, unique 2–10-character public-ID prefix, map center, zoom and explicit public-reporting enable checkbox.
+- Add departments and configure each department's receiving email.
+- Route each report category to a department belonging to the same city.
 
-The dashboard URL and account ID are not access credentials. Keep the bucket private. Report image URLs are recorded in the existing `report_images` table. With no `R2_IMAGE_BASE_URL`, these are private S3 object URLs, not anonymously readable public links. Random object keys/MIME/size metadata are stored separately in `report_image_storage`, preserving your existing image schema. Authorized staff view evidence through `/api/admin/images/:id`, which streams from R2 after checking the admin session.
+A city appears publicly only if it is enabled and has active matching category routes. No department mapping is guessed. City prefixes cannot change after reports exist. Existing report numbering continues from the maximum official ID for the city/year, guarded by an InnoDB row lock. Geographic selection is reporter-supplied; coordinates are validated as latitude/longitude, not against municipal boundary polygons. Additional enabled cities may be outside Kosovo.
 
-`R2_IMAGE_BASE_URL` is optional for an existing custom image host. Legacy image rows without new metadata can be read only if their URL maps to the configured R2 base; unrelated external URLs are not fetched. No bucket public-access settings are changed.
+## Report checkers and statistics
+Only the owner can change settings, add countries/cities/departments, create or disable checkers, assign reports or change a report's municipal status. Checker creation prints a temporary password once in the owner's authenticated screen. The checker replaces it on first login; afterward the owner can assign reports from the inbox.
 
-## SMTP2Go API key
-Email now uses SMTP2Go's HTTPS API, not SMTP username/password authentication. Set:
+Checkers can read only currently assigned reports and their private photos, and record verification notes. They cannot inspect another checker's assignments, change municipal resolution status or manage platform settings. A repeated check updates the same checker/report review rather than inflating the distinct-report count. Disabling a checker or resetting their password revokes their sessions.
 
-- `SMTP2GO_API_KEY`: the key from SMTP2Go Sending > API Keys, allowed to call `/email/send`.
-- `SMTP_FROM`: the verified sender address; the environment example uses `reports@kosova.report`. Use it only if verified in your account.
+`/admin/stats` shows totals by status, average resolution time, departmental resolution counts/rates, daily report volume for the last 30 days and each checker's current assignments/distinct checks. A checker sees only their own scope. Reports retain an internal status audit history. Owner notes and checker notes are never included in citizen progress responses.
 
-The request goes to `https://api.smtp2go.com/v3/email/send` with `X-Smtp2go-Api-Key`. No API key is sent to the browser or stored in report data. The alert includes the public ID, description, OSM location and inline evidence. API acceptance is checked, including failed-recipient counts. Acceptance does not guarantee delivery to the recipient's inbox.
+Sessions use 32-byte random cookies with only a SHA-256 digest stored in MySQL, HttpOnly/SameSite=Strict, Secure on public HTTPS, and an eight-hour normal lifetime. Login throttling has per-email and global windows. Mutations validate the configured origin in addition to Next.js server-action checks. Use HTTPS on the deployed domain.
 
-SMTP2Go limits API emails to 50 MB including encoding. Up to 30 MiB of original evidence is embedded inline, leaving space for base64 encoding and message content. If uploads exceed that budget, the email states how many photos are attached; all original images remain in R2 and are available in the admin panel. Uploads still allow ten images, 5 MiB each.
+## Cloudflare R2 and moving existing images
+Account: c268c9a22ef16f948948c241da7a9592. Bucket: **kosova-report-images**.
 
-Reports, images and a notification record commit atomically in MySQL. If API sending fails, the report stays saved and the citizen receives a receipt with `notification: pending`. A retry worker is not included; pending alerts are visible in admin. Any future retry worker must rebuild attachments from private R2 objects. Duplicate alerts remain possible if API acceptance succeeds but updating `sent_at` fails; a stable Message-ID identifies the submission.
+The existing GitHub workflow forwards R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY, SMTP2GO_API_KEY and SMTP_FROM repository secrets. It defaults the account/bucket to the values above. Existing server configuration is supported. R2 credentials need read/write/delete access to that bucket. The dashboard account ID is not an access credential.
 
-## Administrator setup
-Open `/admin` after migration 004. The initial panel has one administrator configured through environment variables. It does **not** authenticate against or modify the pre-existing `admins` table because its columns and password format have not been supplied.
-
-Set `ADMIN_EMAIL`, `ADMIN_PASSWORD_HASH`, and `ADMIN_SESSION_SECRET`. Generate the hash without putting the password into shell history:
+The image command defaults to a read-only inventory:
 
 ```bash
-cd /home/kosova/htdocs/kosova.report
-read -rsp 'Admin password (at least 14 characters): ' admin_password; echo
-printf '%s' "$admin_password" | node scripts/hash-admin-password.mjs
-unset admin_password
-openssl rand -hex 32
+npm run migrate:images
+npm run migrate:images -- --apply
 ```
 
-Use the generated hash for ADMIN_PASSWORD_HASH and the random hex output for ADMIN_SESSION_SECRET. In a Next.js dotenv file, escape each literal dollar sign in the hash with a backslash: `ADMIN_PASSWORD_HASH='scrypt\$salt\$hash'`, replacing salt/hash with the actual generated values. Shell-managed environment values have different quoting rules; do not add the backslashes to a raw PM2 environment value.
+Apply mode uploads all six current branding images and legacy report_images entries without R2 metadata. It uses content-derived keys, verifies object size and hash metadata via R2 HEAD, and changes database references only after upload verification. It preserves original files/URLs in backups and does not delete source files. Already-mapped report images are skipped; failed sources can be retried. A nonzero exit identifies failures by asset/image ID without printing credentials or private image URLs.
 
-Restart `pm2 restart kosova-report --update-env` after setting credentials. Sessions last eight hours, use signed HttpOnly/SameSite=Strict cookies and require HTTPS outside localhost. Password-hash/secret rotation invalidates old sessions. A shared database-backed window allows five login attempts in 15 minutes. No default password is installed.
+All six branding assets are included locally, including the supplied CODON and Sbunker artwork. The public footer uses `/api/branding/:key`; it reads verified branding objects from private R2 and uses local files as a fallback before migration. Citizen evidence stays private behind authenticated `/api/admin/images/:id`, with assignment checks for checkers. R2 does not need public bucket access.
 
-The panel shows actual database cities and departments, report status/history, private evidence, reporter emails and internal notes. Status updates maintain the existing `resolved_at` timestamp and audit the change. It offers the three existing status values; it does not add an Escalated status.
+Legacy external report-image URLs are restricted to the app's HTTPS hostname and explicitly allowed image hosts; redirects are checked. If a legitimate old host is rejected, add its hostname to IMAGE_MIGRATION_ALLOWED_HOSTS in the operator's environment and rerun. Local paths must resolve inside public/. The per-image migration cap is 6 MiB. Current uploads allow ten JPEG/PNG/WebP files, 5 MiB each. Unrelated/private network URLs are not automatically imported.
 
-### Enable institutional routing
-Under **Departments and routing**, verify or add the real department name/email, then add a category assignment to a department in the same municipality. No category-to-department relationship existed in the supplied schema, so migration 004 intentionally does not guess where a report should go. A department can handle several categories. Inactive routes are excluded from the public municipality list. Existing department rows are preserved.
+Without R2_IMAGE_BASE_URL, stored image URLs use the private S3 endpoint. The admin API streams objects using their private keys. An existing custom image base remains optional. Runtime settings are never put in client-side bundles.
 
-Public choices come from `/api/report-options` using configured active routes. Categories are infrastructure, environment, public_services, administration, health, education and safety. The panel supports database city prefixes of 2–10 letters/digits. Prefixes are normalized to uppercase in public IDs. Location validation uses a Kosovo-area bounding box, not municipal polygons.
+## SMTP2Go and private progress links
+Set SMTP2GO_API_KEY and a verified SMTP_FROM sender at kosova.report. The app uses `https://api.smtp2go.com/v3/email/send` with X-Smtp2go-Api-Key; SMTP username/password variables are not used.
 
-## Public pages and receipts
-`/` is the SQ/SR/EN welcome page. `/report?lang=sq|sr|en` is the reporting wizard. Language switching preserves the current draft. Leaflet is loaded only in the browser. Submissions use `POST /api/reports/submit`.
+Initial department alerts include the official ID, description, OSM location, inline images and a private municipality action link. Citizens who supply email get a receipt/progress link; anonymous reports never receive citizen emails.
 
-`GET /api/reports/:public_id/pdf` requires `Authorization: Bearer <tracking_key>`. It uses the actual schema joins and aliases `lat/lng` to receipt coordinates. The endpoint accepts UUID credentials from new reports and 32–64-character URL-safe credentials from existing records. Contact details and tracking keys are omitted from the PDF. Save the private key before closing the success screen.
+When the owner or municipality changes a report to In Progress / Resolved, notifications are queued for the receiving department and the citizen when an email exists. The municipality's link can acknowledge handling or mark that one report resolved without giving access to the admin panel, reporter email, or other reports. It cannot reopen a resolved issue. Municipal tokens are random, stored hashed, scoped to one report/department and expire after 90 days. Opening a link does not change status; the recipient must press an action button. Repeating the same status does not queue duplicate events.
 
-## Map tile access
-OSM tiles use the canonical HTTPS endpoint, visible attribution and `referrerPolicy=strict-origin-when-cross-origin`. If OSM continues to block the deployed browser/domain, configure an authorized provider using both `NEXT_PUBLIC_MAP_TILE_URL` and `NEXT_PUBLIC_MAP_ATTRIBUTION`, then rebuild. Browser keys must be domain-restricted. No proxy or provider rotation bypasses OSM's usage policy. Coordinate inputs remain available when tiles fail.
+Citizen links are read-only and use the existing private tracking credential. Both link types carry credentials in URL fragments, which are not sent in HTTP URLs/referrers. The browser removes the fragment after reading it and sends the credential as a Bearer header. Reopen the original email link if a page reload loses its in-memory credential. Keep these links private. Test your email provider's click-tracking configuration to ensure private URL fragments survive link rewriting.
 
-## Hosting and checks
-Keep Node 22 on port 3067. Nginx needs `client_max_body_size 52m` and adequate timeouts. Add edge rate limiting for public submissions. Images are checked by MIME/signature but are not transcoded, malware-scanned or stripped of EXIF metadata. Client idempotency across a lost response is not implemented.
+`/track/:public_id` provides SQ/SR/EN progress and a PDF receipt. `/municipality/:public_id` provides SQ/SR/EN municipal actions. Status emails include HTML and plain-text links. Internal notes and reporter contact details are not shown on those progress pages.
 
-Run `npm test` and `npm run build`. Tests isolate MySQL, R2 and SMTP2Go and cover integer insertion IDs, existing public-ID sequence recovery, authentication, audit writes and API-key/inline-image payloads. No live MySQL/R2/SMTP2Go credentials were available during implementation, so the migration and real delivery must be verified on the configured server after a backup.
+SMTP2Go API acceptance is checked; acceptance is not proof of inbox delivery. Failed sends remain pending and are counted in admin. A scheduled retry worker is not included. A send followed by failure to save sent_at can cause duplicate mail. At most 30 MiB of original images are embedded to remain below the provider's 50 MB encoded-message limit; additional originals remain available to authorized staff. Live sending requires configured server credentials and sender verification.
 
-## Branding
-Partner order is CIVICUS, Metamorphosis Foundation, TechSoup, Digital Activism Program, Sbunker. IdeoNgritja was removed as requested. Four local logos came from https://ddidigitalspark.org/; Sbunker uses the supplied official image URL. Donor artwork retains its owners' rights. Noto Sans licensing is included in `public/fonts/OFL.txt`.
+## Public branding and pages
+`/` is the SQ/SR/EN introduction and has no admin link. `/report` is the public reporting wizard. The footer preserves CIVICUS, Metamorphosis, TechSoup, Digital Activism Program and Sbunker in order, then shows the supplied CODON logo and the exact credit: "in co-operation with CODON a part of Progon LLC." The PDF and email text credits have also been updated. Donor artwork retains its owners' rights; Noto Sans licensing is included in public/fonts/OFL.txt.
 
+OSM tiles retain attribution and an explicit referrer policy. If the domain/network remains blocked, configure both NEXT_PUBLIC_MAP_TILE_URL and NEXT_PUBLIC_MAP_ATTRIBUTION for an authorized provider and rebuild. No tile proxy or provider rotation bypasses OSM policies.
 
-## GitHub secret forwarding
-The deployment workflow now forwards these repository secrets over SSH using the action's `env`/`envs` mechanism, exports nonempty values before the build, and lets PM2 inherit them when starting Next.js:
+## Verification and remaining operational checks
+Run `npm test` and `npm run build`. Tests isolate MySQL, R2 and SMTP2Go, exercising one-time credentials, role/assignment enforcement, progress-token scope, idempotent municipal updates, report numbering and email payloads. Production service credentials and the live server are not accessible from this workspace; actual R2 transfers, MySQL migration execution and inbox delivery must be verified using the operator commands above.
 
-- `R2_ACCESS_KEY_ID`
-- `R2_SECRET_ACCESS_KEY`
-- `SMTP2GO_API_KEY`
-- `SMTP_FROM` (for example, a verified sender at kosova.report)
-
-`R2_ACCOUNT_ID` and `R2_BUCKET` may also be repository secrets; when absent, the workflow uses the selected account ID and `kosova-report-images`. `R2_IMAGE_BASE_URL` is optional. Empty optional secrets do not replace values loaded from existing server dotenv files. MySQL and admin credentials still use the existing server configuration; `SSH_PASSWORD` remains solely the SSH login password.
-
-Secret values are passed as environment data, not embedded into the remote shell script. Do not enable shell tracing or print the remote environment. PM2 saves its runtime environment on the server for restarts. A deployment with missing GitHub API credentials can still use valid values in the server's environment files; it cannot invent keys that have never been configured.
+Keep Node 22 on port 3067 and Nginx client_max_body_size 52m with adequate timeouts. Original-image EXIF stripping/transcoding/scanning and persistent client idempotency across a lost submission response are not implemented.

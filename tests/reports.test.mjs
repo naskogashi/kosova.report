@@ -31,7 +31,7 @@ async function loadRoute(
   let mail;
   const execute = async (sql, values) => {
     queries.push({ sql, values });
-    if (sql.startsWith("SELECT id,UPPER(code) AS code FROM cities"))
+    if (sql.startsWith("SELECT c.id,UPPER(c.code) AS code FROM cities"))
       return [[{ id: 1, code: "PR" }]];
     if (sql.startsWith("SELECT d.id,d.notification"))
       return [
@@ -94,6 +94,12 @@ async function loadRoute(
         events.push("send");
         if (smtpFails) throw Error("API rejected notification");
       },
+    },
+    "../../../../lib/report-notifications": {
+      departmentLink: async () =>
+        "https://kosova.report/municipality/PR-2026-000042#key=private-department-token",
+      queueStatusEmails: async () => {},
+      deliverStatusEmails: async () => ({ pending: 0 }),
     },
     "../../../../lib/report-options": {
       categories: ["infrastructure"],

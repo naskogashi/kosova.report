@@ -241,6 +241,7 @@ export default function Home() {
       })
       .then((data) => {
         setMunicipalities(data.cities);
+        if (data.cities.length === 1) setCity(data.cities[0].code);
         setOptionsState("ready");
       })
       .catch((error) => {
@@ -285,10 +286,10 @@ export default function Home() {
       ) ||
         !position ||
         !position.every(Number.isFinite) ||
-        position[0] < 41.8 ||
-        position[0] > 43.3 ||
-        position[1] < 19.9 ||
-        position[1] > 21.9 ||
+        position[0] < -90 ||
+        position[0] > 90 ||
+        position[1] < -180 ||
+        position[1] > 180 ||
         description.trim().length < 10 ||
         description.trim().length > 5000)
     ) {
@@ -573,7 +574,10 @@ export default function Home() {
                         <select
                           className={inputClass}
                           value={city}
-                          onChange={(event) => setCity(event.target.value)}
+                          onChange={(event) => {
+                            setCity(event.target.value);
+                            setPosition(null);
+                          }}
                         >
                           <option value="">{t.choose}</option>
                           {municipalities
@@ -582,7 +586,8 @@ export default function Home() {
                             )
                             .map((value) => (
                               <option key={value.code} value={value.code}>
-                                {value.name}
+                                {value.name}{" "}
+                                {value.country ? `· ${value.country}` : ""}
                               </option>
                             ))}
                         </select>
@@ -614,6 +619,16 @@ export default function Home() {
                         </p>
                         <div className="overflow-hidden rounded-xl border border-slate-200">
                           <ReportMap
+                            center={[
+                              municipalities.find((item) => item.code === city)
+                                ?.latitude || 42.6629,
+                              municipalities.find((item) => item.code === city)
+                                ?.longitude || 21.1655,
+                            ]}
+                            zoom={
+                              municipalities.find((item) => item.code === city)
+                                ?.zoom || 13
+                            }
                             language={language}
                             position={position}
                             onChange={setPosition}
@@ -627,8 +642,8 @@ export default function Home() {
                                 className={inputClass}
                                 type="number"
                                 step="any"
-                                min={index ? 19.9 : 41.8}
-                                max={index ? 21.9 : 43.3}
+                                min={index ? -180 : -90}
+                                max={index ? 180 : 90}
                                 value={
                                   Number.isFinite(position?.[index])
                                     ? position[index]

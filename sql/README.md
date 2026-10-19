@@ -1,10 +1,7 @@
 # Database migrations
 
-For the existing production `kosova` database shown in the schema inspection,
-back up first and run **004_existing_schema.sql only**. It is repeatable and
-preserves your integer IDs, current statuses, core tables and existing data.
+For the existing production kosova database, run `npm run setup:server -- --email your-admin-email` on the server. It backs up first and applies the repeatable compatibility migrations **004** and **005**, then generates a one-time owner password.
 
-Files 001, 002 and 003 target a superseded draft schema. They are kept as
-historical references and must not be run against this production database.
+Files 001–003 describe a superseded draft schema. Do not run them against production. Existing integer report IDs, core tables, statuses and the original admins table remain intact.
 
-See REPORTING_SETUP.md for the exact commands, credentials and routing setup.
+See REPORTING_SETUP.md for account recovery, image migration and deployment details.

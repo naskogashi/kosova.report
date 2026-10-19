@@ -1,11 +1,10 @@
 import { database } from "../../lib/db";
 import { requireAdmin } from "../../lib/admin-session";
-import { categories } from "../../lib/report-options";
 import {
   logoutAction,
   updateReportAction,
-  saveDepartmentAction,
-  saveRouteAction,
+  assignCheckerAction,
+  reviewReportAction,
 } from "./actions";
 import AdminSubmit from "./AdminSubmit";
 export const dynamic = "force-dynamic";
@@ -30,9 +29,15 @@ const labels = {
 const control =
   "w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm";
 const formatDate = (value) =>
-  new Date(value).toLocaleString("en-GB", { timeZone: "Europe/Belgrade" });
+  value
+    ? new Date(value).toLocaleString("en-GB", { timeZone: "Europe/Belgrade" })
+    : "Not recorded";
 export default async function AdminPage({ searchParams }) {
-  const admin = requireAdmin();
+  const admin = await requireAdmin();
+  const owner = admin.role === "owner";
+  let checkers = [],
+    assignment = null,
+    reviews = [];
   const query =
     typeof searchParams.q === "string"
       ? searchParams.q.trim().slice(0, 100)
@@ -65,6 +70,12 @@ export default async function AdminPage({ searchParams }) {
   try {
     const conditions = [],
       values = [];
+    if (!owner) {
+      conditions.push(
+        "r.id IN (SELECT report_id FROM report_assignments WHERE account_id=?)",
+      );
+      values.push(admin.id);
+    }
     if (status) {
       conditions.push("r.status=?");
       values.push(status);
@@ -82,13 +93,15 @@ export default async function AdminPage({ searchParams }) {
       ),
       db.execute(`SELECT COUNT(*) AS total FROM reports r ${where}`, values),
       db.execute(
-        "SELECT status,COUNT(*) AS total FROM reports GROUP BY status",
+        `SELECT r.status,COUNT(*) AS total FROM reports r ${owner ? "" : "WHERE r.id IN (SELECT report_id FROM report_assignments WHERE account_id=?)"} GROUP BY r.status`,
+        owner ? [] : [admin.id],
       ),
       db.execute(
         "SELECT d.id,d.city_id,d.name,d.notification_email,c.code AS city_code FROM departments d JOIN cities c ON c.id=d.city_id ORDER BY c.name,d.name",
       ),
       db.execute(
-        "SELECT COUNT(*) AS total FROM report_notifications WHERE sent_at IS NULL",
+        `SELECT ((SELECT COUNT(*) FROM report_notifications n WHERE n.sent_at IS NULL ${owner ? "" : "AND n.report_id IN (SELECT report_id FROM report_assignments WHERE account_id=?)"})+(SELECT COUNT(*) FROM report_status_notifications n WHERE n.sent_at IS NULL ${owner ? "" : "AND n.report_id IN (SELECT report_id FROM report_assignments WHERE account_id=?)"})) AS total`,
+        owner ? [] : [admin.id, admin.id],
       ),
       db.execute("SELECT id,code,name FROM cities ORDER BY name"),
       db.execute(
@@ -102,13 +115,29 @@ export default async function AdminPage({ searchParams }) {
     summary = results[2][0];
     departments = results[3][0];
     pending = Number(results[4][0][0].total);
+    if (owner) {
+      const [staff] = await db.execute(
+        "SELECT id,name,email FROM staff_accounts WHERE role='checker' AND active=1 AND must_change_password=0",
+      );
+      checkers = staff;
+    }
     if (selected) {
       const [rows] = await db.execute(
-        "SELECT r.id,r.public_id,c.code AS city_code,r.category,r.status,r.description,r.lat AS latitude,r.lng AS longitude,r.created_at,r.is_anonymous AS anonymous,r.reporter_email AS contact_email,r.admin_note,d.notification_email FROM reports r JOIN departments d ON d.id=r.department_id JOIN cities c ON c.id=r.city_id WHERE r.id=? LIMIT 1",
-        [selected],
+        "SELECT r.id,r.public_id,c.code AS city_code,r.category,r.status,r.description,r.lat AS latitude,r.lng AS longitude,r.created_at,r.is_anonymous AS anonymous,r.reporter_email AS contact_email,r.admin_note,d.notification_email FROM reports r JOIN departments d ON d.id=r.department_id JOIN cities c ON c.id=r.city_id WHERE r.id=? AND (?=1 OR EXISTS(SELECT 1 FROM report_assignments a WHERE a.report_id=r.id AND a.account_id=?)) LIMIT 1",
+        [selected, owner ? 1 : 0, admin.id],
       );
       report = rows[0] || null;
       if (report) {
+        const [assigned] = await db.execute(
+          "SELECT account_id FROM report_assignments WHERE report_id=?",
+          [selected],
+        );
+        assignment = assigned[0]?.account_id;
+        const [checked] = await db.execute(
+          "SELECT a.name,r.note,r.checked_at FROM report_reviews r JOIN staff_accounts a ON a.id=r.account_id WHERE r.report_id=?",
+          [selected],
+        );
+        reviews = checked;
         const detail = await Promise.all([
           db.execute(
             "SELECT id FROM report_images WHERE report_id=? ORDER BY id",
@@ -150,8 +179,16 @@ export default async function AdminPage({ searchParams }) {
             </p>
           </div>
           <div className="flex items-center gap-4">
-            <a href="#departments" className="text-sm">
-              Departments
+            {owner && (
+              <a href="/admin/settings" className="text-sm">
+                Settings
+              </a>
+            )}
+            <a href="/admin/stats" className="text-sm">
+              Statistics
+            </a>
+            <a href="/admin/account" className="text-sm">
+              My account
             </a>
             <form action={logoutAction}>
               <button className="rounded-lg border border-white/30 px-4 py-2 text-sm">
@@ -174,7 +211,9 @@ export default async function AdminPage({ searchParams }) {
             role="status"
             className="rounded-lg border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-900"
           >
-            Changes saved.
+            {searchParams.saved === "email_pending"
+              ? "Changes saved. Some notification emails are pending."
+              : "Changes saved."}
           </p>
         )}
         {searchParams.error && (
@@ -192,8 +231,8 @@ export default async function AdminPage({ searchParams }) {
           >
             <h2 className="font-semibold">Database unavailable</h2>
             <p className="mt-2 text-sm">
-              Check the MySQL environment settings and apply
-              sql/004_existing_schema.sql. Do not rerun the legacy migrations.
+              Check the MySQL environment settings and run the platform setup
+              command (migrations 004 and 005).
             </p>
           </section>
         ) : (
@@ -384,41 +423,105 @@ export default async function AdminPage({ searchParams }) {
                       </div>
                     </div>
                   )}
+                  {owner && (
+                    <form
+                      action={assignCheckerAction}
+                      className="space-y-3 border-t pt-4"
+                    >
+                      <input type="hidden" name="report_id" value={report.id} />
+                      <label className="block text-sm font-semibold">
+                        Assign report checker
+                        <select
+                          name="account_id"
+                          required
+                          defaultValue={assignment || ""}
+                          className={`${control} mt-2`}
+                        >
+                          <option value="">Choose a checker</option>
+                          {checkers.map((checker) => (
+                            <option key={checker.id} value={checker.id}>
+                              {checker.name} · {checker.email}
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+                      <AdminSubmit>Assign checker</AdminSubmit>
+                    </form>
+                  )}
                   <form
-                    action={updateReportAction}
-                    className="space-y-4 border-t border-slate-100 pt-5"
+                    action={reviewReportAction}
+                    className="space-y-3 rounded-lg bg-blue-50 p-4"
                   >
-                    <input type="hidden" name="id" value={report.id} />
+                    <input type="hidden" name="report_id" value={report.id} />
                     <label className="block text-sm font-semibold">
-                      Status
-                      <select
-                        className={`${control} mt-2`}
-                        name="status"
-                        defaultValue={report.status}
-                      >
-                        {Object.entries(statuses).map(([key, label]) => (
-                          <option key={key} value={key}>
-                            {label}
-                          </option>
-                        ))}
-                      </select>
-                    </label>
-                    <label className="block text-sm font-semibold">
-                      Internal note
+                      Check / verify report
                       <textarea
                         name="note"
-                        rows={4}
+                        required
+                        rows={3}
                         maxLength={5000}
-                        defaultValue={report.admin_note || ""}
                         className={`${control} mt-2`}
                       />
-                      <span className="mt-1 block text-xs font-normal text-slate-500">
-                        For authorized staff. Every save is recorded in report
-                        history.
-                      </span>
                     </label>
-                    <AdminSubmit>Save report</AdminSubmit>
+                    <AdminSubmit>Mark report checked</AdminSubmit>
                   </form>
+                  {reviews.length > 0 && (
+                    <ul className="space-y-2">
+                      {reviews.map((review, index) => (
+                        <li
+                          key={index}
+                          className="rounded-lg bg-emerald-50 p-3 text-xs"
+                        >
+                          <strong>{review.name}</strong> ·{" "}
+                          {formatDate(review.checked_at)}
+                          <p className="mt-1 whitespace-pre-wrap">
+                            {review.note}
+                          </p>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                  {owner && (
+                    <>
+                      {" "}
+                      <form
+                        action={updateReportAction}
+                        className="space-y-4 border-t border-slate-100 pt-5"
+                      >
+                        <input type="hidden" name="id" value={report.id} />
+                        <label className="block text-sm font-semibold">
+                          Status
+                          <select
+                            className={`${control} mt-2`}
+                            name="status"
+                            defaultValue={report.status}
+                          >
+                            {Object.entries(statuses).map(([key, label]) => (
+                              <option key={key} value={key}>
+                                {label}
+                              </option>
+                            ))}
+                          </select>
+                        </label>
+                        <label className="block text-sm font-semibold">
+                          Internal note
+                          <textarea
+                            name="note"
+                            rows={4}
+                            maxLength={5000}
+                            defaultValue={report.admin_note || ""}
+                            className={`${control} mt-2`}
+                          />
+                          <span className="mt-1 block text-xs font-normal text-slate-500">
+                            For authorized staff. Every save is recorded in
+                            report history.
+                          </span>
+                        </label>
+                        <AdminSubmit>Save report</AdminSubmit>
+                      </form>
+                    </>
+                  )}
+
                   {history.length > 0 && (
                     <div className="border-t border-slate-100 pt-5">
                       <h3 className="text-sm font-semibold">Recent history</h3>
@@ -453,207 +556,6 @@ export default async function AdminPage({ searchParams }) {
                 The selected report could not be found.
               </p>
             )}
-
-            <section
-              id="departments"
-              className="rounded-xl border border-slate-200 bg-white p-5 sm:p-6"
-            >
-              <h2 className="text-xl font-bold text-[#102344]">
-                Departments and routing
-              </h2>
-              <p className="mt-2 text-sm text-slate-500">
-                Keep institutional contact details here. Assign each category to
-                a department in the same municipality below.
-              </p>
-              <div className="mt-5 space-y-3">
-                {departments.map((department) => (
-                  <form
-                    key={department.id}
-                    action={saveDepartmentAction}
-                    className="grid items-end gap-3 rounded-lg bg-slate-50 p-4 lg:grid-cols-[1fr_2fr_2fr_auto]"
-                  >
-                    <input type="hidden" name="id" value={department.id} />
-                    <input
-                      type="hidden"
-                      name="city_id"
-                      value={department.city_id}
-                    />
-                    <p className="py-2 text-sm font-semibold">
-                      {municipalities.find(
-                        (city) => city.id === department.city_id,
-                      )?.name || department.city_code}
-                    </p>
-                    <label className="text-xs font-semibold">
-                      Department name
-                      <input
-                        name="name"
-                        required
-                        maxLength={255}
-                        className={`${control} mt-1`}
-                        defaultValue={department.name}
-                      />
-                    </label>
-                    <label className="text-xs font-semibold">
-                      Notification email
-                      <input
-                        name="email"
-                        type="email"
-                        required
-                        maxLength={255}
-                        className={`${control} mt-1`}
-                        defaultValue={department.notification_email}
-                      />
-                    </label>
-                    <AdminSubmit>Save</AdminSubmit>
-                  </form>
-                ))}
-              </div>
-              <h3 className="mt-6 font-semibold">Add a department</h3>
-              <form
-                action={saveDepartmentAction}
-                className="mt-3 grid items-end gap-3 md:grid-cols-4"
-              >
-                <input type="hidden" name="id" value="" />
-                <label className="text-xs font-semibold">
-                  Municipality
-                  <select name="city_id" required className={`${control} mt-1`}>
-                    {municipalities.map((city) => (
-                      <option key={city.id} value={city.id}>
-                        {city.name}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-                <label className="text-xs font-semibold">
-                  Department name
-                  <input
-                    name="name"
-                    required
-                    maxLength={255}
-                    className={`${control} mt-1`}
-                  />
-                </label>
-                <label className="text-xs font-semibold">
-                  Notification email
-                  <input
-                    name="email"
-                    required
-                    type="email"
-                    maxLength={255}
-                    className={`${control} mt-1`}
-                  />
-                </label>
-                <AdminSubmit>Add department</AdminSubmit>
-              </form>
-              <h3 className="mt-8 font-semibold">Category assignments</h3>
-              {!routes.length && (
-                <p className="mt-2 rounded-lg bg-amber-50 p-3 text-sm text-amber-900">
-                  No categories are routed yet. Add assignments to enable public
-                  reporting.
-                </p>
-              )}
-              <div className="mt-4 space-y-3">
-                {routes.map((route) => (
-                  <form
-                    key={`${route.city_id}-${route.category}`}
-                    action={saveRouteAction}
-                    className="grid items-end gap-3 rounded-lg bg-slate-50 p-4 md:grid-cols-[1fr_2fr_auto_auto]"
-                  >
-                    <input type="hidden" name="city_id" value={route.city_id} />
-                    <input
-                      type="hidden"
-                      name="category"
-                      value={route.category}
-                    />
-                    <p className="py-2 text-xs font-semibold">
-                      {municipalities.find((city) => city.id === route.city_id)
-                        ?.name || route.city_code}{" "}
-                      · {labels[route.category] || route.category}
-                    </p>
-                    <label className="text-xs font-semibold">
-                      Department
-                      <select
-                        name="department_id"
-                        required
-                        defaultValue={route.department_id}
-                        className={`${control} mt-1`}
-                      >
-                        {departments
-                          .filter(
-                            (department) =>
-                              department.city_id === route.city_id,
-                          )
-                          .map((department) => (
-                            <option key={department.id} value={department.id}>
-                              {department.name}
-                            </option>
-                          ))}
-                      </select>
-                    </label>
-                    <label className="flex min-h-11 items-center gap-2 text-xs">
-                      <input
-                        type="checkbox"
-                        name="active"
-                        defaultChecked={Boolean(route.active)}
-                      />
-                      Active
-                    </label>
-                    <AdminSubmit>Save route</AdminSubmit>
-                  </form>
-                ))}
-              </div>
-              <h3 className="mt-6 font-semibold">
-                Add or update category assignment
-              </h3>
-              <form
-                action={saveRouteAction}
-                className="mt-3 grid items-end gap-3 md:grid-cols-2 lg:grid-cols-5"
-              >
-                <label className="text-xs font-semibold">
-                  Municipality
-                  <select name="city_id" required className={`${control} mt-1`}>
-                    {municipalities.map((city) => (
-                      <option key={city.id} value={city.id}>
-                        {city.name}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-                <label className="text-xs font-semibold">
-                  Category
-                  <select
-                    name="category"
-                    required
-                    className={`${control} mt-1`}
-                  >
-                    {categories.map((category) => (
-                      <option key={category} value={category}>
-                        {labels[category]}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-                <label className="text-xs font-semibold">
-                  Department (same municipality)
-                  <select
-                    name="department_id"
-                    required
-                    className={`${control} mt-1`}
-                  >
-                    {departments.map((department) => (
-                      <option key={department.id} value={department.id}>
-                        {department.city_code} · {department.name}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-                <label className="flex min-h-11 items-center gap-2 text-xs">
-                  <input type="checkbox" name="active" defaultChecked />
-                  Active
-                </label>
-                <AdminSubmit>Save assignment</AdminSubmit>
-              </form>
-            </section>
           </>
         )}
       </div>

@@ -15,8 +15,11 @@ const pinIcon = divIcon({
   iconSize: [32, 42],
   iconAnchor: [16, 40],
 });
-function Pin({ position, onChange }) {
+function Pin({ position, onChange, center, zoom }) {
   const map = useMap();
+  useEffect(() => {
+    map.setView(center, zoom);
+  }, [map, center[0], center[1], zoom]);
   const valid =
     position &&
     position.every(Number.isFinite) &&
@@ -44,7 +47,13 @@ function Pin({ position, onChange }) {
     />
   ) : null;
 }
-export default function ReportMap({ position, onChange, language = "sq" }) {
+export default function ReportMap({
+  position,
+  onChange,
+  language = "sq",
+  center = [42.6629, 21.1655],
+  zoom = 13,
+}) {
   const [tileError, setTileError] = useState(false);
   const messages = {
     sq: "Harta nuk u ngarkua. Mund të shkruani koordinatat më poshtë. Nëse problemi vazhdon, kontaktoni administratorin.",
@@ -65,13 +74,9 @@ export default function ReportMap({ position, onChange, language = "sq" }) {
         </p>
       )}
       <MapContainer
-        center={[42.6, 20.9]}
-        zoom={8}
-        minZoom={7}
-        maxBounds={[
-          [41.5, 19.5],
-          [43.6, 22.3],
-        ]}
+        center={center}
+        zoom={zoom}
+        minZoom={3}
         scrollWheelZoom={false}
         style={{ height: 340, width: "100%", zIndex: 0 }}
       >
@@ -89,7 +94,12 @@ export default function ReportMap({ position, onChange, language = "sq" }) {
           referrerPolicy="strict-origin-when-cross-origin"
           eventHandlers={{ tileerror: () => setTileError(true) }}
         />
-        <Pin position={position} onChange={onChange} />
+        <Pin
+          position={position}
+          onChange={onChange}
+          center={center}
+          zoom={zoom}
+        />
       </MapContainer>
     </div>
   );

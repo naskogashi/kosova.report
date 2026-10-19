@@ -1,4 +1,6 @@
+import { loadServerConfig } from "./server-config";
 import mysql from "mysql2/promise";
+loadServerConfig();
 let pool;
 export function required(name) {
   const value = process.env[name];

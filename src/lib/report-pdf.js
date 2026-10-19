@@ -66,7 +66,7 @@ export function createReportPDF(report) {
     doc.line(18, 281, 192, 281);
     doc.setTextColor(90, 105, 125);
     doc.setFontSize(8);
-    doc.text("Developed by CODON / Progon group", 18, 288);
+    doc.text("in co-operation with CODON a part of Progon LLC.", 18, 288);
     doc.text(`${page} / ${doc.getNumberOfPages()}`, 192, 288, {
       align: "right",
     });

@@ -1,77 +1,67 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import test from "node:test";
 import { SourceTextModule, SyntheticModule } from "node:vm";
+import test from "node:test";
 const auth = await import(
   `data:text/javascript;base64,${Buffer.from(readFileSync("src/lib/admin-auth.js", "utf8").replace(/^\uFEFF/, "")).toString("base64")}`
 );
-const password = "Test account password 2026!";
-const passwordHash = auth.hashPassword(password);
-const config = auth.adminConfig({
-  ADMIN_EMAIL: "Staff@example.com",
-  ADMIN_PASSWORD_HASH: passwordHash,
-  ADMIN_SESSION_SECRET: "a".repeat(64),
-  APP_URL: "https://kosova.report",
-});
-test("administrator access fails closed without configuration", () => {
-  assert.equal(auth.adminConfig({}), null);
-  assert.equal(
-    auth.adminConfig({
-      ADMIN_EMAIL: "x",
-      ADMIN_PASSWORD_HASH: "plaintext",
-      ADMIN_SESSION_SECRET: "short",
-      APP_URL: "https://kosova.report",
-    }),
-    null,
-  );
-  assert.equal(auth.verifySession("anything", null), null);
-});
-test("scrypt validates correct passwords and rejects wrong or malformed values", () => {
-  assert.equal(auth.verifyPassword(password, passwordHash), true);
-  assert.equal(auth.verifyPassword("incorrect", passwordHash), false);
-  assert.equal(auth.verifyPassword(password, "plaintext"), false);
-  assert.throws(() => auth.hashPassword("short"));
-});
-test("sessions reject tampering and expire after eight hours", () => {
-  const now = 1792400000000,
-    token = auth.issueSession(config, now);
-  assert.deepEqual(auth.verifySession(token, config, now + 1000), {
-    email: "staff@example.com",
+async function load(file, mocks) {
+  const module = new SourceTextModule(readFileSync(file, "utf8"));
+  await module.link(async (name) => {
+    const values = mocks[name];
+    assert.ok(values, `Unexpected import ${name}`);
+    return new SyntheticModule(Object.keys(values), function () {
+      for (const [key, value] of Object.entries(values))
+        this.setExport(key, value);
+    });
   });
-  assert.equal(auth.verifySession(`${token}x`, config, now), null);
-  assert.equal(
-    auth.verifySession(token, config, now + auth.SESSION_SECONDS * 1000),
-    null,
-  );
-});
-test("password or signing-secret rotation invalidates sessions", () => {
-  const token = auth.issueSession(config);
-  assert.equal(
-    auth.verifySession(token, { ...config, secret: "b".repeat(64) }),
-    null,
-  );
-  assert.equal(
-    auth.verifySession(token, {
-      ...config,
-      passwordHash: auth.hashPassword("A different password 2026!"),
-    }),
-    null,
-  );
+  await module.evaluate();
+  return module.namespace;
+}
+const redirect = (url) => {
+  throw Object.assign(Error("redirect"), { url });
+};
+const password = "One time staff password 2026!";
+test("password hashing rejects short credentials and validates without storing plaintext", () => {
+  const hash = auth.hashPassword(password);
+  assert.ok(!hash.includes(password));
+  assert.ok(auth.verifyPassword(password, hash));
+  assert.ok(!auth.verifyPassword("incorrect", hash));
+  assert.throws(() => auth.hashPassword("short"));
+  assert.throws(() => auth.siteConfig({ APP_URL: "http://public.example" }));
 });
 async function actions({
+  role = "owner",
+  origin = "https://kosova.report",
+  assigned = true,
   attempts = 1,
-  authorized = true,
-  origin = config.origin,
 } = {}) {
   const queries = [],
-    cookieWrites = [];
-  let checked = false;
+    sessions = [];
+  let row = {
+    id: 1,
+    password_hash: auth.hashPassword(password),
+    must_change_password: 1,
+    temporary_expires_at: new Date(Date.now() + 86400000),
+  };
   const execute = async (sql, values) => {
     queries.push({ sql, values });
     if (sql.startsWith("SELECT attempts")) return [[{ attempts }]];
-    if (sql.startsWith("SELECT status")) return [[{ status: "Pending" }]];
+    if (sql.startsWith("SELECT id,password_hash")) return [[row]];
+    if (
+      sql.startsWith(
+        "UPDATE staff_accounts SET password_hash=?,temporary_expires_at=NULL",
+      )
+    ) {
+      row = { ...row, password_hash: values[0], temporary_expires_at: null };
+      return [{ affectedRows: 1 }];
+    }
+    if (sql.startsWith("SELECT status FROM reports"))
+      return [[{ status: "Pending" }]];
+    if (sql.startsWith("SELECT report_id FROM report_assignments"))
+      return [assigned ? [{ report_id: 7 }] : []];
     if (sql.startsWith("SELECT id FROM departments")) return [[]];
-    return [{}];
+    return [{ insertId: 10, affectedRows: 1 }];
   };
   const connection = {
     execute,
@@ -80,123 +70,218 @@ async function actions({
     rollback: async () => queries.push({ sql: "ROLLBACK" }),
     release() {},
   };
-  const mocks = {
-    "next/headers": {
-      headers: () => ({ get: () => origin }),
-      cookies: () => ({ set: (...args) => cookieWrites.push(args) }),
-    },
-    "next/navigation": {
-      redirect: (url) => {
-        throw Object.assign(Error("redirect"), { url });
-      },
-    },
-    "next/cache": { revalidatePath: () => {} },
+  const account = {
+    id: 1,
+    role,
+    email: "owner@kosova.report",
+    name: "Owner",
+    must_change_password: 0,
+  };
+  const action = await load("src/app/admin/actions.js", {
+    "next/headers": { headers: () => ({ get: () => origin }) },
+    "next/navigation": { redirect },
+    "next/cache": { revalidatePath() {} },
+    "node:crypto": await import("node:crypto"),
     "../../lib/db": {
       database: () => ({ execute, getConnection: async () => connection }),
     },
-    "../../lib/admin-auth": { ...auth, adminConfig: () => config },
+    "../../lib/admin-auth": {
+      ...auth,
+      siteConfig: () => ({ origin: "https://kosova.report", secure: true }),
+    },
     "../../lib/admin-session": {
-      requireAdmin: () => {
-        checked = true;
-        if (!authorized) throw Error("unauthorized");
-        return { email: config.email };
+      requireAdmin: async () => account,
+      requireOwner: async () => {
+        if (role !== "owner") redirect("/admin");
+        return account;
       },
+      createSessionRecord: async (accountId, temporary) => ({
+        accountId,
+        temporary,
+      }),
+      setSessionCookie: (record) =>
+        sessions.push([record.accountId, record.temporary]),
+      endSession: async () => {},
     },
-    "../../lib/report-options": {
-      categories: ["infrastructure"],
-      cities: [{ code: "PR" }],
+    "../../lib/report-notifications": {
+      queueStatusEmails: async () => queries.push({ sql: "QUEUE_EMAIL" }),
+      deliverStatusEmails: async () => ({ pending: 0 }),
     },
-  };
-  const module = new SourceTextModule(
-    readFileSync("src/app/admin/actions.js", "utf8"),
-  );
-  await module.link(async (name) => {
-    const values = mocks[name];
-    assert.ok(values, `Unknown import ${name}`);
-    return new SyntheticModule(Object.keys(values), function () {
-      for (const [key, value] of Object.entries(values))
-        this.setExport(key, value);
-    });
+    "../../lib/report-options": { categories: ["infrastructure"] },
   });
-  await module.evaluate();
-  return {
-    action: module.namespace,
-    queries,
-    cookieWrites,
-    get checked() {
-      return checked;
-    },
-  };
+  return { action, queries, sessions };
 }
-const loginForm = () => {
-  const form = new FormData();
-  form.set("email", config.email);
-  form.set("password", password);
-  return form;
+const form = (values) => {
+  const data = new FormData();
+  for (const [key, value] of Object.entries(values)) data.set(key, value);
+  return data;
 };
-test("login issues protected session cookie after checking database limit", async () => {
+test("one-time password permits one sign-in and forces replacement", async () => {
   const app = await actions();
+  const credentials = form({ email: "owner@kosova.report", password });
   await assert.rejects(
-    app.action.loginAction({}, loginForm()),
+    app.action.loginAction({}, credentials),
     (error) => error.url === "/admin",
   );
-  assert.equal(app.cookieWrites.length, 1);
-  const [name, token, options] = app.cookieWrites[0];
-  assert.equal(name, auth.ADMIN_COOKIE);
-  assert.equal(auth.verifySession(token, config).email, config.email);
-  assert.equal(options.httpOnly, true);
-  assert.equal(options.secure, true);
-  assert.equal(options.sameSite, "strict");
+  assert.deepEqual(app.sessions, [[1, true]]);
+  const second = await app.action.loginAction({}, credentials);
+  assert.match(second.error, /Temporary passwords/);
+  assert.equal(app.sessions.length, 1);
 });
-test("login exceeding shared attempt limit cannot issue a cookie", async () => {
+test("login throttling prevents issuing a session", async () => {
   const app = await actions({ attempts: 6 });
-  const result = await app.action.loginAction({}, loginForm());
+  const result = await app.action.loginAction(
+    {},
+    form({ email: "owner@kosova.report", password }),
+  );
   assert.match(result.error, /Too many/);
-  assert.equal(app.cookieWrites.length, 0);
+  assert.equal(app.sessions.length, 0);
 });
-test("cross-origin and unauthenticated report changes never reach database", async () => {
+test("checker and cross-origin callers cannot update municipal status or routing", async () => {
   for (const options of [
+    { role: "checker" },
     { origin: "https://other.example" },
-    { authorized: false },
   ]) {
     const app = await actions(options);
-    await assert.rejects(app.action.updateReportAction(new FormData()));
+    await assert.rejects(
+      app.action.updateReportAction(
+        form({ id: "7", status: "Resolved", note: "Resolved" }),
+      ),
+    );
+    assert.equal(app.queries.length, 0);
+    await assert.rejects(app.action.saveDepartmentAction(new FormData()));
     assert.equal(app.queries.length, 0);
   }
 });
-test("admin report update locks row and commits the audit record atomically", async () => {
+test("owner status update commits audit and queues both progress emails atomically", async () => {
   const app = await actions();
-  const form = new FormData();
-  form.set("id", "7");
-  form.set("status", "Resolved");
-  form.set("note", "Repair confirmed by department");
-  await assert.rejects(app.action.updateReportAction(form), (error) =>
-    error.url?.includes("saved=report"),
+  await assert.rejects(
+    app.action.updateReportAction(
+      form({ id: "7", status: "In Progress", note: "Municipality contacted" }),
+    ),
+    (error) => error.url?.includes("saved=report"),
   );
-  assert.ok(app.checked);
   assert.ok(app.queries.some((query) => query.sql.includes("FOR UPDATE")));
+  assert.ok(
+    app.queries.findIndex((query) => query.sql === "QUEUE_EMAIL") <
+      app.queries.findIndex((query) => query.sql === "COMMIT"),
+  );
   const audit = app.queries.find((query) =>
     query.sql.startsWith("INSERT INTO report_audit_log"),
   );
-  assert.equal(audit.values[1], config.email);
   assert.equal(audit.values[2], "Pending");
-  assert.equal(audit.values[3], "Resolved");
-  assert.equal(app.queries.at(-1).sql, "COMMIT");
+  assert.equal(audit.values[3], "In Progress");
 });
-
-test("routing cannot assign a department from a different municipality", async () => {
-  const app = await actions();
-  const form = new FormData();
-  form.set("city_id", "1");
-  form.set("department_id", "2");
-  form.set("category", "infrastructure");
-  form.set("active", "on");
-  await assert.rejects(app.action.saveRouteAction(form), (error) =>
-    error.url?.includes("error=route"),
+test("a checker cannot inspect/mark a report assigned to another checker", async () => {
+  const app = await actions({ role: "checker", assigned: false });
+  await assert.rejects(
+    app.action.reviewReportAction(form({ report_id: "7", note: "Checked" })),
   );
   assert.ok(
     !app.queries.some((query) =>
-      query.sql.startsWith("INSERT INTO department_routes"),
+      query.sql.startsWith("INSERT INTO report_reviews"),
     ),
+  );
+});
+test("assigned checker saves one distinct review per report", async () => {
+  const app = await actions({ role: "checker" });
+  await assert.rejects(
+    app.action.reviewReportAction(
+      form({ report_id: "7", note: "Photo and location verified" }),
+    ),
+    (error) => error.url?.includes("saved=checked"),
+  );
+  assert.ok(
+    app.queries.some(
+      (query) =>
+        query.sql.startsWith("INSERT INTO report_reviews") &&
+        query.sql.includes("ON DUPLICATE KEY UPDATE"),
+    ),
+  );
+});
+test("checker account creation returns a temporary password only to the owner", async () => {
+  const app = await actions();
+  const result = await app.action.createCheckerAction(
+    {},
+    form({ name: "Reviewer", email: "reviewer@kosova.report" }),
+  );
+  assert.ok(result.password);
+  const insert = app.queries.find((query) =>
+    query.sql.startsWith("INSERT INTO staff_accounts"),
+  );
+  assert.ok(auth.verifyPassword(result.password, insert.values[2]));
+  assert.ok(!insert.values.includes(result.password));
+  const checker = await actions({ role: "checker" });
+  await assert.rejects(checker.action.createCheckerAction({}, new FormData()));
+});
+test("sessions store only token hashes and reject expired/unknown cookies", async () => {
+  let token,
+    stored,
+    valid = true;
+  const sessions = await load("src/lib/admin-session.js", {
+    "next/headers": {
+      cookies: () => ({
+        get: () => (token ? { value: token } : undefined),
+        set: (name, value) => {
+          token = value;
+        },
+      }),
+    },
+    "next/navigation": { redirect },
+    "node:crypto": await import("node:crypto"),
+    "./db": {
+      database: () => ({
+        execute: async (sql, values) => {
+          if (sql.startsWith("INSERT")) {
+            stored = values[0];
+            return [{}];
+          }
+          return [
+            valid
+              ? [
+                  {
+                    id: 1,
+                    email: "owner@example.com",
+                    role: "owner",
+                    must_change_password: 0,
+                  },
+                ]
+              : [],
+          ];
+        },
+      }),
+    },
+    "./admin-auth": { ...auth, siteConfig: () => ({ secure: true }) },
+  });
+  assert.equal(await sessions.currentAdmin(), null);
+  await sessions.startSession(1);
+  assert.equal(stored, auth.digest(token));
+  assert.notEqual(stored, token);
+  assert.equal((await sessions.currentAdmin()).id, 1);
+  valid = false;
+  assert.equal(await sessions.currentAdmin(), null);
+});
+test("database session forces unfinished staff to the account page", async () => {
+  const token = "a".repeat(43);
+  const sessions = await load("src/lib/admin-session.js", {
+    "next/headers": { cookies: () => ({ get: () => ({ value: token }) }) },
+    "next/navigation": { redirect },
+    "node:crypto": await import("node:crypto"),
+    "./db": {
+      database: () => ({
+        execute: async () => [
+          [{ id: 1, role: "checker", must_change_password: 1 }],
+        ],
+      }),
+    },
+    "./admin-auth": auth,
+  });
+  await assert.rejects(
+    sessions.requireAdmin(),
+    (error) => error.url === "/admin/account",
+  );
+  assert.equal(
+    (await sessions.requireAdmin({ allowPasswordChange: true })).id,
+    1,
   );
 });

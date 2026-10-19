@@ -9,6 +9,11 @@ import {
   emailConfiguration,
   sendDepartmentEmail,
 } from "../../../../lib/smtp2go";
+import {
+  departmentLink,
+  queueStatusEmails,
+  deliverStatusEmails,
+} from "../../../../lib/report-notifications";
 import { categories } from "../../../../lib/report-options";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -113,10 +118,10 @@ export async function POST(request) {
       !lngText ||
       !Number.isFinite(latitude) ||
       !Number.isFinite(longitude) ||
-      latitude < 41.8 ||
-      latitude > 43.3 ||
-      longitude < 19.9 ||
-      longitude > 21.9
+      latitude < -90 ||
+      latitude > 90 ||
+      longitude < -180 ||
+      longitude > 180
     )
       throw invalid("Invalid report fields");
     const anonymous = anonymousValue === "true";
@@ -165,7 +170,7 @@ export async function POST(request) {
     const emailConfig = emailConfiguration();
     connection = await database().getConnection();
     const [municipalities] = await connection.execute(
-      "SELECT id,UPPER(code) AS code FROM cities WHERE code=? LIMIT 1",
+      "SELECT c.id,UPPER(c.code) AS code FROM cities c JOIN municipality_settings m ON m.city_id=c.id WHERE c.code=? AND m.enabled=1 LIMIT 1",
       [city],
     );
     if (
@@ -245,6 +250,14 @@ export async function POST(request) {
       ],
     );
     const reportId = inserted.insertId;
+    const progressLink = await departmentLink(connection, {
+      id: reportId,
+      department_id: department.id,
+      public_id,
+    });
+    await queueStatusEmails(connection, reportId, `created:${reportId}`, [
+      "reporter",
+    ]);
     for (let i = 0; i < uploaded.length; i++) {
       const imageURL = new URL(uploaded[i], imageBaseURL).href;
       if (imageURL.length > 512)
@@ -278,7 +291,7 @@ export async function POST(request) {
           `<img src="cid:image-${index}@kosova.report" alt="Report photo ${index + 1}" style="display:block;max-width:100%;height:auto;margin:16px 0;border-radius:8px"/>`,
       )
       .join("");
-    const html = `<div style="background:#f1f5f9;padding:24px;font-family:Arial,sans-serif;color:#102344"><div style="max-width:640px;margin:auto;background:#fff;border-radius:12px;overflow:hidden"><div style="background:#062653;color:white;padding:24px;font-size:22px;font-weight:bold">kosova.report</div><div style="padding:24px"><p style="color:#1d4ed8">NEW CIVIC REPORT</p><h1>${escapeHTML(public_id)}</h1><p>${escapeHTML(city)} / ${escapeHTML(category)}</p><p style="white-space:pre-wrap">${escapeHTML(description)}</p><p>Coordinates: ${latitude}, ${longitude}</p><p><a href="https://www.openstreetmap.org/?mlat=${latitude}&mlon=${longitude}#map=17/${latitude}/${longitude}" style="color:#1248b5">View location on OpenStreetMap</a></p><p>${anonymous ? "Anonymous report" : `Reporter email: ${escapeHTML(email)}`}</p>${imageHTML}<p>${inlineImages.length} of ${validated.length} photos attached. All evidence is available to authorized staff in the admin panel.</p></div><div style="padding:20px;background:#f8fafc;font-size:12px">Developed by CODON / Progon group</div></div></div>`;
+    const html = `<div style="background:#f1f5f9;padding:24px;font-family:Arial,sans-serif;color:#102344"><div style="max-width:640px;margin:auto;background:#fff;border-radius:12px;overflow:hidden"><div style="background:#062653;color:white;padding:24px;font-size:22px;font-weight:bold">kosova.report</div><div style="padding:24px"><p style="color:#1d4ed8">NEW CIVIC REPORT</p><h1>${escapeHTML(public_id)}</h1><p>${escapeHTML(city)} / ${escapeHTML(category)}</p><p style="white-space:pre-wrap">${escapeHTML(description)}</p><p>Coordinates: ${latitude}, ${longitude}</p><p><a href="https://www.openstreetmap.org/?mlat=${latitude}&mlon=${longitude}#map=17/${latitude}/${longitude}" style="color:#1248b5">View location on OpenStreetMap</a></p><p>${anonymous ? "Anonymous report" : `Reporter email: ${escapeHTML(email)}`}</p><p><a href="${escapeHTML(progressLink)}" style="display:inline-block;background:#0843b5;color:white;padding:14px 20px;border-radius:8px">View report and update progress</a></p>${imageHTML}<p>${inlineImages.length} of ${validated.length} photos attached. All evidence is available to authorized staff in the admin panel.</p></div><div style="padding:20px;background:#f8fafc;font-size:12px">in co-operation with CODON a part of Progon LLC.</div></div></div>`;
     const subject = `New report ${public_id}`;
     await connection.execute(
       "INSERT INTO report_notifications (report_id,recipient,subject,html) VALUES (?,?,?,?)",
@@ -302,7 +315,7 @@ export async function POST(request) {
           to: department.notification_email,
           subject,
           html,
-          text: `New report ${public_id}\n${description}\nCoordinates: ${latitude}, ${longitude}`,
+          text: `New report ${public_id}\n${description}\nCoordinates: ${latitude}, ${longitude}\nProgress: ${progressLink}`,
           messageId: `<${uploadId}@${new URL(required("APP_URL")).hostname}>`,
         },
         emailConfig,
@@ -316,6 +329,11 @@ export async function POST(request) {
       console.error("Report notification pending", {
         reportId,
       });
+    }
+    try {
+      await deliverStatusEmails(`created:${reportId}`);
+    } catch {
+      console.error("Receipt email pending", { reportId });
     }
     return Response.json(
       {
