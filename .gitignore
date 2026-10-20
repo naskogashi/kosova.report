@@ -9,3 +9,6 @@ build/
 .env.*
 !.env.example
 tmp/
+
+# Private documents, not for the repository
+kosova-report-features-and-training.pdf
