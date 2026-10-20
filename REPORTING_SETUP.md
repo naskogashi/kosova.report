@@ -15,7 +15,7 @@ You can replace `admin@kosova.report` with your own administrator email before r
 1. Loads existing server settings and, when necessary, the kosova-report PM2 environment without printing keys.
 2. Privately prompts for the MySQL password if it has not been configured.
 3. Runs mysqldump into a mode-600 file in `~/kosova-backups`; it refuses to migrate if the backup fails.
-4. Applies repeatable migrations 004 and 005 to your existing integer-ID database.
+4. Applies repeatable migrations 004 to 007 to your existing integer-ID database.
 5. Saves the existing runtime settings to `~/.config/kosova-report/runtime.json` (directory mode 700, file mode 600), outside the Git checkout. Next.js uses it only as a fallback to actual environment/dotenv values.
 6. Creates the first owner account and prints a random **one-time password on the SSH terminal**. It is not committed, stored in plaintext, or printed by CI. It expires in 24 hours and permits one sign-in only.
 

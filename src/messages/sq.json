@@ -251,6 +251,34 @@
       "queued": "Je jashtë linje. Raporti u ruajt në këtë pajisje dhe dërgohet vetë sapo të kthehet interneti, nëse kjo faqe është e hapur.",
       "sendingQueued": "Interneti u kthye. Duke dërguar raportin…",
       "banner": "Je jashtë linje. Mund të vazhdosh të plotësosh raportin."
+    },
+    "nearby": {
+      "checking": "Po kontrollojmë nëse është raportuar më parë afër…",
+      "heading": "{count, plural, one {Dikush mund ta ketë raportuar tashmë} other {# probleme të ngjashme janë raportuar afër}}",
+      "sub": "A është problemi yt një nga këto? Krahaso vendin, kategorinë dhe datën. Dy probleme mund të jenë afër njëri-tjetrit, prandaj zgjidh vetëm nëse është vërtet i njëjti.",
+      "mapLabel": "Shenja jote dhe problemet e raportuara afër",
+      "yourPin": "Shenja jote",
+      "otherCategory": "Kategori tjetër",
+      "distance": "Rreth {meters} m larg",
+      "since": "raportuar që më {date}",
+      "open": "Hap këtë çështje",
+      "same": "Po, ky është problemi im",
+      "chosen": "Raporti yt do t’i shtohet kësaj çështjeje. Ruan numrin dhe çelësin e vet, dhe departamenti sheh që më shumë njerëz e kanë raportuar.",
+      "addMine": "Vazhdo dhe dërgo edhe raportin tim (më mirë nëse ke detaje ose foto të reja)",
+      "confirmOnly": "Vetëm jepi një pëlqim",
+      "confirming": "Duke shtuar…",
+      "confirmError": "Pëlqimi nuk u shtua. Provo përsëri.",
+      "notThis": "Jo, nuk është ky",
+      "resolvedNote": "Shënuar si i zgjidhur më {date}. Nëse problemi është kthyer, vazhdo dhe dërgo një raport të ri.",
+      "different": "Asnjë nga këto. Problemi im është tjetër",
+      "declinedNote": "The se {count, plural, one {problemi i raportuar afër nuk është} other {asnjë nga # problemet e raportuara afër nuk është}} yti. Raporti yt bëhet çështje e re.",
+      "change": "Ndrysho",
+      "reviewJoined": "Raporti yt do t’i shtohet një çështjeje të raportuar afër. Me tëndin, është raportuar {count, plural, one {një herë} other {# herë}}.",
+      "confirmedTitle": "Faleminderit, pëlqimi yt u shtua",
+      "confirmedBody": "Departamenti sheh që edhe një person e ka këtë problem. Nuk ke nevojë të dërgosh raport. Nëse ke detaje ose foto të reja, mund ta dërgosh prapë tëndin.",
+      "finish": "Mbaro, fshi draftin",
+      "keepWriting": "Dërgo edhe raportin tim",
+      "publicNotice": "Që të tjerët të mos e raportojnë dy herë, faqja tregon se në këtë zonë është raportuar një problem i kësaj kategorie, me datën dhe statusin. Teksti, fotot dhe emaili yt nuk shfaqen."
     }
   },
   "sent": {
@@ -278,7 +306,12 @@
     "share": "Trego për kosova.report",
     "shareText": "Raporto problemet e qytetit me foto dhe vendndodhje, edhe pa emër.",
     "missing": "Ky raport nuk është më në këtë dritare. Gjeje me numrin e raportit dhe çelësin privat.",
-    "missingAction": "Gjej raportin tim"
+    "missingAction": "Gjej raportin tim",
+    "incidentJoined": "U shtua te një çështje ekzistuese, tani e raportuar {count} herë",
+    "incidentNew": "Raporti yt është një çështje e re publike",
+    "incidentJoinedBody": "Departamenti i trajton bashkë të gjitha raportet për këtë problem. Ti e ndjek tëndin me çelësin tënd.",
+    "incidentNewBody": "Të tjerët mund ta gjejnë, t’i japin pëlqim dhe të komentojnë. Deri sa stafi t’i kontrollojë detajet, publike janë vetëm kategoria, zona dhe datat.",
+    "incidentOpen": "Hap çështjen publike"
   },
   "track": {
     "heading": "Gjej raportin tënd",
@@ -309,7 +342,10 @@
     },
     "refresh": "Rifresko",
     "pdf": "Shkarko dëshminë PDF",
-    "another": "Gjej një raport tjetër"
+    "another": "Gjej një raport tjetër",
+    "incident": "{count, plural, one {Çështje publike, raportuar një herë} other {Pjesë e një çështjeje publike të raportuar # herë}}",
+    "incidentConfirms": "{count, plural, one {# person e sheh edhe vetë} other {# persona e shohin edhe vetë}}",
+    "incidentOpen": "Hap çështjen publike"
   },
   "municipality": {
     "heading": "Raporti për departamentin",
@@ -450,7 +486,22 @@
         "title": "Kush e sheh raportin",
         "body": [
           "Raporti i dërgohet me email departamentit që e mbulon atë kategori në komunën tënde: përshkrimi, vendi në hartë, fotot dhe, nëse e ke dhënë, emaili yt. Departamenti merr një lidhje private për ta shënuar raportin si “po trajtohet” ose “i zgjidhur”. Kjo lidhje skadon pas 90 ditësh.",
-          "Stafi i kosova.report që kontrollon raportet i sheh ato në panelin administrativ. Raportet nuk publikohen në faqe."
+          "Stafi i kosova.report që kontrollon raportet i sheh ato në panelin administrativ. Përshkrimi, fotot dhe emaili yt nuk publikohen kurrë automatikisht."
+        ]
+      },
+      {
+        "id": "ceshtjet",
+        "title": "Çështjet publike, pëlqimet dhe komentet",
+        "body": [
+          "Çdo raport i përket një çështjeje publike, që njerëzit të shohin se një problem është raportuar tashmë në vend që ta dërgojnë përsëri. Disa raporte për të njëjtin problem grupohen në një çështje: këtë e zgjedh ti kur raporton, dhe stafi mund t’i grupojë ose t’i ndajë raportet më vonë."
+        ],
+        "list": [
+          "Deri sa stafi ta kontrollojë, faqja e çështjes tregon vetëm kategorinë, zonën e përafërt (jo vendin e saktë), datat, statusin dhe sa herë është raportuar.",
+          "Pastaj stafi mund të publikojë një përmbledhje që e shkruan vetë, vendin e saktë dhe fotot që zgjedh. Ata lënë jashtë emra, fytyra, targa dhe të dhëna të tjera personale.",
+          "Emri, emaili, numri i raportit dhe çelësi yt privat nuk shfaqen kurrë në faqen e çështjes.",
+          "Raportet e dërguara para se të ekzistonin çështjet publike mbeten private, përveç nëse stafi i publikon.",
+          "Një pëlqim numërohet një herë për shfletues. Ruajmë një kod të koduar nga një cookie, jo emrin ose adresën tënde IP.",
+          "Komentet dhe fotot e tyre shfaqen vetëm pasi stafi t’i miratojë. Emri që shkruan shfaqet me komentin; lëre bosh për të mbetur anonim."
         ]
       },
       {
@@ -458,7 +509,7 @@
         "title": "Ku ruhen të dhënat",
         "list": [
           "Raportet ruhen në bazën e të dhënave në serverin e platformës.",
-          "Fotot ruhen në Cloudflare R2, një shërbim ruajtjeje skedarësh. Nuk janë publike; i sheh vetëm stafi i autorizuar dhe departamenti përmes emailit.",
+          "Fotot ruhen në Cloudflare R2, një shërbim ruajtjeje skedarësh. Nuk janë publike; i sheh vetëm stafi i autorizuar dhe departamenti përmes emailit. Një foto shfaqet në faqen e çështjes vetëm nëse e zgjedh stafi, ose nëse është bashkangjitur në një koment të miratuar.",
           "Emailet dërgohen përmes SMTP2Go, një shërbimi për dërgimin e emaileve."
         ]
       },
@@ -470,6 +521,7 @@
         ],
         "list": [
           "kr-locale: cookie që mban mend gjuhën që zgjodhe, për një vit.",
+          "kr-voter: një kod i rastësishëm, vendoset vetëm kur jep një pëlqim, që i njëjti shfletues të numërohet një herë. Një vit.",
           "Cookie e hyrjes së stafit: vetëm për stafin që hyn në panelin administrativ.",
           "Në memorien e shfletuesit ruajmë zgjedhjen tënde për këtë njoftim dhe pamjen (e çelët, e errët, kontrast i lartë).",
           "Drafti i raportit, bashkë me fotot, ruhet vetëm në këtë pajisje derisa ta dërgosh ose ta fshish.",
@@ -492,5 +544,59 @@
       }
     ],
     "note": "Kjo faqe nuk është këshillë ligjore. Ndryshimet e rëndësishme do t’i shënojmë këtu me datë."
+  },
+  "incident": {
+    "statuses": {
+      "Pending": "Në pritje",
+      "In Progress": "Po trajtohet",
+      "Resolved": "I zgjidhur"
+    },
+    "heading": "Problem i raportuar në {city}",
+    "reported": "{count, plural, one {Raportuar një herë} other {Raportuar # herë}}",
+    "confirms": "{count, plural, one {# person e sheh edhe vetë} other {# persona e shohin edhe vetë}}",
+    "notPublished": "Detajet dhe fotot shfaqen këtu pasi stafi t’i ketë kontrolluar për të dhëna personale. Deri atëherë janë publike vetëm kategoria, zona dhe datat.",
+    "photo": "Foto {n}",
+    "mapLabel": "Ku është problemi",
+    "approximate": "Rrethi tregon zonën, jo vendin e saktë.",
+    "confirmTitle": "A e sheh edhe ti këtë problem?",
+    "confirmBody": "Jepi një pëlqim në vend që ta dërgosh të njëjtin raport përsëri. Kështu departamenti sheh sa njerëz prek.",
+    "confirm": "E shoh edhe unë",
+    "confirmed": "E konfirmove",
+    "voteError": "Nuk funksionoi. Provo përsëri.",
+    "voteLimited": "Shumë përpjekje nga ky rrjet. Provo më vonë.",
+    "resolvedTitle": "Shënuar si i zgjidhur",
+    "resolvedBody": "Nëse problemi është ende aty ose është kthyer, dërgo një raport të ri.",
+    "reportAgain": "Raportoje përsëri",
+    "reportOther": "Raporto një problem tjetër",
+    "facts": "Datat",
+    "firstReported": "Raportuar për herë të parë",
+    "lastReported": "Raportuar për herë të fundit",
+    "resolvedOn": "Zgjidhur më",
+    "share": "Ndaj këtë çështje",
+    "copied": "Lidhja u kopjua",
+    "privacyNote": "Emrat, emailet dhe çelësat privatë të raportuesve nuk shfaqen kurrë këtu.",
+    "comments": {
+      "heading": "Komente",
+      "empty": "Ende nuk ka komente.",
+      "team": "Ekipi i kosova.report",
+      "official": "Përditësim zyrtar",
+      "citizen": "Banor",
+      "photo": "Foto e komentit {n}",
+      "add": "Shto një përditësim",
+      "body": "Komenti yt",
+      "bodyHint": "Për shembull: “Rruga tani është e bllokuar.” Mos shkruaj emra, numra telefoni ose adresa të njerëzve.",
+      "name": "Emri që shfaqet",
+      "optional": "opsionale",
+      "addPhoto": "Shto një foto",
+      "removePhoto": "Hiq foton {n}",
+      "moderated": "Komentet shfaqen pasi ekipi ynë t’i ketë kontrolluar, zakonisht brenda një dite pune. Fotot zvogëlohen dhe u hiqen të dhënat e vendndodhjes dhe pajisjes.",
+      "sent": "Faleminderit. Komenti yt do të shfaqet pasi të kontrollohet.",
+      "error": "Komenti nuk u dërgua. Provo përsëri.",
+      "limited": "Shumë komente nga ky rrjet. Provo më vonë.",
+      "short": "Shkruaj fillimisht një koment.",
+      "photoError": "Një foto nuk u lexua. Provo një tjetër.",
+      "sending": "Duke dërguar…",
+      "submit": "Dërgo komentin"
+    }
   }
 }

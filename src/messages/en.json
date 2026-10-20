@@ -251,6 +251,34 @@
       "queued": "You're offline. The report is saved on this device and sends itself as soon as you're back online, as long as this page is open.",
       "sendingQueued": "You're back online. Sending your report…",
       "banner": "You're offline. You can keep filling in the report."
+    },
+    "nearby": {
+      "checking": "Checking whether this was already reported nearby…",
+      "heading": "{count, plural, one {Someone may already have reported this} other {# similar problems were already reported nearby}}",
+      "sub": "Is your problem one of these? Compare the place, category and date. Two problems can be close to each other, so only choose one if it's really the same.",
+      "mapLabel": "Your pin and problems already reported nearby",
+      "yourPin": "Your pin",
+      "otherCategory": "Different category",
+      "distance": "About {meters} m away",
+      "since": "reported since {date}",
+      "open": "Open this issue",
+      "same": "Yes, this is my problem",
+      "chosen": "Your report will be added to this issue. It keeps its own number and key, and the department sees that more people reported it.",
+      "addMine": "Continue and send my report too (best if you have new details or photos)",
+      "confirmOnly": "Only give it a thumbs-up",
+      "confirming": "Adding…",
+      "confirmError": "The thumbs-up wasn't added. Try again.",
+      "notThis": "No, it's not this one",
+      "resolvedNote": "Marked as resolved on {date}. If the problem is back, continue and send a new report.",
+      "different": "None of these. Mine is a different problem",
+      "declinedNote": "You said none of the {count, plural, one {problem} other {# problems}} reported nearby is yours. Your report becomes a new issue.",
+      "change": "Change",
+      "reviewJoined": "Your report will be added to an issue already reported nearby. With yours, it's reported {count, plural, one {once} other {# times}}.",
+      "confirmedTitle": "Thanks, your thumbs-up was added",
+      "confirmedBody": "The department sees that one more person has this problem. You don't need to send a report. If you have new details or photos, you can still send yours.",
+      "finish": "Done, delete my draft",
+      "keepWriting": "Send my report too",
+      "publicNotice": "So others don't report it twice, the site shows that a problem of this category was reported in this area, with the date and status. Your text, photos and email are not shown."
     }
   },
   "sent": {
@@ -278,7 +306,12 @@
     "share": "Tell someone about kosova.report",
     "shareText": "Report problems in the city with a photo and location, even without your name.",
     "missing": "This report is no longer in this window. Find it with the report number and your private key.",
-    "missingAction": "Find my report"
+    "missingAction": "Find my report",
+    "incidentJoined": "Added to an existing issue, now reported {count} times",
+    "incidentNew": "Your report is a new public issue",
+    "incidentJoinedBody": "The department handles all reports of this problem together. You'll still follow yours with your own key.",
+    "incidentNewBody": "Others can find it, give it a thumbs-up and comment. Only the category, the area and the dates are public until staff check the details.",
+    "incidentOpen": "Open the public issue"
   },
   "track": {
     "heading": "Find your report",
@@ -309,7 +342,10 @@
     },
     "refresh": "Refresh",
     "pdf": "Download PDF receipt",
-    "another": "Find another report"
+    "another": "Find another report",
+    "incident": "{count, plural, one {Public issue, reported once} other {Part of a public issue reported # times}}",
+    "incidentConfirms": "{count, plural, one {# person sees it too} other {# people see it too}}",
+    "incidentOpen": "Open the public issue"
   },
   "municipality": {
     "heading": "Report for the department",
@@ -450,7 +486,22 @@
         "title": "Who sees your report",
         "body": [
           "The report is emailed to the department that covers that category in your municipality: the description, the place on the map, the photos and, if you gave it, your email. The department gets a private link to mark the report “being handled” or “resolved”. That link expires after 90 days.",
-          "kosova.report staff who check reports see them in the staff panel. Reports are not published on the site."
+          "kosova.report staff who check reports see them in the staff panel. Your description, photos and email are never published automatically."
+        ]
+      },
+      {
+        "id": "ceshtjet",
+        "title": "Public issues, thumbs-up and comments",
+        "body": [
+          "Each report belongs to a public issue, so people can see that a problem was already reported instead of sending it again. Several reports of the same problem are grouped into one issue: you choose this when you report, and staff can group or separate reports later."
+        ],
+        "list": [
+          "Until staff check it, an issue page shows only the category, the approximate area (not the exact spot), the dates, the status and how many times it was reported.",
+          "Staff can then publish a summary they write themselves, the exact place and photos they choose. They leave out names, faces, plates and other personal details.",
+          "Your name, email, report number and private key are never shown on an issue page.",
+          "Reports sent before public issues existed stay private unless staff publish them.",
+          "A thumbs-up is counted once per browser. We store a scrambled code from a cookie, not your name or IP address.",
+          "Comments and their photos appear only after staff approve them. The name you type is shown with the comment; leave it empty to stay anonymous."
         ]
       },
       {
@@ -458,7 +509,7 @@
         "title": "Where the data is kept",
         "list": [
           "Reports are stored in the database on the platform's server.",
-          "Photos are stored in Cloudflare R2, a file storage service. They are not public; only authorised staff see them, and the department through the email.",
+          "Photos are stored in Cloudflare R2, a file storage service. They are not public; only authorised staff see them, and the department through the email. A photo appears on an issue page only if staff choose it, or if it was attached to an approved comment.",
           "Emails are sent through SMTP2Go, an email delivery service."
         ]
       },
@@ -470,6 +521,7 @@
         ],
         "list": [
           "kr-locale: a cookie that remembers your language, for one year.",
+          "kr-voter: a random code, set only when you give a thumbs-up, so the same browser counts once. One year.",
           "Staff sign-in cookie: only for staff who sign in to the staff panel.",
           "Your browser storage keeps your choice for this notice and your theme (light, dark, high contrast).",
           "A report draft, photos included, stays on this device only, until you send or delete it.",
@@ -492,5 +544,59 @@
       }
     ],
     "note": "This page is not legal advice. We will date any important change here."
+  },
+  "incident": {
+    "statuses": {
+      "Pending": "Waiting",
+      "In Progress": "Being handled",
+      "Resolved": "Resolved"
+    },
+    "heading": "A problem reported in {city}",
+    "reported": "{count, plural, one {Reported once} other {Reported # times}}",
+    "confirms": "{count, plural, one {# person sees it too} other {# people see it too}}",
+    "notPublished": "Details and photos appear here once staff have checked them for personal information. Until then only the category, the area and the dates are public.",
+    "photo": "Photo {n}",
+    "mapLabel": "Where the problem is",
+    "approximate": "The circle shows the area, not the exact spot.",
+    "confirmTitle": "Do you see this problem too?",
+    "confirmBody": "Give it a thumbs-up instead of sending the same report again. It shows the department how many people it affects.",
+    "confirm": "I see it too",
+    "confirmed": "You confirmed it",
+    "voteError": "That didn't work. Try again.",
+    "voteLimited": "Too many tries from this connection. Try again later.",
+    "resolvedTitle": "Marked as resolved",
+    "resolvedBody": "If the problem is still there or came back, send a new report.",
+    "reportAgain": "Report it again",
+    "reportOther": "Report a different problem",
+    "facts": "Dates",
+    "firstReported": "First reported",
+    "lastReported": "Last reported",
+    "resolvedOn": "Resolved on",
+    "share": "Share this issue",
+    "copied": "Link copied",
+    "privacyNote": "Reporters' names, emails and private keys are never shown here.",
+    "comments": {
+      "heading": "Comments",
+      "empty": "No comments yet.",
+      "team": "kosova.report team",
+      "official": "Official update",
+      "citizen": "Resident",
+      "photo": "Comment photo {n}",
+      "add": "Add an update",
+      "body": "Your comment",
+      "bodyHint": "For example: “The road is blocked now.” Don't write names, phone numbers or addresses of people.",
+      "name": "Name shown",
+      "optional": "optional",
+      "addPhoto": "Add a photo",
+      "removePhoto": "Remove photo {n}",
+      "moderated": "Comments appear after our team has checked them, usually within a working day. Photos are made smaller and their location and device details are removed.",
+      "sent": "Thanks. Your comment will appear after it's checked.",
+      "error": "The comment wasn't sent. Try again.",
+      "limited": "Too many comments from this connection. Try again later.",
+      "short": "Write a comment first.",
+      "photoError": "A photo couldn't be read. Try another one.",
+      "sending": "Sending…",
+      "submit": "Send comment"
+    }
   }
 }

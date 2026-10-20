@@ -27,7 +27,8 @@ async function loadRoute(
 ) {
   const events = [],
     queries = [],
-    objectCommands = [];
+    objectCommands = [],
+    attached = [];
   let mail;
   const execute = async (sql, values) => {
     queries.push({ sql, values });
@@ -107,6 +108,15 @@ async function loadRoute(
       cities: [{ code: "PR" }],
     },
     "../../../../lib/city-boundary": { pinInsideCity: async () => true },
+    "../../../../lib/incidents": {
+      attachReport: async (connection, values) => {
+        attached.push(values);
+        return values.chosenRef
+          ? { id: 3, ref: values.chosenRef, joined: true, report_count: 4, status: "In Progress" }
+          : { id: 5, ref: "0123456789", joined: false, report_count: 1, status: "Pending" };
+      },
+    },
+    "../../../../lib/incident-matching": { validRef: (value) => /^[0-9a-f]{10}$/.test(value || "") },
   };
   const module = new SourceTextModule(readFileSync(file, "utf8"));
   await module.link(async (name) => {
@@ -123,6 +133,7 @@ async function loadRoute(
     events,
     queries,
     objectCommands,
+    attached,
     get mail() {
       return mail;
     },
@@ -133,6 +144,7 @@ function request({
   fakeImage = false,
   anonymous = "true",
   origin = "https://kosova.report",
+  extra = {},
 } = {}) {
   const form = new FormData();
   for (const [key, value] of Object.entries({
@@ -144,6 +156,7 @@ function request({
     language: "sq",
     anonymous,
     email: "citizen@example.com",
+    ...extra,
   }))
     form.set(key, value);
   const png = Buffer.from(
@@ -271,4 +284,35 @@ test("image metadata references the real integer auto-increment IDs", async () =
       .find((query) => query.sql.startsWith("INSERT INTO reports"))
       .sql.includes("city_code"),
   );
+});
+
+test("a new report starts its own issue and the receipt names it", async () => {
+  const app = await loadRoute(submitFile);
+  const response = await app.route.POST(request());
+  assert.equal(response.status, 201);
+  const data = await response.json();
+  assert.deepEqual(data.incident, { ref: "0123456789", joined: false, report_count: 1 });
+  assert.equal(app.attached[0].reportId, 7);
+  assert.deepEqual(app.attached[0].point, [42.66, 21.16]);
+  assert.ok(app.events.indexOf("commit") > -1);
+});
+test("a report the citizen says is the same problem joins that issue and the department is told", async () => {
+  const app = await loadRoute(submitFile);
+  const response = await app.route.POST(
+    request({ extra: { incident: "abcdef0123", declined: "1111111111,2222222222", accuracy: "35" } }),
+  );
+  assert.equal(response.status, 201);
+  assert.equal((await response.json()).incident.joined, true);
+  assert.equal(app.attached[0].chosenRef, "abcdef0123");
+  assert.deepEqual(app.attached[0].declinedRefs, ["1111111111", "2222222222"]);
+  assert.equal(app.attached[0].accuracy, 35);
+  assert.match(app.mail.subject, /reported 4 times/);
+  assert.ok(app.mail.html.includes("Reported 4 times"));
+});
+test("malformed issue references are rejected before any upload", async () => {
+  for (const extra of [{ incident: "../../etc" }, { declined: "1,2,3,4,5,6" }]) {
+    const app = await loadRoute(submitFile);
+    assert.equal((await app.route.POST(request({ extra }))).status, 400);
+    assert.ok(!app.events.includes("upload"));
+  }
 });

@@ -10,6 +10,8 @@ import {
 import AdminSubmit from "./AdminSubmit";
 import AdminNav from "./AdminNav";
 import AdminShortcuts from "./AdminShortcuts";
+import IncidentPanel from "./IncidentPanel";
+import { issueErrors } from "./issue-errors";
 import { Icon, categoryStyle } from "../../components/icons";
 import { btn, field } from "../../components/ui";
 export const dynamic = "force-dynamic";
@@ -79,6 +81,8 @@ export default async function AdminPage(props) {
     report = null,
     photos = [],
     history = [],
+    incident = null,
+    incidentDetail = { siblings: [], candidates: [], photos: [], events: [] },
     unavailable = false;
   try {
     const conditions = [],
@@ -101,7 +105,7 @@ export default async function AdminPage(props) {
     const db = database();
     const results = await Promise.all([
       db.execute(
-        `SELECT r.id,r.public_id,r.category,c.code AS city_code,r.status,r.created_at FROM reports r JOIN cities c ON c.id=r.city_id ${where} ORDER BY r.created_at DESC,r.id DESC LIMIT 25 OFFSET ${(page - 1) * 25}`,
+        `SELECT r.id,r.public_id,r.category,c.code AS city_code,r.status,r.created_at,i.report_count FROM reports r JOIN cities c ON c.id=r.city_id LEFT JOIN incidents i ON i.id=r.incident_id ${where} ORDER BY r.created_at DESC,r.id DESC LIMIT 25 OFFSET ${(page - 1) * 25}`,
         values,
       ),
       db.execute(`SELECT COUNT(*) AS total FROM reports r ${where}`, values),
@@ -163,6 +167,32 @@ export default async function AdminPage(props) {
         ]);
         photos = detail[0][0];
         history = detail[1][0];
+        const [incidents] = await db.execute(
+          "SELECT i.id,i.ref,i.status,i.visibility,i.public_summary,i.report_count,i.upvote_count,i.comment_count FROM incidents i JOIN reports r ON r.incident_id=i.id WHERE r.id=?",
+          [selected],
+        );
+        incident = incidents[0] || null;
+        // Other reports, suggestions and photos of the issue are for owners: checkers only see their assigned reports.
+        if (incident && owner) {
+          const grouped = await Promise.all([
+            db.execute("SELECT id,public_id,status,created_at,incident_link FROM reports WHERE incident_id=? ORDER BY created_at,id LIMIT 50", [incident.id]),
+            db.execute(
+              "SELECT d.incident_id,d.candidate_id,d.distance_m,d.score,d.source,a.id AS newer_id,a.ref AS newer_ref,b.ref AS older_ref,other.ref AS other_ref,other.category,other.status,other.report_count,(SELECT MIN(x.id) FROM reports x WHERE x.incident_id=other.id) AS report_id FROM incident_duplicate_candidates d JOIN incidents a ON a.id=d.incident_id JOIN incidents b ON b.id=d.candidate_id JOIN incidents other ON other.id=IF(d.incident_id=?,d.candidate_id,d.incident_id) WHERE (d.incident_id=? OR d.candidate_id=?) AND d.decision='open' AND a.merged_into IS NULL AND b.merged_into IS NULL ORDER BY d.score DESC LIMIT 10",
+              [incident.id, incident.id, incident.id],
+            ),
+            db.execute(
+              "SELECT i.id,(p.report_image_id IS NOT NULL) AS public FROM report_images i JOIN reports r ON r.id=i.report_id JOIN report_image_storage s ON s.report_image_id=i.id LEFT JOIN incident_public_images p ON p.report_image_id=i.id AND p.incident_id=? WHERE r.incident_id=? ORDER BY i.id LIMIT 40",
+              [incident.id, incident.id],
+            ),
+            db.execute("SELECT actor_email,action,detail,created_at FROM incident_events WHERE incident_id=? ORDER BY id DESC LIMIT 10", [incident.id]),
+          ]);
+          incidentDetail = {
+            siblings: grouped[0][0],
+            candidates: grouped[1][0],
+            photos: grouped[2][0],
+            events: grouped[3][0],
+          };
+        }
       }
     }
   } catch (error) {
@@ -200,6 +230,11 @@ export default async function AdminPage(props) {
           <span className="ml-3 hidden lg:inline">{t("Keyboard: j and k move between reports, / searches.")}</span>
         </p>
       </div>
+      {searchParams.error && issueErrors[searchParams.error] && (
+        <p role="alert" className="mt-5 rounded-md bg-error-wash p-3 font-semibold text-error">
+          {t(issueErrors[searchParams.error])}
+        </p>
+      )}
       {searchParams.saved && (
         <p role="status" className="mt-5 rounded-md bg-ok-wash p-3 font-semibold text-ok">
           {searchParams.saved === "email_pending"
@@ -207,7 +242,7 @@ export default async function AdminPage(props) {
             : t("Changes saved.")}
         </p>
       )}
-      {searchParams.error && (
+      {searchParams.error && !issueErrors[searchParams.error] && (
         <p role="alert" className="mt-5 rounded-md bg-error-wash p-3 font-semibold text-error">
           {t("Changes could not be saved. Check the database and try again.")}
         </p>
@@ -291,7 +326,14 @@ export default async function AdminPage(props) {
                             {style && <Icon name={row.category} className="size-6" />}
                           </span>
                           <span className="min-w-0">
-                            <span className="tabular block font-extrabold">{row.public_id}</span>
+                            <span className="tabular flex items-center gap-2 font-extrabold">
+                              {row.public_id}
+                              {Number(row.report_count) > 1 && (
+                                <span title={t("Reports of this problem")} className="inline-flex items-center gap-1 rounded-full bg-wash px-2 text-xs text-blue">
+                                  <Icon name="group" className="size-3.5" />×{row.report_count}
+                                </span>
+                              )}
+                            </span>
                             <span className="block truncate text-sm text-pencil">
                               {t(labels[row.category] || row.category)}, {cityName(row.city_code)}
                             </span>
@@ -386,6 +428,19 @@ export default async function AdminPage(props) {
                     </div>
                   )}
                 </article>
+
+                {incident && (
+                  <IncidentPanel
+                    t={t}
+                    owner={owner}
+                    reportId={report.id}
+                    incident={incident}
+                    {...incidentDetail}
+                    formatDate={formatDate}
+                    labels={labels}
+                    statuses={statuses}
+                  />
+                )}
 
                 {owner && (
                   <form action={updateReportAction} className={`${card} grid gap-4 p-5`}>

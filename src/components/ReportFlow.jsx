@@ -6,6 +6,7 @@ import { useSearchParams } from "next/navigation";
 import { useRouter } from "../i18n/navigation";
 import Receipt from "./Receipt";
 import Sheet from "./Sheet";
+import NearbyIncidents from "./NearbyIncidents";
 import { Icon, categoryStyle } from "./icons";
 import { btn, field, wrap } from "./ui";
 import { categories } from "../lib/report-options";
@@ -63,6 +64,10 @@ export default function ReportFlow() {
   const [ready, setReady] = useState(false);
   const [confirmDiscard, setConfirmDiscard] = useState(false);
   const [peekOpen, setPeekOpen] = useState(false);
+  // Same problem already reported nearby? The reporter's answer, and the GPS accuracy of the pin.
+  const [match, setMatch] = useState({ incident: "", declined: [] });
+  const [accuracy, setAccuracy] = useState();
+  const [confirmedOnly, setConfirmedOnly] = useState("");
   const heading = useRef(null);
   const sending = useRef(false);
   const sent = useRef(false);
@@ -102,6 +107,7 @@ export default function ReportFlow() {
         );
         setStep(Math.min(draft.step || 0, 2));
         setQueued(Boolean(draft.queued));
+        if (draft.match?.declined) setMatch(draft.match);
         setRestored(true);
       } else {
         const preset = search.get("category");
@@ -127,11 +133,12 @@ export default function ReportFlow() {
         anonymous,
         email,
         queued,
+        match,
         photos: photos.filter((p) => p.state === "ready").map((p) => p.file),
       });
     }, 400);
     return () => clearTimeout(timer);
-  }, [ready, step, category, city, position, description, anonymous, email, queued, photos]);
+  }, [ready, step, category, city, position, description, anonymous, email, queued, photos, match]);
 
   const dirty = Boolean(category || description || photos.length || position);
   useEffect(() => {
@@ -255,6 +262,7 @@ export default function ReportFlow() {
     navigator.geolocation.getCurrentPosition(
       ({ coords }) => {
         placePin([coords.latitude, coords.longitude]);
+        setAccuracy(coords.accuracy);
         setLocating("idle");
         try {
           navigator.vibrate?.(10);
@@ -324,6 +332,9 @@ export default function ReportFlow() {
       language: locale,
     }).forEach(([key, value]) => form.set(key, value));
     if (!anonymous) form.set("email", email.trim());
+    if (match.incident) form.set("incident", match.incident);
+    if (match.declined.length) form.set("declined", match.declined.slice(0, 5).join(","));
+    if (accuracy) form.set("accuracy", String(Math.round(accuracy)));
     photos.filter((p) => p.state === "ready").forEach((p) => form.append("images", p.file));
     try {
       const response = await fetch("/api/reports/submit", { method: "POST", body: form });
@@ -376,7 +387,15 @@ export default function ReportFlow() {
     setQueued(false);
     setRestored(false);
     setConfirmDiscard(false);
+    setMatch({ incident: "", declined: [] });
     go(0);
+  }
+  // The reporter only gave a thumbs-up to an existing issue: nothing more to send.
+  async function finishConfirmed() {
+    const ref = confirmedOnly;
+    sent.current = true;
+    await clearDraft();
+    router.push({ pathname: "/incident/[ref]", params: { ref } });
   }
 
   const done = [Boolean(category), validPoint(position) && description.trim().length >= 10, false].filter(
@@ -521,6 +540,7 @@ export default function ReportFlow() {
                             checked={category === value}
                             onChange={() => {
                               setCategory(value);
+                              setMatch({ incident: "", declined: [] });
                               try {
                                 navigator.vibrate?.(8);
                               } catch {}
@@ -561,7 +581,10 @@ export default function ReportFlow() {
                         id="field-municipality"
                         className={field.input}
                         value={city}
-                        onChange={(event) => setCity(event.target.value)}
+                        onChange={(event) => {
+                          setCity(event.target.value);
+                          setMatch({ incident: "", declined: [] });
+                        }}
                         aria-invalid={Boolean(errors.municipality)}
                         aria-describedby={describe("municipality")}
                         autoComplete="address-level2"
@@ -613,7 +636,10 @@ export default function ReportFlow() {
                         center={center}
                         zoom={selectedCity?.zoom || 13}
                         position={validPoint(position) ? position : null}
-                        onChange={placePin}
+                        onChange={(point) => {
+                          setAccuracy(undefined);
+                          placePin(point);
+                        }}
                         label={t("details.location")}
                         pinLabel={validPoint(position) ? formatCoords(position) : ""}
                         onTileError={() => setTileError(true)}
@@ -657,6 +683,7 @@ export default function ReportFlow() {
                             onChange={(number) => {
                               const next = position ? [...position] : [NaN, NaN];
                               next[index] = number;
+                              setAccuracy(undefined);
                               placePin(next);
                             }}
                           />
@@ -664,6 +691,18 @@ export default function ReportFlow() {
                       </div>
                     </details>
                   </section>
+
+                  {selectedCity && category && !notRouted && validPoint(position) && !outside && (
+                    <NearbyIncidents
+                      city={selectedCity.code}
+                      category={category}
+                      position={position}
+                      accuracy={accuracy}
+                      choice={match}
+                      onChoice={setMatch}
+                      onConfirmed={setConfirmedOnly}
+                    />
+                  )}
 
                   <div>
                     <label htmlFor="field-description" className={field.label}>
@@ -772,6 +811,17 @@ export default function ReportFlow() {
                       anonymous={anonymous}
                     />
                   </div>
+                  {match.incident && (
+                    <p className="flex items-start gap-2.5 rounded-md bg-wash p-4 text-sm">
+                      <Icon name="group" className="mt-0.5 size-5 shrink-0 text-blue" />
+                      <span className="flex-1">
+                        {t("nearby.reviewJoined", { count: match.count || 1 })}{" "}
+                        <button type="button" onClick={() => editAt(1, "nearby-title")} className="font-bold text-blue underline underline-offset-4">
+                          {t("nearby.change")}
+                        </button>
+                      </span>
+                    </p>
+                  )}
                   <ul className="grid gap-2">
                     {[
                       ["editCategory", 0, "field-category"],
@@ -854,6 +904,10 @@ export default function ReportFlow() {
                   )}
 
                   <p className="flex items-start gap-2.5 rounded-md bg-wash p-4 text-sm">
+                    <Icon name="group" className="mt-0.5 size-5 shrink-0 text-blue" />
+                    {t("nearby.publicNotice")}
+                  </p>
+                  <p className="flex items-start gap-2.5 rounded-md bg-wash p-4 text-sm">
                     <Icon name="info" className="mt-0.5 size-5 shrink-0 text-blue" />
                     {t("review.disclaimer")}
                   </p>
@@ -893,6 +947,25 @@ export default function ReportFlow() {
           </div>
         </aside>
       </div>
+
+      <Sheet
+        open={Boolean(confirmedOnly)}
+        onClose={() => setConfirmedOnly("")}
+        title={t("nearby.confirmedTitle")}
+        titleId="confirmed-title"
+        closeLabel={t("nearby.keepWriting")}
+        center
+      >
+        <p className="mt-2 text-pencil">{t("nearby.confirmedBody")}</p>
+        <div className="mt-6 grid gap-2 sm:grid-cols-2">
+          <button type="button" onClick={finishConfirmed} className={btn.primary}>
+            {t("nearby.finish")}
+          </button>
+          <button type="button" onClick={() => setConfirmedOnly("")} className={btn.soft}>
+            {t("nearby.keepWriting")}
+          </button>
+        </div>
+      </Sheet>
 
       <Sheet
         open={confirmDiscard}

@@ -10,6 +10,7 @@ import {
   queueStatusEmails,
   deliverStatusEmails,
 } from "../../../../lib/report-notifications";
+import { syncIncidentStatus } from "../../../../lib/incidents";
 export const dynamic = "force-dynamic";
 const select =
   "SELECT r.id,r.public_id,r.category,r.description,r.status,r.created_at,r.resolved_at,r.lat,r.lng,d.notification_email,c.name AS city FROM reports r JOIN departments d ON d.id=r.department_id JOIN cities c ON c.id=r.city_id JOIN municipality_report_tokens t ON t.report_id=r.id AND t.department_id=r.department_id WHERE r.public_id=? AND t.token_hash=? AND t.expires_at>UTC_TIMESTAMP()";
@@ -53,7 +54,8 @@ export async function POST(request, props) {
       { error: "Report not found" },
       { status: 404, headers: privateHeaders },
     );
-  let connection, eventKey, status;
+  let connection, eventKey, status,
+    shared = [];
   try {
     connection = await database().getConnection();
     await connection.beginTransaction();
@@ -98,6 +100,8 @@ export async function POST(request, props) {
       );
       eventKey = `audit:${audit.insertId}`;
       await queueStatusEmails(connection, report.id, eventKey);
+      // Other reports of the same problem move with it.
+      shared = await syncIncidentStatus(connection, report.id, status, report.notification_email);
     }
     await connection.commit();
   } catch (error) {
@@ -113,11 +117,11 @@ export async function POST(request, props) {
     connection?.release();
   }
   let pending = 0;
-  if (eventKey) {
+  for (const key of eventKey ? [eventKey, ...shared] : []) {
     try {
-      pending = (await deliverStatusEmails(eventKey)).pending;
+      pending += (await deliverStatusEmails(key)).pending;
     } catch {
-      pending = 1;
+      pending++;
     }
   }
   return Response.json(

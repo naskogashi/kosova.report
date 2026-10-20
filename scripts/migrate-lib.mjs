@@ -9,6 +9,7 @@ export const migrations = [
   "sql/004_existing_schema.sql",
   "sql/005_platform_management.sql",
   "sql/006_news.sql",
+  "sql/007_incidents.sql",
 ];
 
 // Backs the database up with mysqldump, then applies every migration.

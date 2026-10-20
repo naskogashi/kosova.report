@@ -4,6 +4,7 @@ import { useFormatter, useLocale, useTranslations } from "next-intl";
 import Receipt from "./Receipt";
 import TrackForm from "./TrackForm";
 import { Icon } from "./icons";
+import { Link } from "../i18n/navigation";
 import { btn, wrap } from "./ui";
 import { localizedCityName } from "../lib/municipality-names";
 import { downloadReportPDF } from "../lib/report-pdf-client";
@@ -155,6 +156,21 @@ export default function ReportProgress({ publicId, municipality = false }) {
                 </li>
               ))}
             </ol>
+
+            {!municipality && report.incident && (
+              <div className="mt-6 flex max-w-[34rem] items-start gap-3 rounded-md bg-wash p-4">
+                <Icon name="group" className="mt-0.5 size-6 shrink-0 text-blue" />
+                <div>
+                  <p className="font-bold">
+                    {t("incident", { count: report.incident.report_count })}
+                    {report.incident.upvote_count > 0 && <> · {t("incidentConfirms", { count: report.incident.upvote_count })}</>}
+                  </p>
+                  <Link href={{ pathname: "/incident/[ref]", params: { ref: report.incident.ref } }} className={`${btn.link} text-sm`}>
+                    {t("incidentOpen")}
+                  </Link>
+                </div>
+              </div>
+            )}
 
             <div aria-live="polite" className="mt-6">
               {notice && <p className="rounded-md bg-wash p-3 text-sm font-semibold">{notice}</p>}

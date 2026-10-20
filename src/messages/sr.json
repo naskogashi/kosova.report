@@ -251,6 +251,34 @@
       "queued": "Niste na mreži. Prijava je sačuvana na ovom uređaju i biće poslata čim se internet vrati, ako je ova stranica otvorena.",
       "sendingQueued": "Internet se vratio. Šaljem prijavu…",
       "banner": "Niste na mreži. Možete nastaviti da popunjavate prijavu."
+    },
+    "nearby": {
+      "checking": "Proveravamo da li je ovo već prijavljeno u blizini…",
+      "heading": "{count, plural, one {Neko je možda već prijavio ovo} few {# slična problema su već prijavljena u blizini} other {# sličnih problema je već prijavljeno u blizini}}",
+      "sub": "Da li je vaš problem jedan od ovih? Uporedite mesto, kategoriju i datum. Dva problema mogu biti blizu jedan drugom, zato izaberite samo ako je zaista isti.",
+      "mapLabel": "Vaša oznaka i problemi već prijavljeni u blizini",
+      "yourPin": "Vaša oznaka",
+      "otherCategory": "Druga kategorija",
+      "distance": "Oko {meters} m dalje",
+      "since": "prijavljeno od {date}",
+      "open": "Otvori ovaj problem",
+      "same": "Da, ovo je moj problem",
+      "chosen": "Vaša prijava biće dodata ovom problemu. Zadržava svoj broj i ključ, a odeljenje vidi da ga je prijavilo više ljudi.",
+      "addMine": "Nastavite i pošaljite i svoju prijavu (najbolje ako imate nove detalje ili fotografije)",
+      "confirmOnly": "Samo dajte palac gore",
+      "confirming": "Dodajem…",
+      "confirmError": "Palac gore nije dodat. Pokušajte ponovo.",
+      "notThis": "Ne, nije ovaj",
+      "resolvedNote": "Označeno kao rešeno {date}. Ako se problem vratio, nastavite i pošaljite novu prijavu.",
+      "different": "Nijedan od ovih. Moj problem je drugi",
+      "declinedNote": "Rekli ste da {count, plural, one {problem prijavljen u blizini nije} few {nijedan od # problema prijavljena u blizini nije} other {nijedan od # problema prijavljenih u blizini nije}} vaš. Vaša prijava postaje novi problem.",
+      "change": "Promeni",
+      "reviewJoined": "Vaša prijava biće dodata problemu koji je već prijavljen u blizini. Sa vašom, prijavljen je {count, plural, one {# put} few {# puta} other {# puta}}.",
+      "confirmedTitle": "Hvala, vaš palac gore je dodat",
+      "confirmedBody": "Odeljenje vidi da još jedna osoba ima ovaj problem. Ne morate da šaljete prijavu. Ako imate nove detalje ili fotografije, ipak možete poslati svoju.",
+      "finish": "Gotovo, obriši nacrt",
+      "keepWriting": "Pošalji i moju prijavu",
+      "publicNotice": "Da drugi ne bi prijavili isto dva puta, sajt prikazuje da je u ovoj oblasti prijavljen problem ove kategorije, sa datumom i statusom. Vaš tekst, fotografije i email se ne prikazuju."
     }
   },
   "sent": {
@@ -278,7 +306,12 @@
     "share": "Preporuči kosova.report",
     "shareText": "Prijavite probleme u gradu sa fotografijom i lokacijom, može i anonimno.",
     "missing": "Ova prijava više nije u ovom prozoru. Pronađite je pomoću broja prijave i privatnog ključa.",
-    "missingAction": "Pronađi moju prijavu"
+    "missingAction": "Pronađi moju prijavu",
+    "incidentJoined": "Dodato postojećem problemu, sada prijavljeno {count} puta",
+    "incidentNew": "Vaša prijava je novi javni problem",
+    "incidentJoinedBody": "Odeljenje rešava sve prijave ovog problema zajedno. Svoju i dalje pratite svojim ključem.",
+    "incidentNewBody": "Drugi mogu da ga pronađu, daju palac gore i komentarišu. Dok osoblje ne proveri detalje, javni su samo kategorija, oblast i datumi.",
+    "incidentOpen": "Otvori javni problem"
   },
   "track": {
     "heading": "Pronađite svoju prijavu",
@@ -309,7 +342,10 @@
     },
     "refresh": "Osveži",
     "pdf": "Preuzmi PDF potvrdu",
-    "another": "Pronađi drugu prijavu"
+    "another": "Pronađi drugu prijavu",
+    "incident": "{count, plural, one {Javni problem, prijavljen # put} few {Deo javnog problema prijavljenog # puta} other {Deo javnog problema prijavljenog # puta}}",
+    "incidentConfirms": "{count, plural, one {# osoba ga takođe vidi} few {# osobe ga takođe vide} other {# osoba ga takođe vidi}}",
+    "incidentOpen": "Otvori javni problem"
   },
   "municipality": {
     "heading": "Prijava za odeljenje",
@@ -450,7 +486,22 @@
         "title": "Ko vidi prijavu",
         "body": [
           "Prijava se emailom šalje odeljenju koje pokriva tu kategoriju u vašoj opštini: opis, mesto na mapi, fotografije i, ako ste ga ostavili, vaš email. Odeljenje dobija privatni link da prijavu označi kao „u obradi” ili „rešeno”. Taj link ističe posle 90 dana.",
-          "Osoblje kosova.report koje proverava prijave vidi ih u administratorskom panelu. Prijave se ne objavljuju na sajtu."
+          "Osoblje kosova.report koje proverava prijave vidi ih u administratorskom panelu. Vaš opis, fotografije i email nikada se ne objavljuju automatski."
+        ]
+      },
+      {
+        "id": "ceshtjet",
+        "title": "Javni problemi, palac gore i komentari",
+        "body": [
+          "Svaka prijava pripada jednom javnom problemu, kako bi ljudi videli da je problem već prijavljen umesto da ga ponovo šalju. Više prijava istog problema grupiše se u jedan problem: to birate vi kada prijavljujete, a osoblje kasnije može da grupiše ili razdvoji prijave."
+        ],
+        "list": [
+          "Dok ga osoblje ne proveri, stranica problema prikazuje samo kategoriju, približnu oblast (ne tačno mesto), datume, status i koliko puta je prijavljen.",
+          "Zatim osoblje može da objavi sažetak koji samo napiše, tačno mesto i fotografije koje izabere. Izostavljaju imena, lica, tablice i druge lične podatke.",
+          "Vaše ime, email, broj prijave i privatni ključ nikada se ne prikazuju na stranici problema.",
+          "Prijave poslate pre nego što su postojali javni problemi ostaju privatne, osim ako ih osoblje objavi.",
+          "Palac gore se broji jednom po pregledaču. Čuvamo šifrovani kod iz kolačića, ne vaše ime ili IP adresu.",
+          "Komentari i njihove fotografije pojavljuju se tek kada ih osoblje odobri. Ime koje upišete prikazuje se uz komentar; ostavite ga prazno da biste ostali anonimni."
         ]
       },
       {
@@ -458,7 +509,7 @@
         "title": "Gde se podaci čuvaju",
         "list": [
           "Prijave se čuvaju u bazi podataka na serveru platforme.",
-          "Fotografije se čuvaju u Cloudflare R2, servisu za skladištenje datoteka. Nisu javne; vide ih samo ovlašćeno osoblje i odeljenje preko emaila.",
+          "Fotografije se čuvaju u Cloudflare R2, servisu za skladištenje datoteka. Nisu javne; vide ih samo ovlašćeno osoblje i odeljenje preko emaila. Fotografija se pojavljuje na stranici problema samo ako je osoblje izabere, ili ako je priložena uz odobreni komentar.",
           "Emailovi se šalju preko SMTP2Go, servisa za slanje emailova."
         ]
       },
@@ -470,6 +521,7 @@
         ],
         "list": [
           "kr-locale: kolačić koji pamti izabrani jezik, godinu dana.",
+          "kr-voter: nasumičan kod, postavlja se samo kada date palac gore, da bi se isti pregledač brojao jednom. Godinu dana.",
           "Kolačić za prijavu osoblja: samo za osoblje koje ulazi u administratorski panel.",
           "U memoriji pregledača čuvamo vaš izbor za ovo obaveštenje i izgled (svetao, taman, visok kontrast).",
           "Nacrt prijave, zajedno sa fotografijama, ostaje samo na ovom uređaju dok ga ne pošaljete ili obrišete.",
@@ -492,5 +544,59 @@
       }
     ],
     "note": "Ova stranica nije pravni savet. Važne izmene ćemo ovde označiti datumom."
+  },
+  "incident": {
+    "statuses": {
+      "Pending": "Na čekanju",
+      "In Progress": "U obradi",
+      "Resolved": "Rešeno"
+    },
+    "heading": "Problem prijavljen u mestu {city}",
+    "reported": "{count, plural, one {Prijavljeno # put} few {Prijavljeno # puta} other {Prijavljeno # puta}}",
+    "confirms": "{count, plural, one {# osoba ga takođe vidi} few {# osobe ga takođe vide} other {# osoba ga takođe vidi}}",
+    "notPublished": "Detalji i fotografije pojavljuju se ovde kada ih osoblje proveri zbog ličnih podataka. Do tada su javni samo kategorija, oblast i datumi.",
+    "photo": "Fotografija {n}",
+    "mapLabel": "Gde je problem",
+    "approximate": "Krug prikazuje oblast, ne tačno mesto.",
+    "confirmTitle": "Da li i vi vidite ovaj problem?",
+    "confirmBody": "Dajte palac gore umesto da ponovo šaljete istu prijavu. Tako odeljenje vidi koliko ljudi pogađa.",
+    "confirm": "I ja to vidim",
+    "confirmed": "Potvrdili ste",
+    "voteError": "Nije uspelo. Pokušajte ponovo.",
+    "voteLimited": "Previše pokušaja sa ove mreže. Pokušajte kasnije.",
+    "resolvedTitle": "Označeno kao rešeno",
+    "resolvedBody": "Ako je problem i dalje tu ili se vratio, pošaljite novu prijavu.",
+    "reportAgain": "Prijavite ponovo",
+    "reportOther": "Prijavite drugi problem",
+    "facts": "Datumi",
+    "firstReported": "Prvi put prijavljeno",
+    "lastReported": "Poslednji put prijavljeno",
+    "resolvedOn": "Rešeno",
+    "share": "Podelite ovaj problem",
+    "copied": "Link je kopiran",
+    "privacyNote": "Imena, imejlovi i privatni ključevi podnosilaca nikada se ne prikazuju ovde.",
+    "comments": {
+      "heading": "Komentari",
+      "empty": "Još nema komentara.",
+      "team": "Tim kosova.report",
+      "official": "Zvanično obaveštenje",
+      "citizen": "Stanovnik",
+      "photo": "Fotografija komentara {n}",
+      "add": "Dodajte novost",
+      "body": "Vaš komentar",
+      "bodyHint": "Na primer: „Put je sada blokiran.” Ne pišite imena, brojeve telefona ili adrese ljudi.",
+      "name": "Prikazano ime",
+      "optional": "opciono",
+      "addPhoto": "Dodajte fotografiju",
+      "removePhoto": "Ukloni fotografiju {n}",
+      "moderated": "Komentari se pojavljuju kada ih naš tim proveri, obično u roku od jednog radnog dana. Fotografije se smanjuju i uklanjaju im se podaci o lokaciji i uređaju.",
+      "sent": "Hvala. Vaš komentar će se pojaviti kada bude proveren.",
+      "error": "Komentar nije poslat. Pokušajte ponovo.",
+      "limited": "Previše komentara sa ove mreže. Pokušajte kasnije.",
+      "short": "Prvo napišite komentar.",
+      "photoError": "Fotografija nije mogla da se pročita. Probajte drugu.",
+      "sending": "Šaljem…",
+      "submit": "Pošalji komentar"
+    }
   }
 }

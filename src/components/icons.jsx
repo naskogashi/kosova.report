@@ -135,6 +135,20 @@ const paths = {
   add: <path d="M12 5v14M5 12h14" />,
   chevronLeft: <path d="M14 6l-6 6 6 6" />,
   chevronRight: <path d="M10 6l6 6-6 6" />,
+  thumb: (
+    <>
+      <path d="M7.5 10.5v9h-3v-9h3Z" />
+      <path d="M7.5 10.5 11 4.5a2 2 0 0 1 2.8 2.2L13 10h5.2a2 2 0 0 1 2 2.3l-1 6A2 2 0 0 1 17.2 20H7.5" />
+    </>
+  ),
+  comment: <path d="M5 5.5h14a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1h-8l-4.5 3.5v-3.5H5a1 1 0 0 1-1-1v-9a1 1 0 0 1 1-1Z" />,
+  group: (
+    <>
+      <circle cx="9" cy="9" r="3" />
+      <circle cx="16.5" cy="10" r="2.4" />
+      <path d="M3.5 19a5.5 5.5 0 0 1 11 0M14.5 15.2a4.5 4.5 0 0 1 6 3.8" />
+    </>
+  ),
 };
 
 export function Icon({ name, className = "size-6", title, ...props }) {

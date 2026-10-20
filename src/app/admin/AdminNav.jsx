@@ -2,13 +2,14 @@ import Link from "next/link";
 import Wordmark from "../../components/Wordmark";
 import { logoutAction } from "./actions";
 
-// Staff navigation shared by every admin page. Owners also see News and Settings.
+// Staff navigation shared by every admin page. Owners also see Community, News and Settings.
 export default function AdminNav({ current, t, owner = false }) {
   const links = [
     ["/admin", t("Report inbox")],
     ["/admin/stats", t("Statistics")],
     ...(owner
       ? [
+          ["/admin/community", t("Community")],
           ["/admin/news", t("News")],
           ["/admin/settings", t("Settings")],
         ]

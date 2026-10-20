@@ -108,6 +108,7 @@ async function actions({
       deliverStatusEmails: async () => ({ pending: 0 }),
     },
     "../../lib/report-options": { categories: ["infrastructure"] },
+    "../../lib/incidents": { syncIncidentStatus: async () => [] },
   });
   return { action, queries, sessions };
 }

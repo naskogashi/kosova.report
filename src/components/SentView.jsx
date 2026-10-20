@@ -150,6 +150,26 @@ export default function SentView() {
             {t("pending")}
           </p>
         )}
+        {receipt.incident?.ref && (
+          <section className="mt-6 flex items-start gap-3 rounded-lg bg-wash p-4">
+            <Icon name="group" className="mt-0.5 size-6 shrink-0 text-blue" />
+            <div>
+              <p className="font-extrabold">
+                {receipt.incident.joined
+                  ? t("incidentJoined", { count: receipt.incident.report_count })
+                  : t("incidentNew")}
+              </p>
+              <p className="mt-1 text-sm">{receipt.incident.joined ? t("incidentJoinedBody") : t("incidentNewBody")}</p>
+              <button
+                type="button"
+                onClick={() => leave({ pathname: "/incident/[ref]", params: { ref: receipt.incident.ref } })}
+                className={`${btn.link} text-sm`}
+              >
+                {t("incidentOpen")}
+              </button>
+            </div>
+          </section>
+        )}
 
         <section aria-labelledby="key-title" className="mt-8 rounded-lg bg-card p-5 shadow-soft">
           <h2 id="key-title" className="flex items-center gap-2 text-xl font-extrabold">

@@ -22,6 +22,7 @@ import {
   deliverStatusEmails,
 } from "../../lib/report-notifications";
 import { categories } from "../../lib/report-options";
+import { syncIncidentStatus } from "../../lib/incidents";
 async function assertOrigin() {
   if ((await headers()).get("origin") !== siteConfig().origin)
     throw new Error("Request origin not allowed");
@@ -321,7 +322,8 @@ export async function updateReportAction(form) {
     throw Error("Invalid update");
   const connection = await database().getConnection();
   let failed = false,
-    eventKey;
+    eventKey,
+    shared = [];
   try {
     await connection.beginTransaction();
     const [rows] = await connection.execute(
@@ -340,6 +342,8 @@ export async function updateReportAction(form) {
     if (rows[0].status !== status) {
       eventKey = `audit:${audit.insertId}`;
       await queueStatusEmails(connection, id, eventKey);
+      // Other reports of the same problem move with it.
+      shared = await syncIncidentStatus(connection, id, status, account.email);
     }
     await connection.commit();
   } catch (error) {
@@ -352,11 +356,11 @@ export async function updateReportAction(form) {
     connection.release();
   }
   let pending = 0;
-  if (eventKey && !failed) {
+  for (const key of eventKey && !failed ? [eventKey, ...shared] : []) {
     try {
-      pending = (await deliverStatusEmails(eventKey)).pending;
+      pending += (await deliverStatusEmails(key)).pending;
     } catch {
-      pending = 1;
+      pending++;
     }
   }
   revalidatePath("/admin");

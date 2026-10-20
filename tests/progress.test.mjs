@@ -214,6 +214,7 @@ async function municipality({ found = true, initial = "Pending" } = {}) {
       queueStatusEmails: async () => queued++,
       deliverStatusEmails: async () => ({ pending: 0 }),
     },
+    "../../../../lib/incidents": { syncIncidentStatus: async () => [] },
   });
   return {
     route,

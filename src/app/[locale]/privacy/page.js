@@ -6,7 +6,7 @@ import { loadServerConfig } from "../../../lib/server-config";
 loadServerConfig();
 
 // Bump when the text changes in a way people should know about.
-const UPDATED = "2026-10-19";
+const UPDATED = "2026-10-20";
 // Answers data questions and deletion requests. PRIVACY_CONTACT_EMAIL overrides it on a server.
 const contact = process.env.PRIVACY_CONTACT_EMAIL || "privacy@kosova.report";
 
