@@ -36,7 +36,7 @@ export default async function Footer({ locale, staff = false }) {
                 <Wordmark className="text-[1.375rem] text-ink" />
               </li>
             ) : (
-            <li key={asset.key} className="flex h-14 w-28 items-center justify-center">
+            <li key={asset.key} className={`flex h-14 items-center justify-center ${asset.wide ? "w-56" : "w-28"}`}>
               {asset.key === "sbunker" ? (
                 <a
                   href="https://sbunker.org"
