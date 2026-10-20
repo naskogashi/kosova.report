@@ -1,4 +1,3 @@
-import AdminNav from "../AdminNav";
 import { CategoryBars, DailyColumns, DepartmentBars, StatusSplit } from "./Charts";
 import { siteTitle } from "../../../lib/site-branding";
 import { adminTranslator, adminLanguage } from "../../../lib/admin-language";
@@ -87,8 +86,7 @@ export default async function Stats() {
   const card = "rounded-lg bg-card p-5 shadow-[0_0_0_1px_var(--color-rule)] sm:p-6";
   const tableToggle = "mt-5 [&_summary]:min-h-11 [&_summary]:cursor-pointer [&_summary]:py-2 [&_summary]:font-bold [&_summary]:text-blue";
   return (
-    <div className="mx-auto w-full max-w-6xl space-y-7 px-4 py-8 sm:px-6">
-      <AdminNav current="/admin/stats" t={t} owner={owner} />
+    <div className="mx-auto w-full max-w-7xl *:max-w-6xl space-y-7 px-4 pt-6 pb-8 sm:px-6">
       <h1 className="text-3xl font-extrabold tracking-[-0.025em]">
         {owner ? t("Platform statistics") : t("My assigned reports")}
       </h1>

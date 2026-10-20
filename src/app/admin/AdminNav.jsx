@@ -1,31 +1,36 @@
+"use client";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import Wordmark from "../../components/Wordmark";
 import { logoutAction } from "./actions";
 
-// Staff navigation shared by every admin page. Owners also see Community, News and Settings.
-export default function AdminNav({ current, t, owner = false }) {
+// Staff navigation, drawn once by the admin layout so it never moves between pages.
+// Owners also see Community, News and Settings. The current page comes from the URL.
+export default function AdminNav({ labels, owner = false }) {
+  const pathname = usePathname();
   const links = [
-    ["/admin", t("Report inbox")],
-    ["/admin/stats", t("Statistics")],
+    ["/admin", labels.inbox],
+    ["/admin/stats", labels.stats],
     ...(owner
       ? [
-          ["/admin/community", t("Community")],
-          ["/admin/news", t("News")],
-          ["/admin/settings", t("Settings")],
+          ["/admin/community", labels.community],
+          ["/admin/news", labels.news],
+          ["/admin/settings", labels.settings],
         ]
       : []),
-    ["/admin/account", t("My account")],
+    ["/admin/account", labels.account],
   ];
+  const current = (href) => (href === "/admin" ? pathname === "/admin" : pathname === href || pathname.startsWith(`${href}/`));
   return (
-    <nav aria-label={t("Admin panel")} className="flex flex-wrap items-center gap-x-1 gap-y-2">
-      <Link href="/admin" className="mr-4 rounded-sm" aria-label={t("Admin panel")}>
+    <nav aria-label={labels.panel} className="flex flex-wrap items-center gap-x-1 gap-y-2">
+      <Link href="/admin" className="mr-4 rounded-sm" aria-label={labels.panel}>
         <Wordmark className="text-xl" />
       </Link>
       {links.map(([href, label]) => (
         <Link
           key={href}
           href={href}
-          aria-current={current === href ? "page" : undefined}
+          aria-current={current(href) ? "page" : undefined}
           className="inline-flex min-h-11 items-center rounded-full px-3.5 text-sm font-bold text-pencil hover:bg-wash hover:text-ink aria-[current=page]:bg-ink aria-[current=page]:text-paper"
         >
           {label}
@@ -33,7 +38,7 @@ export default function AdminNav({ current, t, owner = false }) {
       ))}
       <form action={logoutAction} className="ml-auto">
         <button type="submit" className="inline-flex min-h-11 items-center rounded-full px-3.5 text-sm font-bold text-blue hover:bg-wash">
-          {t("Sign out")}
+          {labels.signOut}
         </button>
       </form>
     </nav>

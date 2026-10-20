@@ -8,7 +8,6 @@ import {
   reviewReportAction,
 } from "./actions";
 import AdminSubmit from "./AdminSubmit";
-import AdminNav from "./AdminNav";
 import AdminShortcuts from "./AdminShortcuts";
 import IncidentPanel from "./IncidentPanel";
 import { issueErrors } from "./issue-errors";
@@ -215,8 +214,7 @@ export default async function AdminPage(props) {
     "inline-flex min-h-10 items-center gap-2 rounded-full px-3.5 text-sm font-bold transition-colors duration-120";
   const card = "rounded-lg bg-card shadow-[0_0_0_1px_var(--color-rule)]";
   return (
-    <div className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6">
-      <AdminNav current="/admin" t={t} owner={owner} />
+    <div className="mx-auto w-full max-w-7xl px-4 pb-8 sm:px-6">
       <AdminShortcuts />
       <div className="mt-6 flex flex-wrap items-end justify-between gap-3">
         <div>

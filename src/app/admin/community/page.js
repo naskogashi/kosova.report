@@ -3,7 +3,6 @@ import { requireOwner } from "../../../lib/admin-session";
 import { database } from "../../../lib/db";
 import { siteTitle } from "../../../lib/site-branding";
 import { localizedPath } from "../../../i18n/paths";
-import AdminNav from "../AdminNav";
 import AdminSubmit from "../AdminSubmit";
 import { issueErrors } from "../issue-errors";
 import { btn } from "../../../components/ui";
@@ -72,8 +71,7 @@ export default async function CommunityPage(props) {
   }[searchParams.saved];
 
   return (
-    <div className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6">
-      <AdminNav current="/admin/community" t={t} owner />
+    <div className="mx-auto w-full max-w-7xl px-4 pb-8 sm:px-6">
       <h1 className="mt-6 text-3xl font-extrabold tracking-[-0.025em]">{t("Community")}</h1>
       <p className="mt-1 text-pencil">{t("Comments waiting for approval and reports that may be the same problem.")}</p>
       {saved && <p role="status" className="mt-5 rounded-md bg-ok-wash p-3 font-semibold text-ok">{t(saved)}</p>}

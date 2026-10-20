@@ -1,4 +1,3 @@
-import AdminNav from "../AdminNav";
 import { siteTitle } from "../../../lib/site-branding";
 import { adminTranslator, adminLanguage } from "../../../lib/admin-language";
 import { requireAdmin } from "../../../lib/admin-session";
@@ -23,8 +22,7 @@ export default async function Account() {
   // First sign-in: one form that replaces the one-time password. Afterwards: details and password separately.
   if (!account.must_change_password)
     return (
-      <div className="mx-auto w-full max-w-5xl px-4 py-8 sm:px-6">
-        <AdminNav current="/admin/account" t={t} owner={account.role === "owner"} />
+      <div className="mx-auto w-full max-w-7xl *:max-w-5xl px-4 pb-8 sm:px-6">
         <h1 className="mt-6 text-3xl font-extrabold tracking-[-0.025em]">{t("My account")}</h1>
         <div className="mt-6">
           <AccountForms account={{ name: account.name, email: account.email }} />
@@ -32,9 +30,8 @@ export default async function Account() {
       </div>
     );
   return (
-    <div className="mx-auto w-full max-w-5xl px-4 py-8 sm:px-6">
-      <AdminNav current="/admin/account" t={t} owner={account.role === "owner"} />
-      <section className="mt-8 max-w-lg rounded-lg bg-card p-6 shadow-[0_0_0_1px_var(--color-rule)]">
+    <div className="mx-auto w-full max-w-7xl *:max-w-5xl px-4 pb-8 sm:px-6">
+      <section className="mt-6 max-w-lg rounded-lg bg-card p-6 shadow-[0_0_0_1px_var(--color-rule)]">
         <h1 className="text-2xl font-bold">{t("My account")}</h1>
         {Boolean(account.must_change_password) && (
           <p className="mt-4 rounded-sm bg-wash p-3 text-sm text-stamp">

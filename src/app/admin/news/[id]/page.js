@@ -6,7 +6,6 @@ import { database } from "../../../../lib/db";
 import { siteTitle } from "../../../../lib/site-branding";
 import { newsKinds, newsLocales, toKosovoTime } from "../../../../lib/news";
 import { localizedPath } from "../../../../i18n/paths";
-import AdminNav from "../../AdminNav";
 import AdminSubmit from "../../AdminSubmit";
 import { saveNewsAction, deleteNewsAction } from "../actions";
 import { btn, field } from "../../../../components/ui";
@@ -53,8 +52,7 @@ export default async function EditNews(props) {
   }
   const publicPath = post?.slug ? localizedPath("/news/[slug]", "sq", { slug: post.slug }) : null;
   return (
-    <div className="mx-auto w-full max-w-4xl px-4 py-8 sm:px-6">
-      <AdminNav current="/admin/news" t={t} owner />
+    <div className="mx-auto w-full max-w-7xl *:max-w-4xl px-4 pb-8 sm:px-6">
       <p className="mt-6">
         <Link href="/admin/news" className={btn.link}>
           {t("All posts")}

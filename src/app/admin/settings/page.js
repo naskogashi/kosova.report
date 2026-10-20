@@ -1,6 +1,5 @@
 import { existsSync } from "node:fs";
 import path from "node:path";
-import AdminNav from "../AdminNav";
 import { siteTitle } from "../../../lib/site-branding";
 import { adminTranslator, adminLanguage } from "../../../lib/admin-language";
 import { database } from "../../../lib/db";
@@ -170,8 +169,7 @@ export default async function Settings(props) {
     );
   }
   return (
-    <div className="mx-auto w-full max-w-7xl space-y-7 px-4 py-8 sm:px-6">
-      <AdminNav current="/admin/settings" t={t} owner />
+    <div className="mx-auto w-full max-w-7xl space-y-7 px-4 pt-6 pb-8 sm:px-6">
       <h1 className="text-3xl font-extrabold tracking-[-0.025em] text-ink">
         {t("Platform settings")}
       </h1>
