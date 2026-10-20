@@ -1,0 +1,150 @@
+# License and Legal Notice
+
+**kosova.report**
+Copyright © 2026 Nasko Gashi and Progon LLC (CODON). All rights reserved except as expressly granted below.
+
+kosova.report was created by **Nasko Gashi** and **CODON**, a part of Progon LLC (together, "the Licensors"). The Licensors jointly hold the copyright and all other rights described in this document.
+
+This project was developed with support from the CIVICUS Digital Democracy Initiative (DDI). That support does not make CIVICUS or any partner organisation a copyright holder, licensor or endorser of this project, unless a separate written agreement says otherwise.
+
+This repository is licensed in parts. Each part below has its own license. If anything is unclear, the stricter reading applies to everything except the Software, which is governed only by the GNU Affero General Public License v3.0 and the permitted additional terms in Part 1.
+
+| Part | What it covers | License |
+| --- | --- | --- |
+| 1. Software | All source code and technical files | GNU AGPL v3.0 only |
+| 2. Content | Written reports, research, documentation, data, PDFs, images | CC BY-NC-ND 4.0 |
+| 3. Brand | The name "kosova.report", logos and project identity | Not licensed; all rights reserved |
+| 4. Third-party material | Fonts, partner logos, libraries, map data, user submissions | Their own licenses or owners |
+
+---
+
+## Part 1: Software (GNU Affero General Public License v3.0)
+
+### 1.1 Scope
+
+"The Software" means all source code, scripts, configuration, database schemas and migrations, build and deployment files, tests, interface text embedded in the source code, and the technical architecture of this repository. This includes, without limitation, everything in `src/`, `scripts/`, `sql/`, `tests/`, `public/` (except material listed in Part 4) and `.github/`.
+
+### 1.2 Grant
+
+The Software is free software: you can redistribute it and/or modify it under the terms of the **GNU Affero General Public License as published by the Free Software Foundation, version 3 of the License only** (SPDX: `AGPL-3.0-only`).
+
+The Software is distributed in the hope that it will be useful, but **WITHOUT ANY WARRANTY**; without even the implied warranty of **MERCHANTABILITY** or **FITNESS FOR A PARTICULAR PURPOSE**. See the GNU Affero General Public License for more details.
+
+The full text of the license is in the file `COPYING` in this repository and at <https://www.gnu.org/licenses/agpl-3.0.html>.
+
+### 1.3 Network use: you must publish your source code (AGPLv3 Section 13)
+
+This project is a web application. Section 13 of the AGPLv3 applies to it in full:
+
+> If you modify the Program, your modified version must prominently offer all users interacting with it remotely through a computer network […] an opportunity to receive the Corresponding Source of your version by providing access to the Corresponding Source from a network server at no charge, through some standard or customary means of facilitating copying of software.
+
+In plain terms: **if you run a modified version of this Software as a website, web service, app backend or cloud service that other people use over a network, you must make the complete source code of your modified version available to those users**, free of charge, under the AGPLv3. That includes all your changes, the build and deployment scripts, database schemas and anything else needed to run it. Hosting it privately for others, offering it "as a service", or running it on a server you don't distribute is not an exception.
+
+You must show a clear link to that source code in the user interface of your instance, for example in the footer.
+
+### 1.4 Additional terms under AGPLv3 Section 7
+
+As permitted by Section 7 of the AGPLv3, the following additional terms apply to the Software:
+
+**(a) Preservation of notices and attribution (Section 7(b)).** You must keep intact all copyright notices, this legal notice, and the author attribution "Original work by Nasko Gashi and CODON, kosova.report" in the source files and in the "About", footer or legal-notice area of any user interface of a modified version. Modified versions must be marked as changed and must not claim to be the original.
+
+**(b) No misrepresentation of origin (Section 7(c)).** You must not represent a modified version as the original kosova.report, and you must state in a reasonable way that your version is different from the original.
+
+**(c) No trademark rights (Section 7(e)).** This license does not grant any right to use the trade names, trademarks, service marks, logos or domain names of the Licensors, as set out in Part 3.
+
+Under Section 7, if you receive a copy with additional terms that are not permitted by the AGPLv3, you may remove them. The terms above are permitted terms and may not be removed.
+
+---
+
+## Part 2: Written Content, Research, Reports and Data (CC BY-NC-ND 4.0)
+
+### 2.1 Scope
+
+"The Content" means all non-code material authored by or for the Licensors and made available in or through this repository or the kosova.report platform. This includes written reports, articles and news posts, journalism, research text, analyses, documentation (including `README.md` and guides), training material, datasets and statistics compiled by the Licensors, PDF documents, and images, illustrations and maps created for the project. It does not include the Software (Part 1), the Brand (Part 3) or the third-party material in Part 4.
+
+### 2.2 Grant
+
+The Content is licensed under the **Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License** (SPDX: `CC-BY-NC-ND-4.0`). Full text: <https://creativecommons.org/licenses/by-nc-nd/4.0/legalcode>.
+
+You may copy and redistribute the Content in any medium or format, **unaltered and in full**, for **non-commercial purposes only**, provided you give appropriate credit as follows:
+
+> © Nasko Gashi and CODON, kosova.report, licensed under CC BY-NC-ND 4.0. Original: [link to the source]
+
+### 2.3 What is not permitted without prior written permission
+
+Without the Licensors' **prior written permission**, you may not:
+
+- **sell** the Content, or use it in any product, service, advertising, paid publication or other activity primarily intended for commercial advantage or payment;
+- **modify, alter, edit, abridge, excerpt out of context, or remix** the Content;
+- **translate** the Content into any other language (a translation is a derivative work under this license);
+- **create derivative works**, including adapting the Content's data or findings into new reports, visualisations or datasets that are distributed;
+- **remove or change** the attribution, copyright notice or license reference;
+- **imply** that the Licensors endorse you or your use.
+
+Short quotations for news reporting, criticism, review or research remain permitted to the extent allowed by applicable copyright exceptions and limitations (such as fair use or fair dealing). This license does not restrict them.
+
+To ask for permission, contact the Licensors (see Part 6).
+
+---
+
+## Part 3: Branding and Trademark Rights
+
+### 3.1 Exclusive ownership
+
+The name **"kosova.report"**, the domain `kosova.report`, the kosova.report wordmark and logo (including the gold dot device), app icons, the project's visual identity, and any other names, marks or brand assets identifying this project (together, "the Brand") are the exclusive property of the Licensors. **All rights in the Brand are reserved.** The CODON name and logo are likewise the property of Progon LLC and are not licensed. The Brand is not licensed under the AGPLv3, CC BY-NC-ND 4.0 or any other license in this repository.
+
+### 3.2 No right to use the Brand
+
+Using, copying, modifying or hosting the Software **does not grant you any right** to use the Brand. In particular, you may not, without prior written permission:
+
+- use "kosova.report", a confusingly similar name, or the logos for your instance, product, organisation, domain, app store listing or social media account;
+- present your instance, fork or derivative as the **official** kosova.report, as operated or endorsed by the Licensors, or as connected with its partners or supporters;
+- suggest that reports submitted to your instance reach the institutions or channels used by the official kosova.report.
+
+### 3.3 What forks must do
+
+If you run a modified or unmodified copy of the Software publicly, you must:
+
+1. replace the name, logos, icons and visual identity with your own;
+2. state clearly, for example in the footer, that your service is independent and is not the official kosova.report;
+3. keep the attribution required by Part 1.4(a). Stating that your service is "based on the open-source kosova.report software" is permitted as a factual statement of origin.
+
+---
+
+## Part 4: Third-Party Material and Exclusions
+
+The licenses in Parts 1 and 2 cover only material in which the Licensors hold the rights. They **do not** apply to the following, which remain under their own terms and with their own owners:
+
+- **Fonts:** Sofia Sans and Sofia Sans Extra Condensed, © The Sofia Sans Project Authors, licensed under the SIL Open Font License 1.1 (see `src/fonts/OFL-SofiaSans.txt`).
+- **Partner and supporter logos:** the logos of CIVICUS, Metamorphosis Foundation, TechSoup, Digital Activism Program and Sbunker (in `public/logos/` and in storage) are the property of their respective owners. They are shown only to acknowledge support and partnership, and may not be reused without their owners' permission.
+- **Software dependencies:** libraries installed through npm (including Next.js, React, Leaflet, jsPDF and others) are licensed by their authors under their own licenses.
+- **Map data and tiles:** © OpenStreetMap contributors, available under the Open Database License (ODbL). Municipal boundary data remains under the terms of its original source.
+- **User submissions:** reports, descriptions, photos and comments submitted by members of the public remain the property of the people who submitted them. They are handled under the platform's privacy notice and are not licensed to anyone under this document.
+
+---
+
+## Part 5: Disclaimer of Warranty and Limitation of Liability
+
+THE SOFTWARE AND THE CONTENT ARE PROVIDED **"AS IS"**, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, ACCURACY AND NON-INFRINGEMENT.
+
+TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, IN NO EVENT SHALL THE AUTHOR, COPYRIGHT HOLDER, CONTRIBUTORS, PARTNERS OR SUPPORTERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE, THE CONTENT, OR THEIR USE OR OTHER DEALINGS IN THEM. THIS INCLUDES LOSS OF DATA, LOSS OF PROFITS, AND DIRECT, INDIRECT, INCIDENTAL, SPECIAL OR CONSEQUENTIAL DAMAGES.
+
+kosova.report is **not an emergency service**. Submitting a report does not guarantee that any institution will act. In an emergency, call **112**.
+
+Nothing in this document limits any liability that cannot be limited under applicable law. If any provision is found unenforceable, the remaining provisions stay in full effect.
+
+---
+
+## Part 6: Contact and Permissions
+
+For permission requests (commercial use, translation, adaptation, brand use) or licensing questions, contact the Licensors:
+
+**Nasko Gashi, CODON (Progon LLC)**
+Email: <nasko@gashi.fi>
+Web: <https://kosova.report> · <https://codon.fi>
+
+Any permission must be given **in writing**. Permission given for one use does not extend to any other use.
+
+---
+
+*SPDX summary: Software: `AGPL-3.0-only`. Content: `CC-BY-NC-ND-4.0`. Brand: all rights reserved. Third-party material: see Part 4.*

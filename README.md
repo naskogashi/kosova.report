@@ -132,3 +132,13 @@ tests/              node:test suites
 ## Supported by
 
 This activity is supported by the **CIVICUS Digital Democracy Initiative (DDI)**. Project partners: CIVICUS, Metamorphosis Foundation, TechSoup, Digital Activism Program and Sbunker.
+
+## License
+
+Copyright © 2026 Nasko Gashi and Progon LLC (CODON).
+
+- **Code:** [GNU Affero General Public License v3.0](COPYING). If you run a modified version as a website or online service, you must publish its complete source code to its users.
+- **Written content, reports, data, PDFs and images:** [CC BY-NC-ND 4.0](https://creativecommons.org/licenses/by-nc-nd/4.0/). Share it unchanged, with credit, for non-commercial use. Selling, modifying or translating it needs written permission.
+- **The "kosova.report" name, logos and brand:** all rights reserved. The open-source license does not let anyone use them, or present a copy as the official kosova.report.
+
+Fonts, partner logos, libraries, map data and residents' submissions keep their own licenses and owners. The full terms are in [LICENSE](LICENSE). For permissions, write to nasko@gashi.fi.
