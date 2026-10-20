@@ -4,10 +4,9 @@ import { branding } from "../lib/branding";
 import ThemedLogo from "./ThemedLogo";
 import FooterActions from "./FooterActions";
 import { Icon } from "./icons";
-import Wordmark from "./Wordmark";
 import { wrap } from "./ui";
 
-// Partners with kosova.report beside Sbunker, the CIVICUS DDI line and the CODON credit.
+// Partners, the CIVICUS DDI line and the CODON credit.
 // The DDI logo itself is in the header of the home and report pages (HeaderBrand).
 // The public site adds page links; the staff panel (`staff`) leaves them out.
 export default async function Footer({ locale, staff = false }) {
@@ -29,13 +28,7 @@ export default async function Footer({ locale, staff = false }) {
           aria-label={t("partners")}
           className="flex flex-wrap items-center justify-center gap-x-8 gap-y-5"
         >
-          {partners.flatMap((asset) => [asset, ...(asset.key === "sbunker" ? [{ key: "kosova-report" }] : [])]).map((asset) =>
-            asset.key === "kosova-report" ? (
-              // Our own mark sits with the partners, right after Sbunker.
-              <li key={asset.key} className="flex h-14 w-36 items-center justify-center">
-                <Wordmark className="text-[1.375rem] text-ink" />
-              </li>
-            ) : (
+          {partners.map((asset) => (
             <li key={asset.key} className={`flex h-14 items-center justify-center ${asset.wide ? "w-56" : "w-28"}`}>
               {asset.key === "sbunker" ? (
                 <a
@@ -51,8 +44,7 @@ export default async function Footer({ locale, staff = false }) {
                 <ThemedLogo asset={asset} className="max-h-11 max-w-full object-contain" />
               )}
             </li>
-            ),
-          )}
+          ))}
         </ul>
         <p className="mx-auto mt-6 max-w-[36rem] text-center text-sm text-pencil">
           {t("support")}
