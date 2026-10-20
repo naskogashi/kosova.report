@@ -23,6 +23,7 @@ async function loadRoute(
     existingSequence = 0,
     counterSequence = 41,
     routeMissing = false,
+    groupingFails = false,
   } = {},
 ) {
   const events = [],
@@ -111,6 +112,7 @@ async function loadRoute(
     "../../../../lib/incidents": {
       attachReport: async (connection, values) => {
         attached.push(values);
+        if (groupingFails) throw Object.assign(Error("missing table"), { code: "ER_NO_SUCH_TABLE" });
         return values.chosenRef
           ? { id: 3, ref: values.chosenRef, joined: true, report_count: 4, status: "In Progress" }
           : { id: 5, ref: "0123456789", joined: false, report_count: 1, status: "Pending" };
@@ -315,4 +317,12 @@ test("malformed issue references are rejected before any upload", async () => {
     assert.equal((await app.route.POST(request({ extra }))).status, 400);
     assert.ok(!app.events.includes("upload"));
   }
+});
+test("a grouping failure still saves and sends the report", async () => {
+  const app = await loadRoute(submitFile, { groupingFails: true });
+  const response = await app.route.POST(request());
+  assert.equal(response.status, 201);
+  assert.equal((await response.json()).incident, null);
+  assert.ok(app.events.includes("commit"));
+  assert.ok(app.events.includes("send"));
 });

@@ -287,15 +287,21 @@ export async function POST(request) {
       ],
     );
     const reportId = inserted.insertId;
-    const incident = await attachReport(connection, {
-      reportId,
-      cityId,
-      category,
-      point: [latitude, longitude],
-      accuracy,
-      chosenRef,
-      declinedRefs,
-    });
+    // Grouping must never cost a citizen their report: if it fails, the report is saved alone.
+    let incident = { ref: null, joined: false, report_count: 1 };
+    try {
+      incident = await attachReport(connection, {
+        reportId,
+        cityId,
+        category,
+        point: [latitude, longitude],
+        accuracy,
+        chosenRef,
+        declinedRefs,
+      });
+    } catch (error) {
+      console.error("Report grouping skipped", { reportId, code: error.code || "INCIDENT_ERROR" });
+    }
     const progressLink = await departmentLink(connection, {
       id: reportId,
       department_id: department.id,
@@ -401,11 +407,9 @@ export async function POST(request) {
         public_id,
         tracking_key,
         notification,
-        incident: {
-          ref: incident.ref,
-          joined: incident.joined,
-          report_count: incident.report_count,
-        },
+        incident: incident.ref
+          ? { ref: incident.ref, joined: incident.joined, report_count: incident.report_count }
+          : null,
       },
       {
         status: 201,
