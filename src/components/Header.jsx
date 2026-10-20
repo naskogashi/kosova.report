@@ -1,9 +1,9 @@
 import { getTranslations } from "next-intl/server";
 import { Link } from "../i18n/navigation";
-import Wordmark from "./Wordmark";
 import LanguageSwitch from "./LanguageSwitch";
 import ThemeMenu from "./ThemeMenu";
 import HeaderReport from "./HeaderReport";
+import HeaderBrand from "./HeaderBrand";
 import { Icon } from "./icons";
 import { wrap } from "./ui";
 
@@ -20,9 +20,7 @@ export default async function Header({ locale }) {
       <div
         className={`${wrap} flex min-h-16 items-center gap-x-3 py-2 sm:gap-x-4`}
       >
-        <Link href="/" aria-label={t("home")} className="rounded-sm">
-          <Wordmark className="text-[1.25rem] sm:text-[1.4rem]" />
-        </Link>
+        <HeaderBrand label={t("home")} />
         <p className="hidden items-center gap-1.5 text-sm text-pencil md:flex">
           <Icon name="pin" className="size-4 text-blue" />
           <span className="font-bold text-ink">{t("city")}</span>

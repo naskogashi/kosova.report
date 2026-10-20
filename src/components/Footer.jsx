@@ -1,14 +1,14 @@
 import { getTranslations } from "next-intl/server";
 import { Link } from "../i18n/navigation";
 import { branding } from "../lib/branding";
-import BrandingImage from "./BrandingImage";
+import ThemedLogo from "./ThemedLogo";
 import FooterActions from "./FooterActions";
 import { Icon } from "./icons";
 import Wordmark from "./Wordmark";
 import { wrap } from "./ui";
 
 // Partners with kosova.report beside Sbunker, the CIVICUS DDI line and the CODON credit.
-// The DDI logo itself is shown on top of the home and report pages (DonorBand).
+// The DDI logo itself is in the header of the home and report pages (HeaderBrand).
 // The public site adds page links; the staff panel (`staff`) leaves them out.
 export default async function Footer({ locale, staff = false }) {
   const t = await getTranslations({ locale, namespace: "footer" });
@@ -27,13 +27,13 @@ export default async function Footer({ locale, staff = false }) {
       <div className={`${wrap} pt-10`}>
         <ul
           aria-label={t("partners")}
-          className="flex flex-wrap items-center justify-center gap-x-8 gap-y-5 rounded-lg dark:bg-[oklch(0.97_0.008_255)] dark:px-4 dark:py-5"
+          className="flex flex-wrap items-center justify-center gap-x-8 gap-y-5"
         >
           {partners.flatMap((asset) => [asset, ...(asset.key === "sbunker" ? [{ key: "kosova-report" }] : [])]).map((asset) =>
             asset.key === "kosova-report" ? (
               // Our own mark sits with the partners, right after Sbunker.
               <li key={asset.key} className="flex h-14 w-36 items-center justify-center">
-                <Wordmark className="text-[1.375rem] text-ink dark:text-[oklch(0.25_0.06_258)]" />
+                <Wordmark className="text-[1.375rem] text-ink" />
               </li>
             ) : (
             <li key={asset.key} className="flex h-14 w-28 items-center justify-center">
@@ -45,10 +45,10 @@ export default async function Footer({ locale, staff = false }) {
                   aria-label={`Sbunker (${t("newTab")})`}
                   className="rounded-sm"
                 >
-                  <BrandingImage asset={asset} className="max-h-12 max-w-full object-contain" />
+                  <ThemedLogo asset={asset} className="max-h-12 max-w-full object-contain" />
                 </a>
               ) : (
-                <BrandingImage asset={asset} className="max-h-12 max-w-full object-contain" />
+                <ThemedLogo asset={asset} className="max-h-11 max-w-full object-contain" />
               )}
             </li>
             ),
@@ -63,9 +63,9 @@ export default async function Footer({ locale, staff = false }) {
             target="_blank"
             rel="noopener noreferrer"
             aria-label={`CODON (${t("newTab")})`}
-            className="codon-link flex flex-col items-center rounded-sm dark:rounded-md dark:bg-[oklch(0.97_0.008_255)] dark:px-4 dark:py-2"
+            className="codon-link flex flex-col items-center rounded-sm"
           >
-            <BrandingImage asset={codon} className="h-9 w-auto max-w-28 object-contain" />
+            <ThemedLogo asset={codon} className="h-9 w-auto max-w-28 object-contain" />
             <span aria-hidden="true" className="codon-underline mt-1 block h-0.5 w-full rounded-full bg-gold" />
           </a>
           <span lang="en">{t("codon")}</span>

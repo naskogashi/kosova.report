@@ -3,7 +3,6 @@ import { Link } from "../../i18n/navigation";
 import Receipt from "../../components/Receipt";
 import InstallBand from "../../components/InstallBand";
 import Wordmark from "../../components/Wordmark";
-import DonorBand from "../../components/DonorBand";
 import NewsCard from "../../components/NewsCard";
 import { localize, publishedNews } from "../../lib/news";
 import { Icon, categoryStyle } from "../../components/icons";
@@ -81,8 +80,6 @@ export default async function Home({ params }) {
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-
-      <DonorBand locale={locale} />
 
       {/* Opening: the city itself, drawn from its real streets. */}
       <section aria-labelledby="hero-title" className="bg-wash">

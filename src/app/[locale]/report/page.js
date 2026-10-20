@@ -1,7 +1,6 @@
 import { Suspense } from "react";
 import { setRequestLocale } from "next-intl/server";
 import ReportFlow from "../../../components/ReportFlow";
-import DonorBand from "../../../components/DonorBand";
 import { pageMetadata } from "../../../lib/seo";
 
 export async function generateMetadata({ params }) {
@@ -13,11 +12,8 @@ export default async function ReportPage({ params }) {
   const { locale } = await params;
   setRequestLocale(locale);
   return (
-    <>
-      <DonorBand locale={locale} />
-      <Suspense fallback={<div className="min-h-[70svh]" />}>
-        <ReportFlow />
-      </Suspense>
-    </>
+    <Suspense fallback={<div className="min-h-[70svh]" />}>
+      <ReportFlow />
+    </Suspense>
   );
 }
