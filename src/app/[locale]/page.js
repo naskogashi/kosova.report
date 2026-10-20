@@ -2,6 +2,8 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "../../i18n/navigation";
 import Receipt from "../../components/Receipt";
 import InstallBand from "../../components/InstallBand";
+import Wordmark from "../../components/Wordmark";
+import DonorBand from "../../components/DonorBand";
 import NewsCard from "../../components/NewsCard";
 import { localize, publishedNews } from "../../lib/news";
 import { Icon, categoryStyle } from "../../components/icons";
@@ -80,12 +82,19 @@ export default async function Home({ params }) {
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
+      <DonorBand locale={locale} />
+
       {/* Opening: the city itself, drawn from its real streets. */}
       <section aria-labelledby="hero-title" className="bg-wash">
         <div className={`${wrap} grid gap-10 pt-8 pb-12 lg:grid-cols-[7fr_6fr] lg:items-center lg:gap-14 lg:py-16`}>
           <div>
+            {/* The name first, the promise under it: one heading, read as "kosova.report: Your voice. A better city." */}
             <h1 id="hero-title" className="text-4xl font-extrabold tracking-[-0.03em]">
-              {tm("slogan")}
+              <span className="block text-blue">
+                <Wordmark className="text-[1.15em]" />
+                <span className="sr-only">:</span>
+              </span>
+              <span className="mt-3 block">{tm("slogan")}</span>
             </h1>
             <p className="mt-5 max-w-[33em] text-lg text-pencil">{t("lede")}</p>
             <p className="mt-4 inline-flex items-start gap-2 rounded-full bg-card px-4 py-2 text-sm font-bold">
@@ -280,6 +289,25 @@ export default async function Home({ params }) {
               {t("after.emergency")} 112
             </a>
           </aside>
+        </div>
+      </section>
+
+      {/* Already reported? Public issues, thumbs-up and comments. */}
+      <section aria-labelledby="together-title" className="py-16 lg:py-20">
+        <div className={wrap}>
+          <h2 id="together-title" className="max-w-[40rem] text-3xl font-extrabold tracking-[-0.025em]">
+            {t("together.title")}
+          </h2>
+          <p className="mt-3 max-w-[40rem] text-lg text-pencil">{t("together.sub")}</p>
+          <ul className="mt-8 grid gap-6 md:grid-cols-3">
+            {t.raw("together.items").map((item, index) => (
+              <li key={item.title} className="rounded-lg bg-card p-6 shadow-soft">
+                <Icon name={["group", "thumb", "comment"][index]} className="size-8 text-blue" />
+                <h3 className="mt-3 text-xl font-extrabold">{item.title}</h3>
+                <p className="mt-2 text-pencil">{item.body}</p>
+              </li>
+            ))}
+          </ul>
         </div>
       </section>
 

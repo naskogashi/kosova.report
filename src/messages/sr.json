@@ -69,7 +69,8 @@
     "cookies": "Privatnost i kolačići",
     "install": "Instaliraj aplikaciju",
     "newTab": "otvara se u novoj kartici",
-    "links": "Stranice"
+    "links": "Stranice",
+    "supportedBy": "Uz podršku"
   },
   "cookies": {
     "title": "Samo neophodni kolačići",
@@ -428,6 +429,24 @@
       "limitsTitle": "Šta ne možemo da obećamo",
       "limits": "Ova platforma nije služba za hitne slučajeve. Prijava ne garantuje trenutno rešavanje problema. Odeljenje samo odlučuje kako i kada će je obraditi.",
       "emergency": "Ako je neko u opasnosti, pozovite"
+    },
+    "together": {
+      "title": "Već prijavljeno? Dodajte svoj glas.",
+      "sub": "Kada mnogo ljudi prijavi isti problem, on ima veću težinu. Pre slanja vidite šta je već prijavljeno u blizini.",
+      "items": [
+        {
+          "title": "Isti problem, zajedno",
+          "body": "Prijave iste rupe ili gomile smeća grupišu se u jedan javni problem. Odeljenje vidi koliko ljudi ga je prijavilo."
+        },
+        {
+          "title": "I ja to vidim",
+          "body": "Dajte problemu palac gore umesto da ponovo šaljete istu prijavu. Dovoljan je jedan dodir, bez imena."
+        },
+        {
+          "title": "Novosti sa ulice",
+          "body": "Dodajte komentar ili fotografiju kada se nešto promeni, na primer „put je sada blokiran”. Naš tim proverava komentare pre objave."
+        }
+      ]
     }
   },
   "system": {

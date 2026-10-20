@@ -4,9 +4,11 @@ import { branding } from "../lib/branding";
 import BrandingImage from "./BrandingImage";
 import FooterActions from "./FooterActions";
 import { Icon } from "./icons";
+import Wordmark from "./Wordmark";
 import { wrap } from "./ui";
 
-// Same content as before the redesign: partners, the CIVICUS DDI line and the CODON credit.
+// Partners with kosova.report beside Sbunker, the CIVICUS DDI line and the CODON credit.
+// The DDI logo itself is shown on top of the home and report pages (DonorBand).
 // The public site adds page links; the staff panel (`staff`) leaves them out.
 export default async function Footer({ locale, staff = false }) {
   const t = await getTranslations({ locale, namespace: "footer" });
@@ -27,7 +29,13 @@ export default async function Footer({ locale, staff = false }) {
           aria-label={t("partners")}
           className="flex flex-wrap items-center justify-center gap-x-8 gap-y-5 rounded-lg dark:bg-[oklch(0.97_0.008_255)] dark:px-4 dark:py-5"
         >
-          {partners.map((asset) => (
+          {partners.flatMap((asset) => [asset, ...(asset.key === "sbunker" ? [{ key: "kosova-report" }] : [])]).map((asset) =>
+            asset.key === "kosova-report" ? (
+              // Our own mark sits with the partners, right after Sbunker.
+              <li key={asset.key} className="flex h-14 w-36 items-center justify-center">
+                <Wordmark className="text-[1.375rem] text-ink dark:text-[oklch(0.25_0.06_258)]" />
+              </li>
+            ) : (
             <li key={asset.key} className="flex h-14 w-28 items-center justify-center">
               {asset.key === "sbunker" ? (
                 <a
@@ -43,7 +51,8 @@ export default async function Footer({ locale, staff = false }) {
                 <BrandingImage asset={asset} className="max-h-12 max-w-full object-contain" />
               )}
             </li>
-          ))}
+            ),
+          )}
         </ul>
         <p className="mx-auto mt-6 max-w-[36rem] text-center text-sm text-pencil">
           {t("support")}

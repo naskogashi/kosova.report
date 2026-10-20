@@ -69,7 +69,8 @@
     "cookies": "Privatësia dhe cookies",
     "install": "Instalo aplikacionin",
     "newTab": "hapet në skedë të re",
-    "links": "Faqet"
+    "links": "Faqet",
+    "supportedBy": "Me mbështetjen e"
   },
   "cookies": {
     "title": "Vetëm cookies të domosdoshme",
@@ -428,6 +429,24 @@
       "limitsTitle": "Çfarë nuk mund të premtojmë",
       "limits": "Kjo platformë nuk është shërbim emergjence. Raportimi nuk garanton zgjidhjen e menjëhershme të problemit. Departamenti vendos vetë si dhe kur e trajton.",
       "emergency": "Nëse dikush është në rrezik, thirr"
+    },
+    "together": {
+      "title": "Është raportuar tashmë? Shto zërin tënd.",
+      "sub": "Kur shumë njerëz raportojnë të njëjtin problem, ai ka më shumë peshë. Para se të dërgosh, sheh çfarë është raportuar afër.",
+      "items": [
+        {
+          "title": "Një problem, një çështje",
+          "body": "Raportet për të njëjtën gropë ose grumbull mbeturinash bashkohen në një çështje publike. Departamenti sheh sa njerëz e kanë raportuar."
+        },
+        {
+          "title": "E shoh edhe unë",
+          "body": "Jepi një çështjeje një pëlqim në vend që ta dërgosh të njëjtin raport përsëri. Mjafton një prekje, pa emër."
+        },
+        {
+          "title": "Përditësime nga rruga",
+          "body": "Shto një koment ose foto kur ndryshon diçka, si “rruga tani është e bllokuar”. Ekipi ynë i kontrollon komentet para se të shfaqen."
+        }
+      ]
     }
   },
   "system": {

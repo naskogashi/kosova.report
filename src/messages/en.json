@@ -69,7 +69,8 @@
     "cookies": "Privacy & cookies",
     "install": "Install app",
     "newTab": "opens in a new tab",
-    "links": "Pages"
+    "links": "Pages",
+    "supportedBy": "Supported by"
   },
   "cookies": {
     "title": "Essential cookies only",
@@ -428,6 +429,24 @@
       "limitsTitle": "What we can't promise",
       "limits": "This platform is not an emergency service. Submitting a report does not guarantee an immediate resolution. The department decides how and when to handle it.",
       "emergency": "If someone is in danger, call"
+    },
+    "together": {
+      "title": "Already reported? Add your voice.",
+      "sub": "When many people report the same problem, it counts more. Before you send, you see what was already reported nearby.",
+      "items": [
+        {
+          "title": "One problem, one issue",
+          "body": "Reports of the same pothole or rubbish pile are grouped into one public issue. The department sees how many people reported it."
+        },
+        {
+          "title": "I see it too",
+          "body": "Give an issue a thumbs-up instead of sending the same report again. It takes one tap and needs no name."
+        },
+        {
+          "title": "Updates from the street",
+          "body": "Add a comment or a photo when something changes, like “the road is blocked now”. Our team checks comments before they appear."
+        }
+      ]
     }
   },
   "system": {
