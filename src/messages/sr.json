@@ -179,7 +179,7 @@
       "locating": "Tražim lokaciju…",
       "locationDenied": "Nemamo dozvolu za lokaciju. Dodirnite mapu na mestu problema ili dozvolite lokaciju u podešavanjima pregledača.",
       "locationUnavailable": "Lokacija nije pronađena. Dodirnite mapu na mestu problema.",
-      "mapHint": "Dodirnite mapu ili prevucite oznaku na tačno mesto. Tastaturom: izaberite mapu i pomerajte oznaku strelicama.",
+      "mapHint": "Dodirnite mapu ili prevucite oznaku na tačno mesto. Na telefonu prevlačenje pomera stranicu; dodirnite „Pomeri mapu” da biste pomerili mapu. Tastaturom: izaberite mapu i pomerajte oznaku strelicama.",
       "pinPlaced": "Oznaka je postavljena: {coords}",
       "outside": "Ova tačka je van opštine {city}. Za sada se primaju samo prijave za {city}.",
       "mapError": "Mapa nije učitana. Unesite koordinate ispod.",
@@ -201,7 +201,9 @@
       "moveRight": "Pomeri fotografiju {n} udesno",
       "photoFailed": "Ova fotografija nije učitana. Pokušajte sa drugom.",
       "mapHelp": "Teško vam je da pronađete mesto na mapi? Neka ga telefon pronađe umesto vas.",
-      "locateMe": "Pronađi moju lokaciju"
+      "locateMe": "Pronađi moju lokaciju",
+      "moveMap": "Pomeri mapu",
+      "moveMapDone": "Gotovo"
     },
     "review": {
       "heading": "Proverite prijavu",

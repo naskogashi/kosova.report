@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { divIcon } from "leaflet";
 import { MapContainer, Marker, Polygon, TileLayer, useMap, useMapEvents } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
@@ -84,6 +84,16 @@ function Pin({ position, onChange, center, zoom, label }) {
   ) : null;
 }
 
+// Turns one-finger panning on or off after the map has mounted.
+function Panning({ enabled }) {
+  const map = useMap();
+  useEffect(() => {
+    if (enabled) map.dragging.enable();
+    else map.dragging.disable();
+  }, [map, enabled]);
+  return null;
+}
+
 export default function ReportMap({
   position,
   onChange,
@@ -93,11 +103,36 @@ export default function ReportMap({
   pinLabel,
   onTileError,
   outline,
+  moveLabel = "Move map",
+  doneLabel = "Done",
 }) {
   const customURL = process.env.NEXT_PUBLIC_MAP_TILE_URL;
   const customAttribution = process.env.NEXT_PUBLIC_MAP_ATTRIBUTION;
   const useCustom = Boolean(customURL && customAttribution);
+  // On touch screens a swipe over the map scrolls the page. Panning is opt-in with a button;
+  // tapping still places the pin, the pin can still be dragged and two fingers still zoom.
+  const [touch, setTouch] = useState(false);
+  const [panning, setPanning] = useState(false);
+  useEffect(() => {
+    const query = matchMedia("(pointer: coarse)");
+    const sync = () => setTouch(query.matches);
+    sync();
+    query.addEventListener("change", sync);
+    return () => query.removeEventListener("change", sync);
+  }, []);
+  const locked = touch && !panning;
   return (
+    <div className="relative">
+    {touch && (
+      <button
+        type="button"
+        onClick={() => setPanning((value) => !value)}
+        aria-pressed={panning}
+        className="absolute top-3 right-3 z-[500] inline-flex min-h-11 items-center gap-2 rounded-full bg-card px-4 text-sm font-bold text-ink shadow-lift aria-pressed:bg-blue aria-pressed:text-on-blue"
+      >
+        {panning ? doneLabel : moveLabel}
+      </button>
+    )}
     <MapContainer
       center={center}
       zoom={zoom}
@@ -108,6 +143,7 @@ export default function ReportMap({
       attributionControl
       aria-label={label}
     >
+      <Panning enabled={!locked} />
       <TileLayer
         attribution={
           useCustom
@@ -124,5 +160,6 @@ export default function ReportMap({
       )}
       <Pin position={position} onChange={onChange} center={center} zoom={zoom} label={pinLabel} />
     </MapContainer>
+    </div>
   );
 }

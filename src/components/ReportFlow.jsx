@@ -435,13 +435,14 @@ export default function ReportFlow() {
             </span>
             <span className="text-sm font-bold text-blue">{peekOpen ? t("collapse") : t("expand")}</span>
           </button>
-          <div id="receipt-peek" hidden={!peekOpen} className="mt-3 flex justify-center">
-            {peekOpen && receipt}
+          {/* Opened, the receipt scrolls inside this box so it never covers the whole screen. */}
+          <div id="receipt-peek" hidden={!peekOpen} className="mt-3 max-h-[60svh] overflow-y-auto overscroll-contain rounded-md px-1 pb-2">
+            {peekOpen && <div className="flex justify-center">{receipt}</div>}
           </div>
         </div>
       </div>
 
-      <div className={`${wrap} grid flex-1 gap-10 pt-6 pb-36 lg:grid-cols-[minmax(0,1fr)_27.5rem] lg:gap-14 lg:pt-10 lg:pb-16`}>
+      <div className={`${wrap} grid flex-1 gap-10 pt-6 pb-10 lg:grid-cols-[minmax(0,1fr)_27.5rem] lg:gap-14 lg:pt-10 lg:pb-16`}>
         <form
           noValidate
           onSubmit={(event) => {
@@ -617,6 +618,8 @@ export default function ReportFlow() {
                         pinLabel={validPoint(position) ? formatCoords(position) : ""}
                         onTileError={() => setTileError(true)}
                         outline={outline}
+                        moveLabel={t("details.moveMap")}
+                        doneLabel={t("details.moveMapDone")}
                       />
                     </div>
                     {/* For anyone who finds pointing at a map hard: one big button under it. */}
@@ -864,9 +867,10 @@ export default function ReportFlow() {
             {queued && !online && <p className="rounded-md bg-wash p-3 text-sm font-semibold">{t("offline.queued")}</p>}
           </div>
 
-          {/* Back and Continue sit in the thumb zone on phones. */}
-          <div className="fixed inset-x-0 bottom-0 z-20 bg-paper/95 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] shadow-[0_-1px_0_var(--color-rule)] lg:static lg:mt-8 lg:bg-transparent lg:p-0 lg:shadow-none">
-            <div className={`${wrap} grid grid-cols-[auto_1fr] gap-2 lg:max-w-none lg:px-0`}>
+          {/* Back and Continue stay in the thumb zone while the form scrolls, and stop where the
+              form ends, so they never cover the footer. */}
+          <div className="sticky bottom-0 z-20 -mx-4 mt-8 bg-paper/95 px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] shadow-[0_-1px_0_var(--color-rule)] sm:-mx-6 sm:px-6 lg:static lg:mx-0 lg:bg-transparent lg:p-0 lg:shadow-none">
+            <div className="grid grid-cols-[auto_1fr] gap-2">
               {step > 0 ? (
                 <button type="button" onClick={() => go(step - 1)} className={`${btn.soft} px-4`} disabled={busy}>
                   <Icon name="back" className="size-5" />
@@ -883,7 +887,10 @@ export default function ReportFlow() {
         </form>
 
         <aside className="hidden lg:block" aria-label={t("yourReport")}>
-          <div className="sticky top-6 rotate-[-1.5deg]">{receipt}</div>
+          {/* Pinned beside the form; a long receipt scrolls inside its own column instead of hiding its end. */}
+          <div className="sticky top-6 max-h-[calc(100svh-3rem)] overflow-y-auto overscroll-contain px-3 py-4">
+            <div className="rotate-[-1.5deg]">{receipt}</div>
+          </div>
         </aside>
       </div>
 

@@ -179,7 +179,7 @@
       "locating": "Duke gjetur vendndodhjen…",
       "locationDenied": "Nuk kemi leje për vendndodhjen. Prek hartën te vendi i problemit, ose lejo vendndodhjen te cilësimet e shfletuesit.",
       "locationUnavailable": "Vendndodhja nuk u gjet. Prek hartën te vendi i problemit.",
-      "mapHint": "Prek hartën ose tërhiq shenjën te vendi i saktë. Me tastierë: zgjidh hartën dhe lëviz shenjën me shigjeta.",
+      "mapHint": "Prek hartën ose tërhiq shenjën te vendi i saktë. Në telefon, rrëshqitja lëviz faqen; prek “Lëviz hartën” për ta zhvendosur hartën. Me tastierë: zgjidh hartën dhe lëviz shenjën me shigjeta.",
       "pinPlaced": "Shenja u vendos: {coords}",
       "outside": "Kjo pikë është jashtë {city}. Tani për tani pranohen vetëm raporte për {city}.",
       "mapError": "Harta nuk u ngarkua. Shkruaj koordinatat më poshtë.",
@@ -201,7 +201,9 @@
       "moveRight": "Lëvize foton {n} djathtas",
       "photoFailed": "Kjo foto nuk u lexua. Provo një tjetër.",
       "mapHelp": "E ke të vështirë ta gjesh vendin në hartë? Lëre telefonin ta gjejë për ty.",
-      "locateMe": "Gjej vendndodhjen time"
+      "locateMe": "Gjej vendndodhjen time",
+      "moveMap": "Lëviz hartën",
+      "moveMapDone": "Mbaro"
     },
     "review": {
       "heading": "Kontrollo raportin",

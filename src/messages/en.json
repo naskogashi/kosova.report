@@ -179,7 +179,7 @@
       "locating": "Finding your location…",
       "locationDenied": "We don't have permission to use your location. Tap the map where the problem is, or allow location in your browser settings.",
       "locationUnavailable": "Your location couldn't be found. Tap the map where the problem is.",
-      "mapHint": "Tap the map or drag the pin to the exact spot. With a keyboard: select the map and move the pin with the arrow keys.",
+      "mapHint": "Tap the map or drag the pin to the exact spot. On a phone, swiping scrolls the page; tap “Move map” to pan the map. With a keyboard: select the map and move the pin with the arrow keys.",
       "pinPlaced": "Pin placed: {coords}",
       "outside": "This spot is outside {city}. For now, reports are only accepted for {city}.",
       "mapError": "The map didn't load. Enter the coordinates below.",
@@ -201,7 +201,9 @@
       "moveRight": "Move photo {n} right",
       "photoFailed": "This photo couldn't be read. Try another one.",
       "mapHelp": "Finding the spot on the map is hard? Let your phone find it for you.",
-      "locateMe": "Locate me"
+      "locateMe": "Locate me",
+      "moveMap": "Move map",
+      "moveMapDone": "Done"
     },
     "review": {
       "heading": "Check your report",
