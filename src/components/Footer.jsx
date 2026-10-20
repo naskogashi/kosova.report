@@ -54,9 +54,10 @@ export default async function Footer({ locale, staff = false }) {
             target="_blank"
             rel="noopener noreferrer"
             aria-label={`CODON (${t("newTab")})`}
-            className="rounded-sm dark:rounded-md dark:bg-[oklch(0.97_0.008_255)] dark:px-4 dark:py-2"
+            className="codon-link flex flex-col items-center rounded-sm dark:rounded-md dark:bg-[oklch(0.97_0.008_255)] dark:px-4 dark:py-2"
           >
             <BrandingImage asset={codon} className="h-9 w-auto max-w-28 object-contain" />
+            <span aria-hidden="true" className="codon-underline mt-1 block h-0.5 w-full rounded-full bg-gold" />
           </a>
           <span lang="en">{t("codon")}</span>
         </div>

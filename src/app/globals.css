@@ -39,6 +39,11 @@
   --color-cat-education: oklch(0.54 0.1 105);
   --color-cat-safety: oklch(0.52 0.08 240);
 
+  /* Chart ramp: one hue, light to dark, validated (dataviz, ordinal) on the card surface. */
+  --color-chart-1: oklch(0.76 0.1 262);
+  --color-chart-2: oklch(0.6 0.17 262);
+  --color-chart-3: oklch(0.44 0.18 262);
+
   --font-sans: var(--font-sofia), "Segoe UI", system-ui, sans-serif;
   --font-stamp: var(--font-sofia-narrow), "Arial Narrow", sans-serif;
 
@@ -115,6 +120,9 @@
     --color-cat-health: oklch(0.76 0.1 18);
     --color-cat-education: oklch(0.79 0.1 105);
     --color-cat-safety: oklch(0.77 0.07 240);
+    --color-chart-1: oklch(0.5 0.12 262);
+    --color-chart-2: oklch(0.64 0.14 262);
+    --color-chart-3: oklch(0.8 0.1 262);
     --shadow-tint: oklch(0.08 0.03 258 / 0.55);
     --tint: 16%;
     color-scheme: dark;
@@ -485,4 +493,22 @@
   stroke-width: 2.5;
   stroke-dasharray: 7 6;
   stroke-opacity: 0.85;
+}
+
+/* CODON credit: lifts and grows a gold underline on hover or keyboard focus. */
+.codon-link img {
+  transition: transform var(--duration-2) var(--ease-spring);
+}
+.codon-link .codon-underline {
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform var(--duration-3) var(--ease-out-quint);
+}
+.codon-link:hover img,
+.codon-link:focus-visible img {
+  transform: translateY(-3px) scale(1.06);
+}
+.codon-link:hover .codon-underline,
+.codon-link:focus-visible .codon-underline {
+  transform: scaleX(1);
 }

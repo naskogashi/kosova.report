@@ -22,7 +22,7 @@ Every banned phrase from the brief (sq, sr, en lists, plus em dashes) was search
 ## Facts to confirm (`TODO(data)`)
 
 - `src/components/ReportFlow.jsx`: "outside the city" is a 20 km radius from the municipality centre. Real municipal boundaries aren't in the database.
-- `src/app/manifest.js`: needs a real maskable icon.
+
 - The example report number `PR-2026-000418` uses the seeded Prishtina code `PR`. If a different public ID prefix is set in admin, update the examples in `track.numberHint` and `track.invalidNumber`.
 - No response times, statistics or resolution counts appear anywhere. Add them only from real backend numbers.
 - Category and city guide pages need the real list of which department handles what in Prishtina.

@@ -1,12 +1,12 @@
 "use client";
 
 import { useAdminText } from "../AdminLanguage";
-import { useFormState } from "react-dom";
+import { useActionState } from "react";
 import { updateAccountAction } from "../actions";
 import AdminSubmit from "../AdminSubmit";
 export default function AccountForm({ account }) {
   const t = useAdminText();
-  const [state, action] = useFormState(updateAccountAction, {});
+  const [state, action] = useActionState(updateAccountAction, {});
   return (
     <form action={action} className="mt-6 space-y-4">
       {[

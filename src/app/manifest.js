@@ -17,8 +17,8 @@ export default function manifest() {
     icons: [
       { src: "/icons/icon-192.png", sizes: "192x192", type: "image/png", purpose: "any" },
       { src: "/icons/icon-512.png", sizes: "512x512", type: "image/png", purpose: "any" },
-      // TODO(design): export a dedicated maskable icon with the pin inside the 80% safe zone.
-      { src: "/icons/icon-512.png", sizes: "512x512", type: "image/png", purpose: "maskable" },
+      // Same mark scaled into the 80% safe zone, so Android can crop it to any shape.
+      { src: "/icons/icon-maskable-512.png", sizes: "512x512", type: "image/png", purpose: "maskable" },
     ],
     shortcuts: [
       { name: "Raporto një problem", short_name: "Raporto", url: "/sq/raporto", icons: [{ src: "/icons/icon-192.png", sizes: "192x192" }] },

@@ -4,7 +4,7 @@
  * the report flow pages, municipal boundaries and the list of municipalities. It never caches
  * tracking pages, department links, the staff panel, submissions, PDFs or photos.
  */
-const VERSION = "v3";
+const VERSION = "v4";
 const STATIC = `kosova-static-${VERSION}`;
 const PAGES = `kosova-pages-${VERSION}`;
 const INSTALL_ASSETS = [

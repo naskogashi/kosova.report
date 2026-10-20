@@ -3,6 +3,7 @@ import { siteTitle } from "../../../lib/site-branding";
 import { adminTranslator, adminLanguage } from "../../../lib/admin-language";
 import { requireAdmin } from "../../../lib/admin-session";
 import AccountForm from "./AccountForm";
+import AccountForms from "./AccountForms";
 export const dynamic = "force-dynamic";
 export async function generateMetadata() {
   const t = await adminTranslator();
@@ -19,6 +20,17 @@ export default async function Account() {
   const account = await requireAdmin({
     allowPasswordChange: true,
   });
+  // First sign-in: one form that replaces the one-time password. Afterwards: details and password separately.
+  if (!account.must_change_password)
+    return (
+      <div className="mx-auto w-full max-w-5xl px-4 py-8 sm:px-6">
+        <AdminNav current="/admin/account" t={t} owner={account.role === "owner"} />
+        <h1 className="mt-6 text-3xl font-extrabold tracking-[-0.025em]">{t("My account")}</h1>
+        <div className="mt-6">
+          <AccountForms account={{ name: account.name, email: account.email }} />
+        </div>
+      </div>
+    );
   return (
     <div className="mx-auto w-full max-w-5xl px-4 py-8 sm:px-6">
       <AdminNav current="/admin/account" t={t} owner={account.role === "owner"} />

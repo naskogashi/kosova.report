@@ -12,7 +12,7 @@ import {
 } from "../actions";
 import AdminSubmit from "../AdminSubmit";
 import CheckerForm from "./CheckerForm";
-import DepartmentSettings from "./DepartmentSettings";
+import DepartmentRouting from "./DepartmentRouting";
 import { categories } from "../../../lib/report-options";
 export const dynamic = "force-dynamic";
 export async function generateMetadata() {
@@ -149,7 +149,7 @@ export default async function Settings(props) {
         "SELECT routing.city_id,routing.category,routing.department_id,routing.active,c.code AS city_code FROM department_routes routing JOIN cities c ON c.id=routing.city_id ORDER BY c.name,routing.category",
       ),
       database().execute(
-        "SELECT id,name,email,active,must_change_password FROM staff_accounts WHERE role='checker' ORDER BY name",
+        "SELECT id,name,email,role,active,must_change_password FROM staff_accounts ORDER BY role='owner' DESC,name",
       ),
     ]);
     [countries, municipalities, departments, routes, checkers] = results.map(
@@ -327,7 +327,7 @@ export default async function Settings(props) {
           {t("Configure recipients")}
         </a>
       </section>
-      <DepartmentSettings
+      <DepartmentRouting
         departments={departments}
         municipalities={municipalities}
         routes={routes}
@@ -336,20 +336,34 @@ export default async function Settings(props) {
         id="checkers"
         className="space-y-5 rounded-md border bg-card p-5"
       >
-        <h2 className="text-xl font-bold">{t("Report checkers")}</h2>
+        <h2 className="text-xl font-bold">{t("Staff accounts")}</h2>
         <p className="text-sm text-pencil">
-          {" "}
           {t(
-            "Checkers can view and verify assigned reports. They cannot change platform settings, reassign reports, or mark municipal issues resolved.",
-          )}{" "}
+            "Admins manage everything, including settings, news and other accounts. Checkers can view and verify assigned reports. They cannot change platform settings, reassign reports, or mark municipal issues resolved.",
+          )}
         </p>
         <div className="grid gap-4 lg:grid-cols-2">
-          {checkers.map((checker) => (
+          {checkers.filter((account) => account.role === "owner").map((owner) => (
+            <div key={owner.id} className="space-y-1 rounded-md bg-paper p-4">
+              <p className="flex flex-wrap items-center gap-2 font-semibold">
+                {owner.name}
+                <span className="rounded-full bg-ink px-2.5 py-0.5 text-xs font-bold text-paper">{t("Admin")}</span>
+              </p>
+              <p className="break-all text-sm text-pencil">{owner.email}</p>
+              <p className="text-xs text-pencil">
+                {owner.must_change_password ? t("First sign-in not finished") : t("Account ready")}
+              </p>
+            </div>
+          ))}
+          {checkers.filter((account) => account.role !== "owner").map((checker) => (
             <div
               key={checker.id}
               className="space-y-4 rounded-md bg-paper p-4"
             >
-              <p className="font-semibold">{checker.name}</p>
+              <p className="flex flex-wrap items-center gap-2 font-semibold">
+                {checker.name}
+                <span className="rounded-full bg-wash px-2.5 py-0.5 text-xs font-bold text-blue">{t("Checker")}</span>
+              </p>
               <p className="break-all text-sm text-pencil">
                 {checker.email}
               </p>
@@ -379,7 +393,7 @@ export default async function Settings(props) {
           ))}
         </div>
         <div className="max-w-md">
-          <h3 className="mb-3 font-semibold">{t("Create a checker")}</h3>
+          <h3 className="mb-3 font-semibold">{t("Add an account")}</h3>
           <CheckerForm />
         </div>
       </section>

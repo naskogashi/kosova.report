@@ -188,24 +188,92 @@ export async function updateAccountAction(previous, form) {
   }
   redirect("/admin");
 }
+// Name and email, confirmed with the current password. Sessions stay signed in.
+export async function updateProfileAction(previous, form) {
+  await assertOrigin();
+  const account = await requireAdmin();
+  const name = value(form, "name", 120),
+    email = value(form, "email", 254).toLowerCase(),
+    current = form.get("current_password");
+  if (!name || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
+    return { error: "Provide a name and a valid email.", at: Date.now() };
+  try {
+    const [rows] = await database().execute(
+      "SELECT password_hash FROM staff_accounts WHERE id=? AND active=1",
+      [account.id],
+    );
+    if (!rows.length || typeof current !== "string" || !verifyPassword(current, rows[0].password_hash))
+      return { error: "Current password is incorrect.", at: Date.now() };
+    await database().execute("UPDATE staff_accounts SET name=?,email=? WHERE id=?", [name, email, account.id]);
+  } catch (error) {
+    return {
+      error: error.code === "ER_DUP_ENTRY" ? "That email is already used." : "Could not save your details.",
+      at: Date.now(),
+    };
+  }
+  revalidatePath("/admin/account");
+  return { saved: "Details saved.", at: Date.now() };
+}
+
+// New password, confirmed with the current one. Signs out every other session.
+export async function changePasswordAction(previous, form) {
+  let newSession;
+  await assertOrigin();
+  const account = await requireAdmin();
+  const current = form.get("current_password"),
+    password = form.get("new_password"),
+    confirm = form.get("confirm_password");
+  if (typeof password !== "string" || password.length < 14 || password.length > 1024)
+    return { error: "Use at least 14 characters for the new password.", at: Date.now() };
+  if (password !== confirm) return { error: "The new passwords don't match.", at: Date.now() };
+  const connection = await database().getConnection();
+  try {
+    await connection.beginTransaction();
+    const [rows] = await connection.execute(
+      "SELECT password_hash FROM staff_accounts WHERE id=? AND active=1 FOR UPDATE",
+      [account.id],
+    );
+    if (!rows.length || typeof current !== "string" || !verifyPassword(current, rows[0].password_hash)) {
+      await connection.rollback();
+      return { error: "Current password is incorrect.", at: Date.now() };
+    }
+    await connection.execute(
+      "UPDATE staff_accounts SET password_hash=?,must_change_password=0,temporary_expires_at=NULL WHERE id=?",
+      [hashPassword(password), account.id],
+    );
+    await connection.execute("DELETE FROM staff_sessions WHERE account_id=?", [account.id]);
+    newSession = await createSessionRecord(account.id, false, connection);
+    await connection.commit();
+  } catch {
+    await connection.rollback().catch(() => {});
+    return { error: "Could not change the password. Try again.", at: Date.now() };
+  } finally {
+    connection.release();
+  }
+  await setSessionCookie(newSession);
+  return { saved: "Password changed. Other devices were signed out.", at: Date.now() };
+}
+
 export async function createCheckerAction(previous, form) {
   await assertOrigin();
   await requireOwner();
   try {
     const name = value(form, "name", 120),
-      email = value(form, "email", 254).toLowerCase();
+      email = value(form, "email", 254).toLowerCase(),
+      // Owners can create report checkers or other admins (owners).
+      role = form.get("role") === "owner" ? "owner" : "checker";
     if (!name || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
       return { error: "A name and valid email are required." };
     const password = randomPassword();
     await database().execute(
-      "INSERT INTO staff_accounts (name,email,role,password_hash,must_change_password,temporary_expires_at) VALUES (?,?,'checker',?,1,DATE_ADD(UTC_TIMESTAMP(),INTERVAL 24 HOUR))",
-      [name, email, hashPassword(password)],
+      "INSERT INTO staff_accounts (name,email,password_hash,role,must_change_password,temporary_expires_at) VALUES (?,?,?,?,1,DATE_ADD(UTC_TIMESTAMP(),INTERVAL 24 HOUR))",
+      [name, email, hashPassword(password), role],
     );
     revalidatePath("/admin/settings");
-    return { email, password };
+    return { email, password, role };
   } catch {
     return {
-      error: "Could not create checker. That email may already be in use.",
+      error: "Could not create the account. That email may already be in use.",
     };
   }
 }
@@ -382,35 +450,91 @@ export async function saveDepartmentAction(form) {
 }
 const routeSaveError =
   "Could not save the assignment. The department must belong to the selected municipality.";
+const emailValid = (email) =>
+  /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) && !/[\r\n]/.test(email);
+// Owners see the database's own reason when a save fails, so a schema
+// difference on the server shows up instead of a silent failure.
+const databaseReason = (error) =>
+  error?.code ? `${error.code}${error.sqlMessage ? `: ${error.sqlMessage}` : ""}`.slice(0, 300) : undefined;
+
+// Adds or edits one department of a municipality. Returns a state for useActionState.
+export async function saveDepartmentInlineAction(previous, form) {
+  await assertOrigin();
+  await requireOwner();
+  const id = value(form, "id", 10),
+    cityId = value(form, "city_id", 10),
+    name = value(form, "name", 255),
+    email = value(form, "email", 255).toLowerCase();
+  if ((id && !validId(id)) || !validId(cityId))
+    return { error: "Could not save the department.", at: Date.now() };
+  if (!name) return { error: "Write the department's name.", at: Date.now() };
+  if (!emailValid(email))
+    return { error: "Write a valid email address for the department.", at: Date.now() };
+  try {
+    if (id) {
+      const [result] = await database().execute(
+        "UPDATE departments SET name=?,notification_email=? WHERE id=? AND city_id=?",
+        [name, email, id, cityId],
+      );
+      if (!result.affectedRows) throw new Error("Department unavailable");
+    } else
+      await database().execute(
+        "INSERT INTO departments (city_id,name,notification_email) VALUES (?,?,?)",
+        [cityId, name, email],
+      );
+  } catch (error) {
+    console.error("Department update failed", { code: error.code || "UPDATE_ERROR" });
+    return { error: "Could not save the department.", detail: databaseReason(error), at: Date.now() };
+  }
+  revalidatePath("/admin/settings");
+  return { saved: id ? "Department saved." : "Department added.", at: Date.now() };
+}
+
+// Routes one category of a municipality to a department. With department_id "new"
+// it first creates that department (name + email), in the same transaction.
 export async function saveRouteAction(previous, form) {
   await assertOrigin();
   await requireOwner();
   const cityId = value(form, "city_id", 10),
-    departmentId = value(form, "department_id", 10),
+    departmentChoice = value(form, "department_id", 10),
     category = value(form, "category", 100),
     active = form.get("active") === "on";
-  if (
-    !validId(cityId) ||
-    !validId(departmentId) ||
-    !categories.includes(category)
-  )
-    return { error: routeSaveError, at: Date.now() };
+  const creating = departmentChoice === "new";
+  const newName = value(form, "new_name", 255),
+    newEmail = value(form, "new_email", 255).toLowerCase();
+  if (!validId(cityId) || !categories.includes(category) || (!creating && !validId(departmentChoice)))
+    return { error: "Choose a department for this category.", at: Date.now() };
+  if (creating && !newName) return { error: "Write the new department's name.", at: Date.now() };
+  if (creating && !emailValid(newEmail))
+    return { error: "Write a valid email address for the new department.", at: Date.now() };
+  const connection = await database().getConnection();
   try {
-    const [departments] = await database().execute(
-      "SELECT id FROM departments WHERE id=? AND city_id=?",
-      [departmentId, cityId],
-    );
-    if (!departments.length)
-      throw new Error("Department must belong to the selected municipality");
-    await database().execute(
+    await connection.beginTransaction();
+    let departmentId = departmentChoice;
+    if (creating) {
+      const [inserted] = await connection.execute(
+        "INSERT INTO departments (city_id,name,notification_email) VALUES (?,?,?)",
+        [cityId, newName, newEmail],
+      );
+      departmentId = inserted.insertId;
+    } else {
+      const [departments] = await connection.execute(
+        "SELECT id FROM departments WHERE id=? AND city_id=?",
+        [departmentId, cityId],
+      );
+      if (!departments.length) throw new Error("Department must belong to the selected municipality");
+    }
+    await connection.execute(
       "INSERT INTO department_routes (city_id,category,department_id,active) VALUES (?,?,?,?) ON DUPLICATE KEY UPDATE department_id=VALUES(department_id),active=VALUES(active)",
       [cityId, category, departmentId, active],
     );
+    await connection.commit();
   } catch (error) {
-    console.error("Routing update failed", {
-      code: error.code || "UPDATE_ERROR",
-    });
-    return { error: routeSaveError, at: Date.now() };
+    await connection.rollback().catch(() => {});
+    console.error("Routing update failed", { code: error.code || "UPDATE_ERROR" });
+    return { error: routeSaveError, detail: databaseReason(error), at: Date.now() };
+  } finally {
+    connection.release();
   }
   revalidatePath("/admin/settings");
   return { saved: "Assignment saved.", at: Date.now() };
