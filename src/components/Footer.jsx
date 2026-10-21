@@ -15,6 +15,7 @@ export default async function Footer({ locale, staff = false }) {
   const links = staff
     ? null
     : [
+        ["/map", ts("map")],
         ["/news", ts("news")],
         ["/track", ts("track")],
         ["/privacy", ts("privacy")],

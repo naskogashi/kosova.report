@@ -32,6 +32,10 @@
     "privacy": {
       "title": "Privatësia dhe cookies | kosova.report",
       "description": "Çfarë të dhënash ruan kosova.report kur raporton, kush i sheh, ku ruhen fotot dhe çfarë ruhet në pajisjen tënde. Pa reklama, pa analitikë."
+    },
+    "map": {
+      "title": "Harta e problemeve të raportuara në Prishtinë | kosova.report",
+      "description": "Çdo problem që qytetarët e kanë raportuar në kosova.report, në një hartë publike: ku është, çfarë është dhe nëse është rregulluar. Pa emra apo të dhëna kontakti."
     }
   },
   "shell": {
@@ -58,7 +62,8 @@
       "sunHint": "Për lexim në diell"
     },
     "news": "Lajme",
-    "privacy": "Privatësia"
+    "privacy": "Privatësia",
+    "map": "Harta"
   },
   "footer": {
     "support": "Ky aktivitet mbështetet nga CIVICUS Digital Democracy Initiative (DDI).",
@@ -478,7 +483,8 @@
           "body": "Shto një koment ose foto kur ndryshon diçka, si “rruga tani është e bllokuar”. Ekipi ynë i kontrollon komentet para se të shfaqen."
         }
       ]
-    }
+    },
+    "mapCta": "Shiko hartën e raportimeve"
   },
   "system": {
     "notFoundTitle": "Kjo faqe nuk është në hartë",
@@ -661,5 +667,35 @@
     "installAction": "Si ta shtoni",
     "error": "Njoftimet nuk u aktivizuan. Provoni përsëri më vonë.",
     "privacy": "Kjo pajisje lidhet me raportin vetëm deri 30 ditë pasi të zgjidhet. Departamenti nuk e sheh kurrë."
+  },
+  "map": {
+    "title": "Harta e problemeve të raportuara",
+    "intro": "Të gjitha problemet që qytetarët i kanë raportuar në kosova.report, siç janë sot. Shikoni ku grumbullohen problemet dhe sa shpejt rregullohen.",
+    "privacy": "Nuk shfaqen emra apo të dhëna kontakti. Vendet janë të përafërta (rreth 50 m), përveç kur stafi e ka publikuar çështjen, dhe raportet e reja shfaqen pas 12 orësh.",
+    "loading": "Po ngarkohet harta…",
+    "error": "Harta nuk u ngarkua. Provoni përsëri pas pak.",
+    "retry": "Provo përsëri",
+    "municipality": "Komuna",
+    "category": "Kategoria",
+    "allCategories": "Të gjitha kategoritë",
+    "status": "Statusi",
+    "statusAll": "Të gjitha",
+    "statusOpen": "Të pazgjidhura",
+    "statusResolved": "Të zgjidhura",
+    "period": "Periudha",
+    "periodAll": "Gjithë kohën",
+    "period90": "90 ditët e fundit",
+    "period30": "30 ditët e fundit",
+    "shown": "{count, plural, one {# problem i shfaqur} other {# probleme të shfaqura}}",
+    "open": "{count} të pazgjidhura",
+    "resolved": "{count} të zgjidhura",
+    "legend": "Legjenda",
+    "legendApproximate": "Rreth me vija: vend i përafërt",
+    "reported": "{count, plural, one {Raportuar një herë} other {Raportuar # herë}}",
+    "since": "së pari më {date}",
+    "openIssue": "Hap çështjen",
+    "recent": "Më të fundit",
+    "none": "Asnjë problem nuk përputhet me këto filtra.",
+    "mapLabel": "Harta e problemeve të raportuara"
   }
 }

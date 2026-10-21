@@ -23,6 +23,7 @@ export const routing = defineRouting({
     "/municipality/[publicId]": "/municipality/[publicId]",
     // A public issue: every report of one problem, with thumbs-up and comments.
     "/incident/[ref]": { sq: "/ceshtja/[ref]", sr: "/problem/[ref]", en: "/issue/[ref]" },
+    "/map": { sq: "/harta", sr: "/mapa", en: "/map" },
     "/news": { sq: "/lajme", sr: "/vesti", en: "/news" },
     "/news/[slug]": { sq: "/lajme/[slug]", sr: "/vesti/[slug]", en: "/news/[slug]" },
     "/privacy": { sq: "/privatesia", sr: "/privatnost", en: "/privacy" },

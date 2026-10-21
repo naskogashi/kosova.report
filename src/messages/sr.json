@@ -32,6 +32,10 @@
     "privacy": {
       "title": "Privatnost i kolačići | kosova.report",
       "description": "Koje podatke kosova.report čuva kada prijavite problem, ko ih vidi, gde se čuvaju fotografije i šta ostaje na vašem uređaju. Bez reklama i analitike."
+    },
+    "map": {
+      "title": "Mapa prijavljenih problema u Prištini | kosova.report",
+      "description": "Svaki problem koji su građani prijavili na kosova.report, na javnoj mapi: gde je, šta je i da li je rešen. Bez imena i kontakt podataka."
     }
   },
   "shell": {
@@ -58,7 +62,8 @@
       "sunHint": "Za čitanje na suncu"
     },
     "news": "Vesti",
-    "privacy": "Privatnost"
+    "privacy": "Privatnost",
+    "map": "Mapa"
   },
   "footer": {
     "support": "Ovu aktivnost podržava CIVICUS Digital Democracy Initiative (DDI).",
@@ -478,7 +483,8 @@
           "body": "Dodajte komentar ili fotografiju kada se nešto promeni, na primer „put je sada blokiran”. Naš tim proverava komentare pre objave."
         }
       ]
-    }
+    },
+    "mapCta": "Pogledaj mapu prijava"
   },
   "system": {
     "notFoundTitle": "Ove stranice nema na mapi",
@@ -661,5 +667,35 @@
     "installAction": "Kako da ga dodate",
     "error": "Obaveštenja nisu mogla da se uključe. Pokušajte ponovo kasnije.",
     "privacy": "Ovaj uređaj je povezan sa prijavom samo do 30 dana nakon što bude rešena. Odeljenje to nikada ne vidi."
+  },
+  "map": {
+    "title": "Mapa prijavljenih problema",
+    "intro": "Svi problemi koje su građani prijavili na kosova.report, kakvi su danas. Pogledajte gde se problemi gomilaju i koliko brzo se rešavaju.",
+    "privacy": "Ne prikazuju se imena ni kontakt podaci. Lokacije su približne (oko 50 m), osim kada je osoblje objavilo problem, a nove prijave se pojavljuju posle 12 sati.",
+    "loading": "Mapa se učitava…",
+    "error": "Mapa nije mogla da se učita. Pokušajte ponovo za trenutak.",
+    "retry": "Pokušaj ponovo",
+    "municipality": "Opština",
+    "category": "Kategorija",
+    "allCategories": "Sve kategorije",
+    "status": "Status",
+    "statusAll": "Sve",
+    "statusOpen": "Nerešene",
+    "statusResolved": "Rešene",
+    "period": "Period",
+    "periodAll": "Sve vreme",
+    "period90": "Poslednjih 90 dana",
+    "period30": "Poslednjih 30 dana",
+    "shown": "{count, plural, one {# problem prikazan} few {# problema prikazana} other {# problema prikazano}}",
+    "open": "{count} nerešeno",
+    "resolved": "{count} rešeno",
+    "legend": "Legenda",
+    "legendApproximate": "Isprekidani krug: približna lokacija",
+    "reported": "{count, plural, one {Prijavljeno jednom} other {Prijavljeno # puta}}",
+    "since": "prvi put {date}",
+    "openIssue": "Otvori problem",
+    "recent": "Najnovije",
+    "none": "Nijedan problem ne odgovara ovim filterima.",
+    "mapLabel": "Mapa prijavljenih problema"
   }
 }

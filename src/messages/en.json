@@ -32,6 +32,10 @@
     "privacy": {
       "title": "Privacy and cookies | kosova.report",
       "description": "What kosova.report stores when you report a problem, who sees it, where photos are kept and what stays on your device. No ads, no analytics."
+    },
+    "map": {
+      "title": "Map of reported problems in Prishtina | kosova.report",
+      "description": "Every problem citizens reported on kosova.report, on a public map: where it is, what it is, and whether it has been fixed. No names or contact details."
     }
   },
   "shell": {
@@ -58,7 +62,8 @@
       "sunHint": "For reading in sunlight"
     },
     "news": "News",
-    "privacy": "Privacy"
+    "privacy": "Privacy",
+    "map": "Map"
   },
   "footer": {
     "support": "This activity is supported by the CIVICUS Digital Democracy Initiative (DDI).",
@@ -478,7 +483,8 @@
           "body": "Add a comment or a photo when something changes, like “the road is blocked now”. Our team checks comments before they appear."
         }
       ]
-    }
+    },
+    "mapCta": "See the map of reports"
   },
   "system": {
     "notFoundTitle": "This page isn't on the map",
@@ -661,5 +667,35 @@
     "installAction": "How to add it",
     "error": "Notifications couldn’t be turned on. Try again later.",
     "privacy": "This device is linked to the report only until 30 days after it’s resolved. The department never sees it."
+  },
+  "map": {
+    "title": "Map of reported problems",
+    "intro": "Every problem citizens reported on kosova.report, as it stands today. See where problems gather and how quickly they get fixed.",
+    "privacy": "No names or contact details are shown. Places are approximate (about 50 m) unless staff have published the issue, and new reports appear after 12 hours.",
+    "loading": "Loading the map…",
+    "error": "The map couldn't be loaded. Try again in a moment.",
+    "retry": "Try again",
+    "municipality": "Municipality",
+    "category": "Category",
+    "allCategories": "All categories",
+    "status": "Status",
+    "statusAll": "All",
+    "statusOpen": "Not resolved",
+    "statusResolved": "Resolved",
+    "period": "Period",
+    "periodAll": "All time",
+    "period90": "Last 90 days",
+    "period30": "Last 30 days",
+    "shown": "{count, plural, one {# problem shown} other {# problems shown}}",
+    "open": "{count} not resolved",
+    "resolved": "{count} resolved",
+    "legend": "Legend",
+    "legendApproximate": "Dashed circle: approximate place",
+    "reported": "{count, plural, one {Reported once} other {Reported # times}}",
+    "since": "first {date}",
+    "openIssue": "Open the issue",
+    "recent": "Most recent",
+    "none": "No problems match these filters.",
+    "mapLabel": "Map of reported problems"
   }
 }

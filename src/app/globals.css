@@ -524,3 +524,52 @@
 .codon-link:focus-visible .codon-underline {
   transform: scaleX(1);
 }
+
+/* Public transparency map: one dot per issue, coloured by status. Approximate places are larger
+   dashed circles. The legend uses the same colours. */
+.map-dot {
+  stroke: var(--color-ink);
+  stroke-width: 1.5;
+  fill-opacity: 0.85;
+}
+.map-pending {
+  fill: var(--color-gold);
+}
+.map-progress {
+  fill: var(--color-blue);
+}
+.map-resolved {
+  fill: var(--color-ok);
+}
+.map-approximate {
+  fill-opacity: 0.4;
+  stroke-dasharray: 4 3;
+}
+.map-boundary {
+  stroke: var(--color-blue);
+  stroke-width: 2;
+  fill: var(--color-blue);
+  fill-opacity: 0.04;
+}
+.map-swatch {
+  display: inline-block;
+  width: 0.9rem;
+  height: 0.9rem;
+  border-radius: 999px;
+  border: 1.5px solid var(--color-ink);
+}
+.map-swatch-pending {
+  background: var(--color-gold);
+}
+.map-swatch-progress {
+  background: var(--color-blue);
+}
+.map-swatch-resolved {
+  background: var(--color-ok);
+}
+.map-swatch-area {
+  width: 1.1rem;
+  height: 1.1rem;
+  border-style: dashed;
+  background: color-mix(in oklch, var(--color-gold) 40%, transparent);
+}

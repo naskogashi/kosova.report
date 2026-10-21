@@ -29,6 +29,7 @@ export default async function Header({ locale }) {
         <nav aria-label={t("home")} className="ml-auto hidden lg:block">
           <ul className="flex items-center gap-1 text-sm font-bold">
             {[
+              ["/map", t("map")],
               ["/news", t("news")],
               ["/track", t("track")],
             ].map(([href, label]) => (

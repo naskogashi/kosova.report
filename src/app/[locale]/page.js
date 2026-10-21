@@ -105,6 +105,10 @@ export default async function Home({ params }) {
               <a href="#how" className={btn.soft}>
                 {t("see")}
               </a>
+              <Link href="/map" className={btn.soft}>
+                <Icon name="pin" className="size-5" />
+                {t("mapCta")}
+              </Link>
             </div>
             <p className="mt-6 flex max-w-[33em] items-start gap-2.5 text-sm">
               <Icon name="info" className="mt-0.5 size-5 shrink-0 text-blue" />

@@ -6,7 +6,7 @@ import { publishedNews } from "../lib/news";
 export const revalidate = 3600;
 
 // Public, indexable pages only, each with its language alternates.
-const pages = ["/", "/report", "/track", "/news", "/privacy"];
+const pages = ["/", "/report", "/map", "/track", "/news", "/privacy"];
 
 export default async function sitemap() {
   const origin = siteOrigin();

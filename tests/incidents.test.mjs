@@ -380,3 +380,59 @@ test("voter ids are hashed and malformed cookies are ignored", async () => {
   assert.equal(app.lib.voterHash("short"), null);
   assert.equal(app.lib.voterHash("x'; DROP TABLE"), null);
 });
+
+test("the public map shows only visible issues, approximate unless published, after a 12-hour delay", async () => {
+  const queries = [];
+  const route = new SourceTextModule(readFileSync("src/app/api/map/route.js", "utf8"));
+  const incidentsLib = await (async () => {
+    const lib = new SourceTextModule(readFileSync("src/lib/incidents.js", "utf8"));
+    await lib.link(async (name) => {
+      const values = { "node:crypto": await import("node:crypto"), "./report-notifications": { queueStatusEmails: async () => {} }, "./incident-matching": matching, "./report-status": { setReportStatus: async () => {} }, "./push": { queueFollowerPush: async () => 0 } }[name];
+      return new SyntheticModule(Object.keys(values), function () {
+        for (const [key, value] of Object.entries(values)) this.setExport(key, value);
+      });
+    });
+    await lib.evaluate();
+    return lib.namespace;
+  })();
+  const exact = [42.6629123, 21.1655456];
+  await route.link(async (name) => {
+    const values = {
+      "../../../lib/db": {
+        database: () => ({
+          execute: async (sql) => {
+            queries.push(sql);
+            if (sql.includes("FROM cities")) return [[{ id: 1, code: "PR", name: "Prishtinë", latitude: "42.6629", longitude: "21.1655", zoom_level: 13 }]];
+            return [
+              [
+                { ref: "aaaaaaaaaa", city_id: 1, category: "infrastructure", status: "Pending", visibility: "listed", lat: exact[0], lng: exact[1], report_count: 2, upvote_count: 1, comment_count: 0, public_summary: "secret", first_reported_at: "2026-10-01", last_reported_at: "2026-10-02", resolved_at: null },
+                { ref: "bbbbbbbbbb", city_id: 1, category: "environment", status: "Resolved", visibility: "public", lat: exact[0], lng: exact[1], report_count: 1, upvote_count: 0, comment_count: 0, public_summary: "Fixed", first_reported_at: "2026-09-01", last_reported_at: "2026-09-01", resolved_at: "2026-09-10" },
+              ],
+            ];
+          },
+        }),
+      },
+      "../../../lib/incidents": incidentsLib,
+    }[name];
+    assert.ok(values, `Unexpected import ${name}`);
+    return new SyntheticModule(Object.keys(values), function () {
+      for (const [key, value] of Object.entries(values)) this.setExport(key, value);
+    });
+  });
+  await route.evaluate();
+  const response = await route.namespace.GET();
+  assert.equal(response.status, 200);
+  assert.match(response.headers.get("cache-control"), /s-maxage=300/);
+  const data = await response.json();
+  assert.deepEqual(data.cities, [{ code: "PR", name: "Prishtinë", center: [42.6629, 21.1655], zoom: 13 }]);
+  const [listed, published] = data.incidents;
+  assert.equal(listed.exact, false);
+  assert.notDeepEqual(listed.point, exact);
+  assert.deepEqual(published.point, exact);
+  assert.equal(listed.city, "PR");
+  // Nothing beyond the issue itself.
+  assert.ok(!JSON.stringify(data).includes("secret"));
+  const issues = queries.find((sql) => sql.includes("FROM incidents"));
+  assert.match(issues, /i\.visibility<>'hidden' AND i\.merged_into IS NULL AND i\.report_count>0/);
+  assert.match(issues, /first_reported_at <= UTC_TIMESTAMP\(\) - INTERVAL 12 HOUR/);
+});
