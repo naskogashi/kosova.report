@@ -221,7 +221,8 @@
       "document": "PDF document {n}",
       "removeDocument": "Remove PDF document {n}",
       "documentFailed": "This file couldn't be read. Choose a PDF of up to 5 MB.",
-      "documentLocked": "This PDF is password-protected. Remove the password and try again."
+      "documentLocked": "This PDF is password-protected. Remove the password and try again.",
+      "videoFormat": "This phone recorded the video in a format this browser can't open (often HDR or “High efficiency”). Turn that off in the camera settings and record again (on iPhone: Settings › Camera › Formats › Most Compatible), or add photos instead."
     },
     "review": {
       "heading": "Check your report",

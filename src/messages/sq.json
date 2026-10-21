@@ -221,7 +221,8 @@
       "document": "Dokumenti PDF {n}",
       "removeDocument": "Hiq dokumentin PDF {n}",
       "documentFailed": "Ky skedar nuk u lexua dot. Zgjidhni një PDF deri në 5 MB.",
-      "documentLocked": "Ky PDF është i mbrojtur me fjalëkalim. Hiqni fjalëkalimin dhe provoni përsëri."
+      "documentLocked": "Ky PDF është i mbrojtur me fjalëkalim. Hiqni fjalëkalimin dhe provoni përsëri.",
+      "videoFormat": "Ky telefon e regjistroi videon në një format që ky shfletues nuk mund ta hapë (shpesh HDR ose “High efficiency”). Çaktivizojeni te cilësimet e kamerës dhe regjistroni përsëri (në iPhone: Settings › Camera › Formats › Most Compatible), ose shtoni foto."
     },
     "review": {
       "heading": "Kontrollo raportin",

@@ -221,7 +221,8 @@
       "document": "PDF dokument {n}",
       "removeDocument": "Ukloni PDF dokument {n}",
       "documentFailed": "Ova datoteka nije mogla da se pročita. Izaberite PDF do 5 MB.",
-      "documentLocked": "Ovaj PDF je zaštićen lozinkom. Uklonite lozinku i pokušajte ponovo."
+      "documentLocked": "Ovaj PDF je zaštićen lozinkom. Uklonite lozinku i pokušajte ponovo.",
+      "videoFormat": "Ovaj telefon je snimio video u formatu koji ovaj pregledač ne može da otvori (često HDR ili „High efficiency“). Isključite to u podešavanjima kamere i snimite ponovo (na iPhone-u: Settings › Camera › Formats › Most Compatible) ili dodajte fotografije."
     },
     "review": {
       "heading": "Proverite prijavu",

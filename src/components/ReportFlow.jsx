@@ -364,7 +364,8 @@ export default function ReportFlow() {
         }),
       );
     } catch (error) {
-      setNotice(t(error.message === "unsupported" ? "details.videoUnsupported" : "details.videoFailed"));
+      const message = { format: "details.videoFormat", unsupported: "details.videoUnsupported" }[error.message];
+      setNotice(t(message || "details.videoFailed"));
       removeExtra(id);
     }
   }
