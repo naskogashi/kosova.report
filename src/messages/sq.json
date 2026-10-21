@@ -678,7 +678,7 @@
   "map": {
     "title": "Harta e problemeve të raportuara",
     "intro": "Të gjitha problemet që qytetarët i kanë raportuar në kosova.report, siç janë sot. Shikoni ku grumbullohen problemet dhe sa shpejt rregullohen.",
-    "privacy": "Nuk shfaqen emra apo të dhëna kontakti. Vendet janë të përafërta (rreth 50 m), përveç kur stafi e ka publikuar çështjen, dhe raportet e reja shfaqen pas 12 orësh.",
+    "privacy": "Nuk shfaqen emra apo të dhëna kontakti. Vendet janë të përafërta (rreth 50 m), përveç kur stafi e ka publikuar çështjen, dhe raportet e reja shfaqen pas 6 orësh.",
     "loading": "Po ngarkohet harta…",
     "error": "Harta nuk u ngarkua. Provoni përsëri pas pak.",
     "retry": "Provo përsëri",
@@ -703,7 +703,9 @@
     "openIssue": "Hap çështjen",
     "recent": "Më të fundit",
     "none": "Asnjë problem nuk përputhet me këto filtra.",
-    "mapLabel": "Harta e problemeve të raportuara"
+    "mapLabel": "Harta e problemeve të raportuara",
+    "waiting": "{count, plural, one {# problem i ri pret} other {# probleme të reja presin}} të shfaqen.",
+    "delayNote": "Problemet e reja shfaqen në hartë {hours} orë pas raportimit të parë, që askush të mos lidhet me një raport në çastin kur ndodh."
   },
   "performance": {
     "title": "Si përgjigjen institucionet",

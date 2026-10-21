@@ -157,6 +157,11 @@ export default function TransparencyMap() {
         </li>
       </ul>
 
+      <p className="-mt-2 text-xs text-pencil">
+        {t("delayNote", { hours: data.delayHours })}
+        {data.waiting > 0 && <> {t("waiting", { count: data.waiting, hours: data.delayHours })}</>}
+      </p>
+
       <section aria-labelledby="map-recent">
         <h2 id="map-recent" className="text-xl font-extrabold">
           {t("recent")}

@@ -381,7 +381,7 @@ test("voter ids are hashed and malformed cookies are ignored", async () => {
   assert.equal(app.lib.voterHash("x'; DROP TABLE"), null);
 });
 
-test("the public map shows only visible issues, approximate unless published, after a 12-hour delay", async () => {
+test("the public map shows only visible issues, approximate unless published, after a 6-hour delay", async () => {
   const queries = [];
   const route = new SourceTextModule(readFileSync("src/app/api/map/route.js", "utf8"));
   const incidentsLib = await (async () => {
@@ -403,6 +403,7 @@ test("the public map shows only visible issues, approximate unless published, af
           execute: async (sql) => {
             queries.push(sql);
             if (sql.includes("FROM cities")) return [[{ id: 1, code: "PR", name: "Prishtinë", latitude: "42.6629", longitude: "21.1655", zoom_level: 13 }]];
+            if (sql.startsWith("SELECT COUNT(*) AS total FROM incidents")) return [[{ total: 2 }]];
             return [
               [
                 { ref: "aaaaaaaaaa", city_id: 1, category: "infrastructure", status: "Pending", visibility: "listed", lat: exact[0], lng: exact[1], report_count: 2, upvote_count: 1, comment_count: 0, public_summary: "secret", first_reported_at: "2026-10-01", last_reported_at: "2026-10-02", resolved_at: null },
@@ -434,5 +435,7 @@ test("the public map shows only visible issues, approximate unless published, af
   assert.ok(!JSON.stringify(data).includes("secret"));
   const issues = queries.find((sql) => sql.includes("FROM incidents"));
   assert.match(issues, /i\.visibility<>'hidden' AND i\.merged_into IS NULL AND i\.report_count>0/);
-  assert.match(issues, /first_reported_at <= UTC_TIMESTAMP\(\) - INTERVAL 12 HOUR/);
+  assert.match(issues, /first_reported_at <= UTC_TIMESTAMP\(\) - INTERVAL 6 HOUR/);
+  assert.equal(data.waiting, 2);
+  assert.equal(data.delayHours, 6);
 });

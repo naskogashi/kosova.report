@@ -678,7 +678,7 @@
   "map": {
     "title": "Mapa prijavljenih problema",
     "intro": "Svi problemi koje su građani prijavili na kosova.report, kakvi su danas. Pogledajte gde se problemi gomilaju i koliko brzo se rešavaju.",
-    "privacy": "Ne prikazuju se imena ni kontakt podaci. Lokacije su približne (oko 50 m), osim kada je osoblje objavilo problem, a nove prijave se pojavljuju posle 12 sati.",
+    "privacy": "Ne prikazuju se imena ni kontakt podaci. Lokacije su približne (oko 50 m), osim kada je osoblje objavilo problem, a nove prijave se pojavljuju posle 6 sati.",
     "loading": "Mapa se učitava…",
     "error": "Mapa nije mogla da se učita. Pokušajte ponovo za trenutak.",
     "retry": "Pokušaj ponovo",
@@ -703,7 +703,9 @@
     "openIssue": "Otvori problem",
     "recent": "Najnovije",
     "none": "Nijedan problem ne odgovara ovim filterima.",
-    "mapLabel": "Mapa prijavljenih problema"
+    "mapLabel": "Mapa prijavljenih problema",
+    "waiting": "{count, plural, one {# nov problem čeka} few {# nova problema čekaju} other {# novih problema čeka}} da se pojavi.",
+    "delayNote": "Novi problemi se pojavljuju na mapi {hours} sati posle prve prijave, da niko ne bi mogao da se poveže sa prijavom u trenutku kada nastaje."
   },
   "performance": {
     "title": "Kako institucije odgovaraju",

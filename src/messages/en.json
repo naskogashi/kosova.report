@@ -678,7 +678,7 @@
   "map": {
     "title": "Map of reported problems",
     "intro": "Every problem citizens reported on kosova.report, as it stands today. See where problems gather and how quickly they get fixed.",
-    "privacy": "No names or contact details are shown. Places are approximate (about 50 m) unless staff have published the issue, and new reports appear after 12 hours.",
+    "privacy": "No names or contact details are shown. Places are approximate (about 50 m) unless staff have published the issue, and new reports appear after 6 hours.",
     "loading": "Loading the map…",
     "error": "The map couldn't be loaded. Try again in a moment.",
     "retry": "Try again",
@@ -703,7 +703,9 @@
     "openIssue": "Open the issue",
     "recent": "Most recent",
     "none": "No problems match these filters.",
-    "mapLabel": "Map of reported problems"
+    "mapLabel": "Map of reported problems",
+    "waiting": "{count, plural, one {# recent problem is} other {# recent problems are}} waiting to appear.",
+    "delayNote": "New problems appear on the map {hours} hours after they are first reported, so nobody can be linked to a report as it happens."
   },
   "performance": {
     "title": "How institutions respond",
