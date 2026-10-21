@@ -215,6 +215,10 @@ async function municipality({ found = true, initial = "Pending" } = {}) {
       deliverStatusEmails: async () => ({ pending: 0 }),
     },
     "../../../../lib/incidents": { syncIncidentStatus: async () => [] },
+    "../../../../lib/report-status": {
+      setReportStatus: (conn, reportId, status) =>
+        conn.execute("UPDATE reports SET status=?", [status, status, reportId]),
+    },
   });
   return {
     route,

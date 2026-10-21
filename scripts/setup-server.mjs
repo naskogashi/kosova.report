@@ -27,6 +27,8 @@ try {
     MYSQL_USER: config.user,
     MYSQL_DATABASE: config.database,
     R2_BUCKET: "kosova-report-images",
+    R2_EVIDENCE_BUCKET: "kosova-evidence",
+    R2_PUBLIC_BUCKET: "kosova-public",
     R2_IMAGE_BASE_URL: "https://images.kosova.report",
     R2_ACCOUNT_ID: "c268c9a22ef16f948948c241da7a9592",
   }))

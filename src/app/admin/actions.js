@@ -23,6 +23,7 @@ import {
 } from "../../lib/report-notifications";
 import { categories } from "../../lib/report-options";
 import { syncIncidentStatus } from "../../lib/incidents";
+import { setReportStatus, closedError } from "../../lib/report-status";
 async function assertOrigin() {
   if ((await headers()).get("origin") !== siteConfig().origin)
     throw new Error("Request origin not allowed");
@@ -327,14 +328,18 @@ export async function updateReportAction(form) {
   try {
     await connection.beginTransaction();
     const [rows] = await connection.execute(
-      "SELECT status FROM reports WHERE id=? FOR UPDATE",
+      "SELECT status,anonymized_at FROM reports WHERE id=? FOR UPDATE",
       [id],
     );
     if (!rows.length) throw Error("Report unavailable");
-    await connection.execute(
-      "UPDATE reports SET status=?,admin_note=?,resolved_at=CASE WHEN ?='Resolved' THEN COALESCE(resolved_at,UTC_TIMESTAMP()) ELSE NULL END WHERE id=?",
-      [status, note, status, id],
-    );
+    // An anonymized report keeps only statistics; no new notes or statuses.
+    if (rows[0].anonymized_at) throw closedError();
+    await connection.execute("UPDATE reports SET admin_note=? WHERE id=?", [
+      note,
+      id,
+    ]);
+    if (rows[0].status !== status)
+      await setReportStatus(connection, id, status);
     const [audit] = await connection.execute(
       "INSERT INTO report_audit_log (report_id,actor_email,previous_status,new_status,note) VALUES (?,?,?,?,?)",
       [id, account.email, rows[0].status, status, note],

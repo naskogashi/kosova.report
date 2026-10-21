@@ -11,3 +11,6 @@ export function r2() {
   });
 }
 export const bucketName = () => process.env.R2_BUCKET || "kosova-report-images";
+// Citizen evidence (private) and staff-published copies, both under the 30-day retention rules.
+export const evidenceBucket = () => process.env.R2_EVIDENCE_BUCKET || "kosova-evidence";
+export const publicBucket = () => process.env.R2_PUBLIC_BUCKET || "kosova-public";

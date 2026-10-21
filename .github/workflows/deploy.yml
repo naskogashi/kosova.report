@@ -21,6 +21,8 @@ jobs:
           DEPLOY_R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
           DEPLOY_R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
           DEPLOY_R2_IMAGE_BASE_URL: ${{ secrets.R2_IMAGE_BASE_URL || 'https://images.kosova.report' }}
+          DEPLOY_R2_EVIDENCE_BUCKET: ${{ vars.R2_EVIDENCE_BUCKET || secrets.R2_EVIDENCE_BUCKET || 'kosova-evidence' }}
+          DEPLOY_R2_PUBLIC_BUCKET: ${{ vars.R2_PUBLIC_BUCKET || secrets.R2_PUBLIC_BUCKET || 'kosova-public' }}
           DEPLOY_SMTP2GO_API_KEY: ${{ secrets.SMTP2GO_API_KEY }}
           DEPLOY_SMTP_FROM: ${{ secrets.SMTP_FROM }}
         with:
@@ -28,7 +30,7 @@ jobs:
           username: kosova
           password: ${{ secrets.SSH_PASSWORD }} # <-- Vaihdettu avain salasanaksi!
           port: 22
-          envs: DEPLOY_R2_ACCOUNT_ID,DEPLOY_R2_BUCKET,DEPLOY_R2_ACCESS_KEY_ID,DEPLOY_R2_SECRET_ACCESS_KEY,DEPLOY_R2_IMAGE_BASE_URL,DEPLOY_SMTP2GO_API_KEY,DEPLOY_SMTP_FROM
+          envs: DEPLOY_R2_ACCOUNT_ID,DEPLOY_R2_BUCKET,DEPLOY_R2_ACCESS_KEY_ID,DEPLOY_R2_SECRET_ACCESS_KEY,DEPLOY_R2_IMAGE_BASE_URL,DEPLOY_R2_EVIDENCE_BUCKET,DEPLOY_R2_PUBLIC_BUCKET,DEPLOY_SMTP2GO_API_KEY,DEPLOY_SMTP_FROM
           script: |
             set -eu
             export PATH=/home/kosova/.nvm/versions/node/v22.23.3/bin:$PATH
@@ -40,7 +42,7 @@ jobs:
 
             # Import nonempty GitHub settings without interpolating secrets into shell code.
             # Missing optional secrets leave existing server environment files in effect.
-            for setting in R2_ACCOUNT_ID R2_BUCKET R2_ACCESS_KEY_ID R2_SECRET_ACCESS_KEY R2_IMAGE_BASE_URL SMTP2GO_API_KEY SMTP_FROM; do
+            for setting in R2_ACCOUNT_ID R2_BUCKET R2_ACCESS_KEY_ID R2_SECRET_ACCESS_KEY R2_IMAGE_BASE_URL R2_EVIDENCE_BUCKET R2_PUBLIC_BUCKET SMTP2GO_API_KEY SMTP_FROM; do
               deploy_value=$(printenv "DEPLOY_$setting" || true)
               if [ -n "$deploy_value" ]; then
                 export "$setting=$deploy_value"

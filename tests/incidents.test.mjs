@@ -136,6 +136,10 @@ async function incidents(handler) {
       queueStatusEmails: async (conn, reportId, eventKey, audiences) => queued.push({ reportId, eventKey, audiences }),
     },
     "./incident-matching": matching,
+    "./report-status": {
+      setReportStatus: (conn, reportId, status) =>
+        conn.execute("UPDATE reports SET status=? WHERE id=?", [status, reportId]),
+    },
   };
   const module = new SourceTextModule(readFileSync("src/lib/incidents.js", "utf8"));
   await module.link(async (name) => {
@@ -261,6 +265,7 @@ test("a status change reaches every report of the issue, each reporter by their 
   );
   const except = app.queries.find((q) => q.sql.startsWith("SELECT id,status,department_id FROM reports"));
   assert.deepEqual(except.values, [4, 10, "Resolved"]);
+  assert.match(except.sql, /anonymized_at IS NULL/);
 });
 
 test("reports without an issue (old rows) are left alone", async () => {

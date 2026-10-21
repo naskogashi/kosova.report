@@ -35,6 +35,7 @@ async function actions({
   origin = "https://kosova.report",
   assigned = true,
   attempts = 1,
+  anonymized = false,
 } = {}) {
   const queries = [],
     sessions = [];
@@ -56,8 +57,8 @@ async function actions({
       row = { ...row, password_hash: values[0], temporary_expires_at: null };
       return [{ affectedRows: 1 }];
     }
-    if (sql.startsWith("SELECT status FROM reports"))
-      return [[{ status: "Pending" }]];
+    if (sql.startsWith("SELECT status,anonymized_at FROM reports"))
+      return [[{ status: "Pending", anonymized_at: anonymized ? new Date() : null }]];
     if (sql.startsWith("SELECT report_id FROM report_assignments"))
       return [assigned ? [{ report_id: 7 }] : []];
     if (sql.startsWith("SELECT id FROM departments")) return [[]];
@@ -109,6 +110,11 @@ async function actions({
     },
     "../../lib/report-options": { categories: ["infrastructure"] },
     "../../lib/incidents": { syncIncidentStatus: async () => [] },
+    "../../lib/report-status": {
+      setReportStatus: async (connection, reportId, status) =>
+        queries.push({ sql: "SET_STATUS", values: [reportId, status] }),
+      closedError: () => new Error("Report is closed and anonymized"),
+    },
   });
   return { action, queries, sessions };
 }
@@ -172,6 +178,26 @@ test("owner status update commits audit and queues both progress emails atomical
   );
   assert.equal(audit.values[2], "Pending");
   assert.equal(audit.values[3], "In Progress");
+  const change = app.queries.find((query) => query.sql === "SET_STATUS");
+  assert.deepEqual(change.values, ["7", "In Progress"]);
+});
+test("an anonymized report takes no new note or status", async () => {
+  const app = await actions({ anonymized: true });
+  await assert.rejects(
+    app.action.updateReportAction(
+      form({ id: "7", status: "In Progress", note: "Reopened" }),
+    ),
+    (error) => error.url?.includes("error=update"),
+  );
+  assert.ok(app.queries.some((query) => query.sql === "ROLLBACK"));
+  assert.ok(
+    !app.queries.some(
+      (query) =>
+        query.sql === "SET_STATUS" ||
+        query.sql.startsWith("UPDATE reports") ||
+        query.sql.startsWith("INSERT INTO report_audit_log"),
+    ),
+  );
 });
 test("a checker cannot inspect/mark a report assigned to another checker", async () => {
   const app = await actions({ role: "checker", assigned: false });

@@ -1,5 +1,6 @@
 import { createHash, randomBytes } from "node:crypto";
 import { queueStatusEmails } from "./report-notifications";
+import { setReportStatus } from "./report-status";
 import {
   ATTACH_MAX_M,
   MAX_RADIUS_M,
@@ -135,15 +136,12 @@ async function applyStatus(connection, incidentId, status, { actor, note, except
     [status, status, incidentId],
   );
   const [siblings] = await connection.execute(
-    "SELECT id,status,department_id FROM reports WHERE incident_id=? AND id<>? AND status<>? FOR UPDATE",
+    "SELECT id,status,department_id FROM reports WHERE incident_id=? AND id<>? AND status<>? AND anonymized_at IS NULL FOR UPDATE",
     [incidentId, exceptReportId, status],
   );
   const events = [];
   for (const sibling of siblings) {
-    await connection.execute(
-      "UPDATE reports SET status=?,resolved_at=CASE WHEN ?='Resolved' THEN COALESCE(resolved_at,UTC_TIMESTAMP()) ELSE NULL END WHERE id=?",
-      [status, status, sibling.id],
-    );
+    await setReportStatus(connection, sibling.id, status);
     const [audit] = await connection.execute(
       "INSERT INTO report_audit_log (report_id,actor_email,previous_status,new_status,note) VALUES (?,?,?,?,?)",
       [sibling.id, actor, sibling.status, status, note],

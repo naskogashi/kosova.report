@@ -22,6 +22,8 @@ const names = [
   "R2_ACCESS_KEY_ID",
   "R2_SECRET_ACCESS_KEY",
   "R2_IMAGE_BASE_URL",
+  "R2_EVIDENCE_BUCKET",
+  "R2_PUBLIC_BUCKET",
   "SMTP2GO_API_KEY",
   "SMTP_FROM",
 ];
@@ -59,8 +61,11 @@ export const dbConfig = () => ({
 export const connect = (extra) =>
   mysql.createConnection({ ...dbConfig(), ...extra });
 export const bucket = () => process.env.R2_BUCKET || "kosova-report-images";
-export const storage = () =>
+export const evidenceBucket = () => process.env.R2_EVIDENCE_BUCKET || "kosova-evidence";
+export const publicBucket = () => process.env.R2_PUBLIC_BUCKET || "kosova-public";
+export const storage = (extra) =>
   new S3Client({
+    ...extra,
     region: "auto",
     endpoint: `https://${required("R2_ACCOUNT_ID")}.r2.cloudflarestorage.com`,
     credentials: {

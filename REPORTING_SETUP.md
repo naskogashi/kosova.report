@@ -15,7 +15,7 @@ You can replace `admin@kosova.report` with your own administrator email before r
 1. Loads existing server settings and, when necessary, the kosova-report PM2 environment without printing keys.
 2. Privately prompts for the MySQL password if it has not been configured.
 3. Runs mysqldump into a mode-600 file in `~/kosova-backups`; it refuses to migrate if the backup fails.
-4. Applies repeatable migrations 004 to 007 to your existing integer-ID database.
+4. Applies repeatable migrations 004 to 008 to your existing integer-ID database.
 5. Saves the existing runtime settings to `~/.config/kosova-report/runtime.json` (directory mode 700, file mode 600), outside the Git checkout. Next.js uses it only as a fallback to actual environment/dotenv values.
 6. Creates the first owner account and prints a random **one-time password on the SSH terminal**. It is not committed, stored in plaintext, or printed by CI. It expires in 24 hours and permits one sign-in only.
 
@@ -62,6 +62,8 @@ Sessions use 32-byte random cookies with only a SHA-256 digest stored in MySQL, 
 Account: c268c9a22ef16f948948c241da7a9592. Bucket: **kosova-report-images**.
 
 The existing GitHub workflow forwards R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY, SMTP2GO_API_KEY and SMTP_FROM repository secrets. It defaults the account/bucket to the values above. Existing server configuration is supported. R2 credentials need read/write/delete access to that bucket. The dashboard account ID is not an access credential.
+
+Citizen evidence lives in two more buckets with the same account and token: **kosova-evidence** (private) and **kosova-public** (staff-published copies), set by `R2_EVIDENCE_BUCKET` and `R2_PUBLIC_BUCKET` (GitHub Actions variables; defaults match). Their lifecycle rules are set in the Cloudflare dashboard under each bucket's Settings → Object lifecycle rules: on kosova-evidence, `incoming/` deleted after 1 day and `expiring/` after 30 days; on kosova-public, `expiring/` after 30 days. Never add a rule without a prefix, and none to kosova-report-images. See `docs/architecture/evidence-retention-push-alerts.md`.
 
 The image command defaults to a read-only inventory:
 

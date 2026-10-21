@@ -11,6 +11,7 @@ import {
   deliverStatusEmails,
 } from "../../../../lib/report-notifications";
 import { syncIncidentStatus } from "../../../../lib/incidents";
+import { setReportStatus } from "../../../../lib/report-status";
 export const dynamic = "force-dynamic";
 const select =
   "SELECT r.id,r.public_id,r.category,r.description,r.status,r.created_at,r.resolved_at,r.lat,r.lng,d.notification_email,c.name AS city FROM reports r JOIN departments d ON d.id=r.department_id JOIN cities c ON c.id=r.city_id JOIN municipality_report_tokens t ON t.report_id=r.id AND t.department_id=r.department_id WHERE r.public_id=? AND t.token_hash=? AND t.expires_at>UTC_TIMESTAMP()";
@@ -84,10 +85,7 @@ export async function POST(request, props) {
       );
     }
     if (report.status !== status) {
-      await connection.execute(
-        "UPDATE reports SET status=?,resolved_at=CASE WHEN ?='Resolved' THEN COALESCE(resolved_at,UTC_TIMESTAMP()) ELSE NULL END WHERE id=?",
-        [status, status, report.id],
-      );
+      await setReportStatus(connection, report.id, status);
       const [audit] = await connection.execute(
         "INSERT INTO report_audit_log (report_id,actor_email,previous_status,new_status,note) VALUES (?,?,?,?,?)",
         [
