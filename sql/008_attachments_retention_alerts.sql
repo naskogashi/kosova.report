@@ -102,7 +102,7 @@ CREATE TABLE IF NOT EXISTS public_alerts (
  recipients INT UNSIGNED NULL,
  INDEX alert_queue (status, created_at),
  FOREIGN KEY(city_id) REFERENCES cities(id),
- FOREIGN KEY(reviewed_by) REFERENCES staff_accounts(id),
+ INDEX alert_reviewer (reviewed_by),
  CONSTRAINT alert_needs_review CHECK (status IN ('pending_review','expired') OR (reviewed_by IS NOT NULL AND reviewed_at IS NOT NULL))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
