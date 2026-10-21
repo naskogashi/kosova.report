@@ -26,6 +26,7 @@ import { syncIncidentStatus } from "../../lib/incidents";
 import { setReportStatus, closedError } from "../../lib/report-status";
 import { deliverPush } from "../../lib/push";
 import { deleteReport } from "../../lib/report-deletion";
+import { AccountDeletionError, deleteAccount } from "../../lib/account-deletion";
 async function assertOrigin() {
   if ((await headers()).get("origin") !== siteConfig().origin)
     throw new Error("Request origin not allowed");
@@ -280,6 +281,26 @@ export async function createCheckerAction(previous, form) {
       error: "Could not create the account. That email may already be in use.",
     };
   }
+}
+// Owners only. Typing the account's email confirms it; the deletion log keeps who and when.
+export async function deleteAccountAction(form) {
+  await assertOrigin();
+  const actor = await requireOwner();
+  const id = value(form, "id", 10),
+    confirm = value(form, "confirm", 254).toLowerCase();
+  if (!validId(id)) throw Error("Invalid account");
+  let outcome = "saved=account_deleted";
+  try {
+    const [rows] = await database().execute("SELECT email FROM staff_accounts WHERE id=?", [id]);
+    if (!rows.length) outcome = "error=account_missing";
+    else if (confirm !== rows[0].email.toLowerCase()) outcome = "error=account_confirm";
+    else await deleteAccount(database(), id, actor);
+  } catch (error) {
+    outcome = error instanceof AccountDeletionError ? `error=account_${error.message}` : "error=account_database";
+    if (!(error instanceof AccountDeletionError)) console.error("Account deletion failed", { code: error.code || "DELETE_ERROR" });
+  }
+  revalidatePath("/admin/settings");
+  redirect(`/admin/settings?${outcome}#checkers`);
 }
 export async function resetCheckerAction(previous, form) {
   await assertOrigin();

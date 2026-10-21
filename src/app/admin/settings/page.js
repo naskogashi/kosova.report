@@ -8,6 +8,7 @@ import {
   saveCountryAction,
   saveCityAction,
   toggleCheckerAction,
+  deleteAccountAction,
 } from "../actions";
 import AdminSubmit from "../AdminSubmit";
 import CheckerForm from "./CheckerForm";
@@ -126,10 +127,47 @@ async function CityForm({ city, countries }) {
     </form>
   );
 }
+const accountErrors = {
+  account_confirm: "Type the account's email exactly as shown to delete it.",
+  account_self: "You can't delete your own account.",
+  account_last_owner: "This is the last active admin account, so it can't be deleted. Make another account an admin first.",
+  account_missing: "That account no longer exists.",
+  account_database: "The account could not be deleted. Nothing was changed.",
+};
+// Delete, behind a disclosure and the account's email typed in full. Not shown for your own account.
+function DeleteAccount({ account, t }) {
+  return (
+    <details className="rounded-md border border-rule p-3">
+      <summary className="cursor-pointer text-sm font-bold text-error">{t("Delete account")}</summary>
+      <form action={deleteAccountAction} className="mt-3 grid gap-3">
+        <input type="hidden" name="id" value={account.id} />
+        <p className="text-sm">
+          {t("Deleting signs this person out and removes the account for good, with its report assignments and report checks. Status history keeps their email. The deletion log keeps who deleted it and when.")}
+        </p>
+        <label className="text-sm font-semibold">
+          {t("Type the account's email to confirm")}
+          <input
+            name="confirm"
+            type="email"
+            required
+            autoComplete="off"
+            placeholder={account.email}
+            className="mt-1 block min-h-11 w-full rounded-sm border-[1.5px] border-rule bg-card px-3 text-base"
+          />
+        </label>
+        <div>
+          <button type="submit" className="inline-flex min-h-11 items-center rounded-full bg-error px-4 text-sm font-bold text-paper">
+            {t("Delete account for good")}
+          </button>
+        </div>
+      </form>
+    </details>
+  );
+}
 export default async function Settings(props) {
   const searchParams = await props.searchParams;
   const t = await adminTranslator();
-  await requireOwner();
+  const me = await requireOwner();
   let countries = [],
     municipalities = [],
     departments = [],
@@ -179,7 +217,7 @@ export default async function Settings(props) {
           className="rounded-sm bg-ok-wash p-3 text-sm text-ok"
         >
           {" "}
-          {t("Changes saved.")}{" "}
+          {searchParams.saved === "account_deleted" ? t("Account deleted. It is listed in the deletion log.") : t("Changes saved.")}{" "}
         </p>
       )}
       {searchParams.error && (
@@ -189,7 +227,8 @@ export default async function Settings(props) {
         >
           {" "}
           {t(
-            "Could not save. Check unique codes, valid data and matching municipality/department selections. City prefixes cannot change after reports exist.",
+            accountErrors[searchParams.error] ||
+              "Could not save. Check unique codes, valid data and matching municipality/department selections. City prefixes cannot change after reports exist.",
           )}{" "}
         </p>
       )}
@@ -351,6 +390,7 @@ export default async function Settings(props) {
               <p className="text-xs text-pencil">
                 {owner.must_change_password ? t("First sign-in not finished") : t("Account ready")}
               </p>
+              {String(owner.id) !== String(me.id) && <DeleteAccount account={owner} t={t} />}
             </div>
           ))}
           {checkers.filter((account) => account.role !== "owner").map((checker) => (
@@ -387,6 +427,7 @@ export default async function Settings(props) {
                 <AdminSubmit>{t("Save access")}</AdminSubmit>
               </form>
               <CheckerForm id={checker.id} />
+              <DeleteAccount account={checker} t={t} />
             </div>
           ))}
         </div>

@@ -60,6 +60,7 @@ async function actions({
     if (sql.startsWith("SELECT status,anonymized_at FROM reports"))
       return [[{ status: "Pending", anonymized_at: anonymized ? new Date() : null }]];
     if (sql.startsWith("SELECT public_id FROM reports")) return [[{ public_id: "PR-2026-000007" }]];
+    if (sql.startsWith("SELECT email FROM staff_accounts WHERE id=?")) return [[{ email: "Besa@kosova.report" }]];
     if (sql.startsWith("SELECT report_id FROM report_assignments"))
       return [assigned ? [{ report_id: 7 }] : []];
     if (sql.startsWith("SELECT id FROM departments")) return [[]];
@@ -111,6 +112,10 @@ async function actions({
     },
     "../../lib/report-options": { categories: ["infrastructure"] },
     "../../lib/incidents": { syncIncidentStatus: async () => [] },
+    "../../lib/account-deletion": {
+      AccountDeletionError: class extends Error {},
+      deleteAccount: async (db, id, by) => queries.push({ sql: "DELETE_ACCOUNT", values: [id, by.email] }),
+    },
     "../../lib/report-deletion": {
       deleteReport: async (db, id, by) => queries.push({ sql: "DELETE_REPORT", values: [id, by.email] }),
     },
@@ -340,4 +345,22 @@ test("only an owner who types the report number deletes it, and the log knows wh
     await assert.rejects(denied.action.deleteReportAction(form({ id: "7", confirm: "PR-2026-000007" })));
     assert.ok(!denied.queries.some((query) => query.sql === "DELETE_REPORT"));
   }
+});
+
+test("only an owner who types the account's email deletes it", async () => {
+  const app = await actions();
+  await assert.rejects(
+    app.action.deleteAccountAction(form({ id: "9", confirm: "besa@kosova.report" })),
+    (error) => error.url === "/admin/settings?saved=account_deleted#checkers",
+  );
+  assert.deepEqual(app.queries.find((query) => query.sql === "DELETE_ACCOUNT").values, ["9", "owner@kosova.report"]);
+  const wrong = await actions();
+  await assert.rejects(
+    wrong.action.deleteAccountAction(form({ id: "9", confirm: "someone@kosova.report" })),
+    (error) => error.url === "/admin/settings?error=account_confirm#checkers",
+  );
+  assert.ok(!wrong.queries.some((query) => query.sql === "DELETE_ACCOUNT"));
+  const checker = await actions({ role: "checker" });
+  await assert.rejects(checker.action.deleteAccountAction(form({ id: "9", confirm: "besa@kosova.report" })));
+  assert.ok(!checker.queries.some((query) => query.sql === "DELETE_ACCOUNT"));
 });

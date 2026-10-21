@@ -8,6 +8,8 @@ For the existing production kosova database, run `npm run setup:server -- --emai
 
 **009** adds `report_deletions`, the log of reports an owner deleted: report number, category, municipality, who deleted it and when.
 
+**010** adds `account_deletions`, the log of staff accounts an admin deleted: whose account, its role, who deleted it and when.
+
 Files 001–003 describe a superseded draft schema. Do not run them against production. Existing integer report IDs, core tables, statuses and the original admins table remain intact.
 
 See REPORTING_SETUP.md for account recovery, image migration and deployment details.
