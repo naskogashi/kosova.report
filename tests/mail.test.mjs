@@ -54,6 +54,8 @@ test("SMTP2Go uses API-key auth and base64 inline attachments", async () => {
   assert.equal(sent.options.headers["X-Smtp2go-Api-Key"], "test-key");
   const body = JSON.parse(sent.options.body);
   assert.deepEqual(body.to, ["department@example.com"]);
+  assert.equal(body.sender, "Kosova Report <reports@kosova.report>");
+  assert.equal(mail.senderWithName("Ekipi <info@kosova.report>"), "Ekipi <info@kosova.report>");
   assert.equal(body.inlines[0].filename, "photo-1");
   assert.equal(
     body.inlines[0].fileblob,

@@ -2,6 +2,9 @@ import { required } from "./db";
 export function emailConfiguration() {
   return { apiKey: required("SMTP2GO_API_KEY"), sender: required("SMTP_FROM") };
 }
+// The name inboxes show next to the address. A SMTP_FROM that already has a name keeps it.
+const SENDER_NAME = "Kosova Report";
+export const senderWithName = (sender) => (sender.includes("<") ? sender : `${SENDER_NAME} <${sender}>`);
 export async function sendDepartmentEmail(
   message,
   config = emailConfiguration(),
@@ -17,7 +20,7 @@ export async function sendDepartmentEmail(
     },
     signal: AbortSignal.timeout(20000),
     body: JSON.stringify({
-      sender: config.sender,
+      sender: senderWithName(config.sender),
       to: [message.to],
       subject: message.subject,
       html_body: message.html,
