@@ -60,7 +60,36 @@ test("SMTP2Go uses API-key auth and base64 inline attachments", async () => {
     Buffer.from("fixture").toString("base64"),
   );
   assert.equal(body.html_body, message.html);
+  assert.equal(body.attachments, undefined);
   assert.ok(!JSON.stringify(body).includes("test-key"));
+});
+test("videos and PDFs travel as named attachments, photos stay inline", async () => {
+  let body;
+  await mail.sendDepartmentEmail(
+    {
+      ...message,
+      attachments: [
+        ...message.attachments,
+        { filename: "video-1.mp4", content: Buffer.from("mp4"), contentType: "video/mp4" },
+        { filename: "document-1.pdf", content: Buffer.from("%PDF"), contentType: "application/pdf" },
+      ],
+    },
+    mail.emailConfiguration(),
+    async (url, options) => {
+      body = JSON.parse(options.body);
+      return Response.json({ data: { succeeded: 1, failed: 0, email_id: "accepted-email" } });
+    },
+  );
+  assert.deepEqual(body.inlines.map((file) => file.filename), ["photo-1"]);
+  assert.deepEqual(
+    body.attachments.map((file) => [file.filename, file.mimetype]),
+    [
+      ["video-1.mp4", "video/mp4"],
+      ["document-1.pdf", "application/pdf"],
+    ],
+  );
+  // Every file SMTP2Go receives has a name; one without makes it reject the whole email.
+  for (const file of [...body.inlines, ...body.attachments]) assert.ok(file.filename);
 });
 test("SMTP2Go rejects HTTP errors and partial/failed acceptance", async () => {
   for (const response of [

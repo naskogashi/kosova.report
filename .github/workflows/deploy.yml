@@ -64,5 +64,5 @@ jobs:
             NODE_ENV=production pm2 start node_modules/next/dist/bin/next --name kosova-report --cwd /home/kosova/htdocs/kosova.report --interpreter "$(command -v node)" -- start -p 3067
             # Evidence retention: deletes files and anonymizes reports 30 days after resolution.
             pm2 delete kosova-retention 2>/dev/null || true
-            NODE_ENV=production pm2 start scripts/retention.mjs --name kosova-retention --cwd /home/kosova/htdocs/kosova.report --interpreter "$(command -v node)" --cron-restart "*/15 * * * *" --no-autorestart
+            NODE_ENV=production pm2 start scripts/retention.mjs --name kosova-retention --cwd /home/kosova/htdocs/kosova.report --interpreter "$(command -v node)" --node-args="--disable-warning=MODULE_TYPELESS_PACKAGE_JSON" --cron-restart "*/15 * * * *" --no-autorestart
             pm2 save

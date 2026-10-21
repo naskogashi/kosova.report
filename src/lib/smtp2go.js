@@ -7,6 +7,8 @@ export async function sendDepartmentEmail(
   config = emailConfiguration(),
   fetcher = fetch,
 ) {
+  const files = message.attachments || [];
+  const attached = files.filter((file) => !file.cid);
   const response = await fetcher("https://api.smtp2go.com/v3/email/send", {
     method: "POST",
     headers: {
@@ -21,11 +23,22 @@ export async function sendDepartmentEmail(
       html_body: message.html,
       text_body: message.text,
       custom_headers: [{ header: "Message-ID", value: message.messageId }],
-      inlines: (message.attachments || []).map((image) => ({
-        filename: image.cid,
-        fileblob: image.content.toString("base64"),
-        mimetype: image.contentType,
-      })),
+      // Photos shown inside the email carry a cid; videos and PDFs are ordinary attachments.
+      // SMTP2Go rejects the whole message if an inline has no name.
+      inlines: files
+        .filter((file) => file.cid)
+        .map((image) => ({
+          filename: image.cid,
+          fileblob: image.content.toString("base64"),
+          mimetype: image.contentType,
+        })),
+      ...(attached.length && {
+        attachments: attached.map((file) => ({
+          filename: file.filename,
+          fileblob: file.content.toString("base64"),
+          mimetype: file.contentType,
+        })),
+      }),
     }),
   });
   const result = await response.json();
