@@ -26,7 +26,9 @@ export default async function PerformanceDashboard({ data, locale, compact = fal
   const agencies = compact ? data.agencies.slice(0, 5) : data.agencies;
 
   return (
-    <div className="grid gap-6">
+    // grid-cols-1 is minmax(0, 1fr): without it the column grows to the table's 40rem min width
+    // and the whole page scrolls sideways on phones instead of just the table.
+    <div className="grid grid-cols-1 gap-6">
       {!compact && overall.total < MIN_REPORTS && (
         <p className="rounded-md bg-wash p-4 text-sm font-semibold">{t("earlyDays")}</p>
       )}
