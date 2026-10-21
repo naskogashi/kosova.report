@@ -12,6 +12,7 @@ import {
 } from "../../../../lib/report-notifications";
 import { syncIncidentStatus } from "../../../../lib/incidents";
 import { setReportStatus } from "../../../../lib/report-status";
+import { queueFollowerPush, deliverPush } from "../../../../lib/push";
 export const dynamic = "force-dynamic";
 const select =
   "SELECT r.id,r.public_id,r.category,r.description,r.status,r.created_at,r.resolved_at,r.lat,r.lng,d.notification_email,c.name AS city FROM reports r JOIN departments d ON d.id=r.department_id JOIN cities c ON c.id=r.city_id JOIN municipality_report_tokens t ON t.report_id=r.id AND t.department_id=r.department_id WHERE r.public_id=? AND t.token_hash=? AND t.expires_at>UTC_TIMESTAMP()";
@@ -34,6 +35,19 @@ export async function GET(request, props) {
         { status: 404, headers: privateHeaders },
       );
     const { id, notification_email, ...report } = rows[0];
+    // The first time the department opens its link, the citizen hears that it was opened.
+    try {
+      const [opened] = await database().execute(
+        "UPDATE reports SET first_opened_at=UTC_TIMESTAMP() WHERE id=? AND first_opened_at IS NULL",
+        [id],
+      );
+      if (opened.affectedRows === 1) {
+        await queueFollowerPush(database(), id, "opened", "opened");
+        await deliverPush(database());
+      }
+    } catch {
+      console.error("Opened notice pending", { reportId: id });
+    }
     return Response.json(report, { headers: privateHeaders });
   } catch {
     return Response.json(
@@ -120,6 +134,14 @@ export async function POST(request, props) {
       pending += (await deliverStatusEmails(key)).pending;
     } catch {
       pending++;
+    }
+  }
+  if (eventKey) {
+    // The citizen's own devices hear about it at once.
+    try {
+      await deliverPush(database());
+    } catch {
+      console.error("Push delivery pending");
     }
   }
   return Response.json(

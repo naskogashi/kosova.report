@@ -637,5 +637,18 @@
       "sending": "Šaljem…",
       "submit": "Pošalji komentar"
     }
+  },
+  "follow": {
+    "title": "Dobijte obaveštenje kada odeljenje odgovori",
+    "body": "Poslaćemo obaveštenje na ovaj uređaj kada vaša prijava bude otvorena, u obradi ili rešena.",
+    "action": "Uključi obaveštenja",
+    "working": "Uključivanje…",
+    "following": "Obaveštenja su uključena za ovu prijavu na ovom uređaju.",
+    "stop": "Isključi obaveštenja na ovom uređaju",
+    "denied": "Obaveštenja su blokirana za ovaj sajt. Možete ih dozvoliti u podešavanjima pregledača.",
+    "installFirst": "Na iPhone-u obaveštenja rade kada dodate kosova.report na početni ekran.",
+    "installAction": "Kako da ga dodate",
+    "error": "Obaveštenja nisu mogla da se uključe. Pokušajte ponovo kasnije.",
+    "privacy": "Ovaj uređaj je povezan sa prijavom samo do 30 dana nakon što bude rešena. Odeljenje to nikada ne vidi."
   }
 }

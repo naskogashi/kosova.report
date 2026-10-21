@@ -6,6 +6,7 @@
 import { CopyObjectCommand, DeleteObjectCommand } from "@aws-sdk/client-s3";
 import { connect, storage, bucket, evidenceBucket } from "./runtime.mjs";
 import { runRetention, backfillSummary, approveBackfill } from "../src/lib/retention.js";
+import { deliverPush, queueNoResponse } from "../src/lib/push.js";
 
 const backfill = process.argv.includes("--backfill");
 const approve = process.argv.includes("--approve");
@@ -35,6 +36,10 @@ try {
       },
     });
     if (Object.values(result).some(Boolean)) console.log("Retention run", result);
+    // Same schedule: tell followers of reports nobody opened in 14 days, retry unsent pushes.
+    const waiting = await queueNoResponse(connection);
+    const push = await deliverPush(connection);
+    if (waiting || Object.values(push).some(Boolean)) console.log("Push run", { noResponse: waiting, ...push });
     if (result.failed) process.exitCode = 1;
   }
 } catch (error) {

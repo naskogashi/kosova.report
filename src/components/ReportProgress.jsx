@@ -8,6 +8,8 @@ import { Link } from "../i18n/navigation";
 import { btn, wrap } from "./ui";
 import { localizedCityName } from "../lib/municipality-names";
 import { downloadReportPDF } from "../lib/report-pdf-client";
+import { forgetKey } from "../lib/push-client";
+import FollowReport from "./FollowReport";
 
 const order = ["Pending", "In Progress", "Resolved"];
 
@@ -59,6 +61,7 @@ export default function ReportProgress({ publicId, municipality = false }) {
         try {
           sessionStorage.removeItem(storeKey);
         } catch {}
+        forgetKey(publicId);
         return setState("anonymized");
       }
       if (!response.ok) return setState("unavailable");
@@ -67,7 +70,7 @@ export default function ReportProgress({ publicId, municipality = false }) {
     } catch {
       setState("unavailable");
     }
-  }, [endpoint, token, municipality, storeKey]);
+  }, [endpoint, token, municipality, storeKey, publicId]);
   useEffect(() => {
     load();
   }, [load]);
@@ -174,6 +177,10 @@ export default function ReportProgress({ publicId, municipality = false }) {
                 </li>
               ))}
             </ol>
+
+            {!municipality && report.status !== "Resolved" && (
+              <FollowReport publicId={publicId} trackingKey={token} className="mt-6 max-w-[34rem]" />
+            )}
 
             {!municipality && report.incident && (
               <div className="mt-6 flex max-w-[34rem] items-start gap-3 rounded-md bg-wash p-4">

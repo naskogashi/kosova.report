@@ -8,6 +8,7 @@ import { btn, wrap } from "./ui";
 import { readReceipt } from "../lib/draft-store";
 import { downloadReportPDF } from "../lib/report-pdf-client";
 import { openInstall, useInstall } from "./install";
+import FollowReport from "./FollowReport";
 
 export default function SentView() {
   const t = useTranslations("sent");
@@ -170,6 +171,8 @@ export default function SentView() {
             </div>
           </section>
         )}
+
+        <FollowReport publicId={receipt.public_id} trackingKey={receipt.tracking_key} className="mt-6" />
 
         <section aria-labelledby="key-title" className="mt-8 rounded-lg bg-card p-5 shadow-soft">
           <h2 id="key-title" className="flex items-center gap-2 text-xl font-extrabold">

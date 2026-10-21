@@ -1,11 +1,13 @@
 import { scheduleExpiry, cancelExpiry } from "./retention";
+import { queueFollowerPush } from "./push";
 
 export const closedError = () =>
   Object.assign(new Error("Report is closed and anonymized"), { status: 409 });
 
 // The only way a report's status changes. Retention follows the status in the same
-// transaction: resolving starts the 30-day clock, reopening stops it. Anonymized reports
-// are final. The caller holds the row lock, writes the audit entry and queues emails.
+// transaction: resolving starts the 30-day clock, reopening stops it. The citizen's own
+// devices are told at once (deliverPush after commit). Anonymized reports are final.
+// The caller holds the row lock, writes the audit entry and queues emails.
 export async function setReportStatus(connection, reportId, status) {
   const [result] = await connection.execute(
     "UPDATE reports SET status=?,resolved_at=CASE WHEN ?='Resolved' THEN COALESCE(resolved_at,UTC_TIMESTAMP()) ELSE NULL END WHERE id=? AND anonymized_at IS NULL",
@@ -14,4 +16,5 @@ export async function setReportStatus(connection, reportId, status) {
   if (result.affectedRows === 0) throw closedError();
   if (status === "Resolved") await scheduleExpiry(connection, reportId);
   else await cancelExpiry(connection, reportId);
+  await queueFollowerPush(connection, reportId, status);
 }

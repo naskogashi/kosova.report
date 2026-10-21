@@ -91,6 +91,26 @@ npm run retention -- --backfill            # counts only, changes nothing
 npm run retention -- --backfill --approve  # the next run deletes and anonymizes them
 ```
 
+### Push notifications about a citizen's own report
+
+After sending, and on the tracking page, citizens can turn on notifications for their report. They hear when the department first opens it, when it's being handled, resolved or reopened, when staff group it with other reports, and after 14 days without any response. These go out at once, without staff approval, and only to devices that follow that one report. Public alerts are a separate, staff-approved feature.
+
+Push stays hidden until these GitHub Actions settings exist (generate them once, on any computer with this repository):
+
+```bash
+npx web-push generate-vapid-keys                                          # public and private key
+node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"  # seal key
+```
+
+| Name | Kind | Value |
+|---|---|---|
+| `VAPID_PUBLIC_KEY` | variable | the public key |
+| `VAPID_SUBJECT` | variable | `mailto:` plus a contact address, for example `mailto:info@kosova.report` |
+| `VAPID_PRIVATE_KEY` | secret | the private key |
+| `PUSH_SEAL_KEY` | secret | the seal key |
+
+Never change them afterwards: subscriptions belong to the VAPID key, and stored subscriptions can only be read with the same seal key. Push endpoints are stored sealed, staff never see them, and a report's follows are deleted when it is anonymized. On iPhone, notifications work only after kosova.report is added to the Home Screen; the page explains this.
+
 Backups and MySQL binary logs keep copies of the data from before anonymization. Keep both for at most 30 days (for binary logs: `binlog_expire_logs_seconds = 2592000`), or the deletion is not complete. A report takes up to 10 photos, 1 video (at most 5 seconds, no sound, 1.6 MB) and 2 PDFs (5 MB each).
 
 The image command defaults to a read-only inventory:

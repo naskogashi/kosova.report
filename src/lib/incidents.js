@@ -1,6 +1,7 @@
 import { createHash, randomBytes } from "node:crypto";
 import { queueStatusEmails } from "./report-notifications";
 import { setReportStatus } from "./report-status";
+import { queueFollowerPush } from "./push";
 import {
   ATTACH_MAX_M,
   MAX_RADIUS_M,
@@ -206,7 +207,9 @@ export async function mergeIncidents(connection, { sourceId, targetId, actor, ac
     ? "Resolved"
     : open.reduce((best, s) => (statusRank[s] > statusRank[best] ? s : best), "Pending");
 
+  const [moved] = await connection.execute("SELECT id FROM reports WHERE incident_id=?", [source.id]);
   await connection.execute("UPDATE reports SET incident_id=?,incident_link='staff' WHERE incident_id=?", [target.id, source.id]);
+  for (const { id } of moved) await queueFollowerPush(connection, id, "grouped", `grouped:${target.id}`);
   await connection.execute(
     "INSERT IGNORE INTO incident_votes (incident_id,voter_hash,created_at) SELECT ?,voter_hash,created_at FROM incident_votes WHERE incident_id=?",
     [target.id, source.id],

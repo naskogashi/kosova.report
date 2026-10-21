@@ -8,7 +8,8 @@ const retention = await import(source("src/lib/retention.js"));
 
 // lib/report-status.js with the real retention module, against a scripted database.
 async function reportStatus({ anonymized = false } = {}) {
-  const queries = [];
+  const queries = [],
+    pushed = [];
   const connection = {
     execute: async (sql, values = []) => {
       queries.push({ sql, values });
@@ -16,15 +17,17 @@ async function reportStatus({ anonymized = false } = {}) {
       return [{ affectedRows: 0 }];
     },
   };
+  const push = { queueFollowerPush: async (db, reportId, event) => pushed.push([reportId, event]) };
   const module = new SourceTextModule(readFileSync("src/lib/report-status.js", "utf8"));
   await module.link(async (name) => {
-    assert.equal(name, "./retention");
-    return new SyntheticModule(Object.keys(retention), function () {
-      for (const [key, value] of Object.entries(retention)) this.setExport(key, value);
+    const values = { "./retention": retention, "./push": push }[name];
+    assert.ok(values, `Unexpected import ${name}`);
+    return new SyntheticModule(Object.keys(values), function () {
+      for (const [key, value] of Object.entries(values)) this.setExport(key, value);
     });
   });
   await module.evaluate();
-  return { lib: module.namespace, connection, queries };
+  return { lib: module.namespace, connection, queries, pushed };
 }
 
 test("resolving a report starts the 30-day clock on its attachments", async () => {
@@ -36,6 +39,8 @@ test("resolving a report starts the 30-day clock on its attachments", async () =
   assert.match(expiry.sql, /SET a\.state='expiring_pending',a\.expires_at=r\.resolved_at \+ INTERVAL 30 DAY/);
   assert.match(expiry.sql, /a\.state IN \('active','restoring'\)/);
   assert.deepEqual(expiry.values, [7]);
+  // The citizen's own devices are told in the same transaction.
+  assert.deepEqual(app.pushed, [[7, "Resolved"]]);
 });
 
 test("reopening a report stops the clock and brings moved files back", async () => {
@@ -53,6 +58,7 @@ test("an anonymized report's status never changes", async () => {
   const app = await reportStatus({ anonymized: true });
   await assert.rejects(app.lib.setReportStatus(app.connection, 7, "In Progress"), (error) => error.status === 409);
   assert.equal(app.queries.length, 1);
+  assert.deepEqual(app.pushed, []);
 });
 
 test("lifecycle rules: incoming/ after a day, expiring/ after 30 days, merged by ID", async () => {

@@ -6,6 +6,7 @@ import { database } from "../../../lib/db";
 import { requireOwner } from "../../../lib/admin-session";
 import { siteConfig } from "../../../lib/admin-auth";
 import { deliverStatusEmails } from "../../../lib/report-notifications";
+import { deliverPush } from "../../../lib/push";
 import { IncidentError, logIncident, mergeIncidents, splitReport } from "../../../lib/incidents";
 import { validRef } from "../../../lib/incident-matching";
 
@@ -70,6 +71,12 @@ export async function mergeIncidentAction(form) {
     } catch {
       pending++;
     }
+  }
+  // The citizen's own devices hear about it at once.
+  try {
+    await deliverPush(database());
+  } catch {
+    console.error("Push delivery pending");
   }
   done(form, pending ? "saved=email_pending" : "saved=merged");
 }

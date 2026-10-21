@@ -110,6 +110,7 @@ async function actions({
     },
     "../../lib/report-options": { categories: ["infrastructure"] },
     "../../lib/incidents": { syncIncidentStatus: async () => [] },
+    "../../lib/push": { deliverPush: async () => queries.push({ sql: "DELIVER_PUSH" }) },
     "../../lib/report-status": {
       setReportStatus: async (connection, reportId, status) =>
         queries.push({ sql: "SET_STATUS", values: [reportId, status] }),
@@ -180,6 +181,8 @@ test("owner status update commits audit and queues both progress emails atomical
   assert.equal(audit.values[3], "In Progress");
   const change = app.queries.find((query) => query.sql === "SET_STATUS");
   assert.deepEqual(change.values, ["7", "In Progress"]);
+  // Pushes go out after commit, never inside the transaction.
+  assert.ok(app.queries.findIndex((query) => query.sql === "DELIVER_PUSH") > app.queries.findIndex((query) => query.sql === "COMMIT"));
 });
 test("an anonymized report takes no new note or status", async () => {
   const app = await actions({ anonymized: true });

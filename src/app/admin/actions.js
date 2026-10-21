@@ -24,6 +24,7 @@ import {
 import { categories } from "../../lib/report-options";
 import { syncIncidentStatus } from "../../lib/incidents";
 import { setReportStatus, closedError } from "../../lib/report-status";
+import { deliverPush } from "../../lib/push";
 async function assertOrigin() {
   if ((await headers()).get("origin") !== siteConfig().origin)
     throw new Error("Request origin not allowed");
@@ -366,6 +367,14 @@ export async function updateReportAction(form) {
       pending += (await deliverStatusEmails(key)).pending;
     } catch {
       pending++;
+    }
+  }
+  if (eventKey && !failed) {
+    // The citizen's own devices hear about it at once.
+    try {
+      await deliverPush(database());
+    } catch {
+      console.error("Push delivery pending");
     }
   }
   revalidatePath("/admin");

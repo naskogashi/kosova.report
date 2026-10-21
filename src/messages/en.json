@@ -637,5 +637,18 @@
       "sending": "Sending…",
       "submit": "Send comment"
     }
+  },
+  "follow": {
+    "title": "Get notified when the department responds",
+    "body": "We’ll send a notification to this device when your report is opened, handled or resolved.",
+    "action": "Turn on notifications",
+    "working": "Turning on…",
+    "following": "Notifications are on for this report on this device.",
+    "stop": "Turn off notifications on this device",
+    "denied": "Notifications are blocked for this site. You can allow them in your browser settings.",
+    "installFirst": "On iPhone, notifications work after you add kosova.report to your Home Screen.",
+    "installAction": "How to add it",
+    "error": "Notifications couldn’t be turned on. Try again later.",
+    "privacy": "This device is linked to the report only until 30 days after it’s resolved. The department never sees it."
   }
 }

@@ -126,16 +126,23 @@ async function incidents(handler) {
   const connection = {
     execute: async (sql, values = []) => {
       queries.push({ sql, values });
-      return (await handler(sql, values)) ?? [{ affectedRows: 1, insertId: 0 }];
+      const scripted = await handler(sql, values);
+      if (scripted) return scripted;
+      if (sql.startsWith("SELECT id FROM reports WHERE incident_id=?")) return [[{ id: 40 }, { id: 41 }]];
+      return [{ affectedRows: 1, insertId: 0 }];
     },
   };
-  const queued = [];
+  const queued = [],
+    pushed = [];
   const mocks = {
     "node:crypto": await import("node:crypto"),
     "./report-notifications": {
       queueStatusEmails: async (conn, reportId, eventKey, audiences) => queued.push({ reportId, eventKey, audiences }),
     },
     "./incident-matching": matching,
+    "./push": {
+      queueFollowerPush: async (conn, reportId, event, once) => pushed.push({ reportId, event, once }),
+    },
     "./report-status": {
       setReportStatus: (conn, reportId, status) =>
         conn.execute("UPDATE reports SET status=? WHERE id=?", [status, reportId]),
@@ -150,7 +157,7 @@ async function incidents(handler) {
     });
   });
   await module.evaluate();
-  return { lib: module.namespace, connection, queries, queued };
+  return { lib: module.namespace, connection, queries, queued, pushed };
 }
 const nearbyRow = (overrides = {}) => ({
   ...row({ at: overrides.at || east(10) }),
@@ -292,6 +299,22 @@ test("merging keeps the furthest open stage, never resolves an open problem, and
     return app.queries.find((q) => q.sql.startsWith("UPDATE incidents SET status=?")).values[0];
   };
   assert.equal(await run("In Progress", "Pending"), "In Progress");
+  // Followers of the reports that moved hear that their report was grouped, once per target issue.
+  const grouped = await incidents((sql) => {
+    if (sql.startsWith("SELECT id,ref,city_id,status,merged_into FROM incidents"))
+      return [
+        [
+          { id: 1, ref: "1111111111", city_id: 1, status: "Pending", merged_into: null },
+          { id: 2, ref: "2222222222", city_id: 1, status: "Pending", merged_into: null },
+        ],
+      ];
+    if (sql.startsWith("SELECT id,status,department_id FROM reports")) return [[]];
+  });
+  await grouped.lib.mergeIncidents(grouped.connection, { sourceId: 1, targetId: 2, actor: "owner@x", actorId: 5 });
+  assert.deepEqual(grouped.pushed, [
+    { reportId: 40, event: "grouped", once: "grouped:2" },
+    { reportId: 41, event: "grouped", once: "grouped:2" },
+  ]);
   assert.equal(await run("Pending", "Resolved"), "Pending");
   assert.equal(await run("Resolved", "Resolved"), "Resolved");
   await assert.rejects(run("Pending", "Pending", 7), /city/);

@@ -637,5 +637,18 @@
       "sending": "Duke dërguar…",
       "submit": "Dërgo komentin"
     }
+  },
+  "follow": {
+    "title": "Merrni njoftim kur përgjigjet departamenti",
+    "body": "Do t’ju dërgojmë një njoftim në këtë pajisje kur raporti juaj hapet, trajtohet ose zgjidhet.",
+    "action": "Aktivizo njoftimet",
+    "working": "Duke aktivizuar…",
+    "following": "Njoftimet janë aktive për këtë raport në këtë pajisje.",
+    "stop": "Çaktivizo njoftimet në këtë pajisje",
+    "denied": "Njoftimet janë të bllokuara për këtë faqe. Mund t’i lejoni te cilësimet e shfletuesit.",
+    "installFirst": "Në iPhone, njoftimet funksionojnë pasi ta shtoni kosova.report në ekranin kryesor.",
+    "installAction": "Si ta shtoni",
+    "error": "Njoftimet nuk u aktivizuan. Provoni përsëri më vonë.",
+    "privacy": "Kjo pajisje lidhet me raportin vetëm deri 30 ditë pasi të zgjidhet. Departamenti nuk e sheh kurrë."
   }
 }
