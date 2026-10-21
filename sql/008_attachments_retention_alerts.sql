@@ -40,6 +40,15 @@ CREATE TABLE IF NOT EXISTS attachments (
  CONSTRAINT attachment_scrubbed CHECK (state<>'deleted' OR (object_key IS NULL AND public_key IS NULL AND sha256 IS NULL))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- When retention began. Reports resolved before then are only deleted and anonymized after the
+-- one-time backfill is approved: npm run retention -- --backfill --approve
+CREATE TABLE IF NOT EXISTS retention_settings (
+ id TINYINT UNSIGNED PRIMARY KEY,
+ started_at DATETIME NOT NULL,
+ backfill_approved_at DATETIME NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+INSERT IGNORE INTO retention_settings (id,started_at) VALUES (1,UTC_TIMESTAMP());
+
 -- Endpoint and keys are sealed with AES-GCM under a key that lives only in the environment.
 CREATE TABLE IF NOT EXISTS push_subscriptions (
  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,

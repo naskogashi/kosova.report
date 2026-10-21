@@ -18,11 +18,23 @@ export async function GET(request, props) {
       "SELECT r.public_id,r.category,r.description,r.status,r.created_at,r.resolved_at,c.name AS city,i.ref AS incident_ref,i.visibility AS incident_visibility,i.report_count,i.upvote_count FROM reports r JOIN cities c ON c.id=r.city_id LEFT JOIN incidents i ON i.id=r.incident_id AND i.merged_into IS NULL WHERE r.public_id=? AND r.tracking_key=? LIMIT 1",
       [params.public_id, key],
     );
-    if (!rows.length)
+    if (!rows.length) {
+      // Thirty days after resolution the key is replaced and the report anonymized: say so,
+      // with dates only.
+      const [closed] = await database().execute(
+        "SELECT resolved_at,anonymized_at FROM reports WHERE public_id=? AND anonymized_at IS NOT NULL LIMIT 1",
+        [params.public_id],
+      );
+      if (closed.length)
+        return Response.json(
+          { anonymized: true, ...closed[0] },
+          { status: 410, headers: privateHeaders },
+        );
       return Response.json(
         { error: "Report not found" },
         { status: 404, headers: privateHeaders },
       );
+    }
     // The public issue this report belongs to, when there is one people can see.
     const { incident_ref, incident_visibility, report_count, upvote_count, ...report } = rows[0];
     return Response.json(

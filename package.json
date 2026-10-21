@@ -12,7 +12,8 @@
     "boundary": "node scripts/fetch-boundary.mjs",
     "migrate:images": "node scripts/migrate-images.mjs",
     "verify:images": "node scripts/verify-images.mjs",
-    "r2:lifecycle": "node scripts/r2-lifecycle.mjs"
+    "r2:lifecycle": "node scripts/r2-lifecycle.mjs",
+    "retention": "node scripts/retention.mjs"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.500.0",

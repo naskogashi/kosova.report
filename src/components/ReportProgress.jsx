@@ -25,6 +25,7 @@ export default function ReportProgress({ publicId, municipality = false }) {
   const [busy, setBusy] = useState(false);
   const [notice, setNotice] = useState("");
   const [pdfError, setPdfError] = useState(false);
+  const [closed, setClosed] = useState(null);
   const storeKey = `kr-${municipality ? "dept" : "key"}:${publicId}`;
   const endpoint = `/api/${municipality ? "municipality" : "tracking"}/${encodeURIComponent(publicId)}`;
 
@@ -52,13 +53,21 @@ export default function ReportProgress({ publicId, municipality = false }) {
         cache: "no-store",
       });
       if (response.status === 404) return setState("notFound");
+      // Resolved more than 30 days ago: files and contact details are gone, and so is the key.
+      if (response.status === 410 && !municipality) {
+        setClosed(await response.json());
+        try {
+          sessionStorage.removeItem(storeKey);
+        } catch {}
+        return setState("anonymized");
+      }
       if (!response.ok) return setState("unavailable");
       setReport(await response.json());
       setState("ready");
     } catch {
       setState("unavailable");
     }
-  }, [endpoint, token]);
+  }, [endpoint, token, municipality, storeKey]);
   useEffect(() => {
     load();
   }, [load]);
@@ -124,6 +133,15 @@ export default function ReportProgress({ publicId, municipality = false }) {
           <div role="alert" className="mt-8 max-w-[34rem]">
             <p className="text-lg font-semibold">{municipality ? tm("error") : t("notFound")}</p>
             {!municipality && <TrackForm initialNumber={publicId} />}
+          </div>
+        )}
+        {state === "anonymized" && closed && (
+          <div role="status" className="mt-8 max-w-[34rem]">
+            <p className="text-sm font-bold text-pencil">{t("status")}</p>
+            <p className="mt-1 text-3xl font-extrabold tracking-[-0.02em] text-blue">{t("statuses.Resolved")}</p>
+            <p className="mt-4 text-lg">
+              {t("anonymized", { resolved: date(closed.resolved_at), anonymized: date(closed.anonymized_at) })}
+            </p>
           </div>
         )}
         {state === "unavailable" && (

@@ -365,7 +365,8 @@
     "another": "Pronađi drugu prijavu",
     "incident": "{count, plural, one {Javni problem, prijavljen # put} few {Deo javnog problema prijavljenog # puta} other {Deo javnog problema prijavljenog # puta}}",
     "incidentConfirms": "{count, plural, one {# osoba ga takođe vidi} few {# osobe ga takođe vide} other {# osoba ga takođe vidi}}",
-    "incidentOpen": "Otvori javni problem"
+    "incidentOpen": "Otvori javni problem",
+    "anonymized": "Ova prijava je rešena {resolved}. Trideset dana kasnije, {anonymized}, njene fotografije, video snimci, dokumenti i kontakt podaci trajno su obrisani. Ostala je samo anonimna statistika."
   },
   "municipality": {
     "heading": "Prijava za odeljenje",

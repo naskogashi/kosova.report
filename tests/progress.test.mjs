@@ -349,3 +349,35 @@ test("read-only citizen endpoint never exposes contact details or a mutation han
   assert.equal(result.reporter_email, undefined);
   assert.equal(result.status, "In Progress");
 });
+test("after anonymization tracking says so with dates only, and unknown reports stay not found", async () => {
+  for (const [anonymized, status] of [[true, 410], [false, 404]]) {
+    const queries = [];
+    const route = await load("src/app/api/tracking/[public_id]/route.js", {
+      "../../../../lib/db": {
+        database: () => ({
+          execute: async (sql, values) => {
+            queries.push({ sql, values });
+            if (sql.includes("anonymized_at IS NOT NULL"))
+              return [anonymized ? [{ resolved_at: "2026-09-01T10:00:00Z", anonymized_at: "2026-10-01T10:15:00Z" }] : []];
+            return [[]];
+          },
+        }),
+      },
+      "../../../../lib/tracking": tracking,
+    });
+    const response = await route.GET(
+      new Request("https://kosova.report/api/tracking/PR-2026-000001", {
+        headers: { Authorization: `Bearer ${"z".repeat(43)}` },
+      }),
+      { params },
+    );
+    assert.equal(response.status, status);
+    if (anonymized)
+      assert.deepEqual(await response.json(), {
+        anonymized: true,
+        resolved_at: "2026-09-01T10:00:00Z",
+        anonymized_at: "2026-10-01T10:15:00Z",
+      });
+    assert.deepEqual(queries.at(-1).values, ["PR-2026-000001"]);
+  }
+});

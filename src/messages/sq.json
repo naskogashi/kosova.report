@@ -365,7 +365,8 @@
     "another": "Gjej një raport tjetër",
     "incident": "{count, plural, one {Çështje publike, raportuar një herë} other {Pjesë e një çështjeje publike të raportuar # herë}}",
     "incidentConfirms": "{count, plural, one {# person e sheh edhe vetë} other {# persona e shohin edhe vetë}}",
-    "incidentOpen": "Hap çështjen publike"
+    "incidentOpen": "Hap çështjen publike",
+    "anonymized": "Ky raport u zgjidh më {resolved}. Tridhjetë ditë më vonë, më {anonymized}, fotot, videot, dokumentet dhe të dhënat e kontaktit u fshinë përgjithmonë. Mbeten vetëm statistika anonime."
   },
   "municipality": {
     "heading": "Raporti për departamentin",

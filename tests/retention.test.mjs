@@ -96,3 +96,109 @@ test("migration 008 is applied and its CHECK constraints avoid cascading foreign
       for (const column of cascading) assert.ok(!new RegExp(`\\b${column}\\b`).test(check), `${column} in CHECK`);
   }
 });
+
+// runRetention against a scripted database and storage.
+function retentionFixture({ pending = [], restoring = [], reports = [], comments = [], failAnonymize = false, columns = [] } = {}) {
+  const queries = [],
+    storage = [],
+    events = [];
+  const db = {
+    execute: async (sql, values = []) => {
+      queries.push({ sql, values });
+      if (sql.startsWith("SELECT id,object_key FROM attachments WHERE state='expiring_pending'")) return [pending];
+      if (sql.startsWith("SELECT id,object_key FROM attachments WHERE state='restoring'")) return [restoring];
+      if (sql.startsWith("SELECT r.id FROM reports r")) return [reports.map((id) => ({ id }))];
+      if (sql.startsWith("SELECT column_name")) return [columns];
+      if (sql.startsWith("SELECT object_key AS k"))
+        return [[{ k: "evidence/" + "a".repeat(32) }, { k: "reports/old-upload/photo.jpg" }]];
+      if (sql.startsWith("SELECT i.image_url"))
+        return [[{ url: "https://images.kosova.report/reports/legacy/one.jpg" }, { url: "https://elsewhere.example/x.jpg" }]];
+      if (sql.startsWith("SELECT m.id,m.object_key")) return [comments];
+      if (sql.startsWith("UPDATE reports SET reporter_email") && failAnonymize) throw new Error("lock wait timeout");
+      return [{ affectedRows: 1 }];
+    },
+    beginTransaction: async () => events.push("begin"),
+    commit: async () => events.push("commit"),
+    rollback: async () => events.push("rollback"),
+  };
+  const files = {
+    copy: async (from, to) => storage.push(["copy", from, to]),
+    remove: async (key) => storage.push(["remove", key]),
+  };
+  return {
+    run: () => retention.runRetention({ db, storage: files, imageBase: "https://images.kosova.report/" }),
+    queries,
+    storage,
+    events,
+  };
+}
+
+test("resolved files move to expiring/ and reopened ones come back to evidence/", async () => {
+  const ref = "q".repeat(32);
+  const app = retentionFixture({
+    pending: [{ id: 1, object_key: `evidence/${ref}` }],
+    restoring: [{ id: 2, object_key: `expiring/${ref}` }],
+  });
+  const result = await app.run();
+  assert.deepEqual(app.storage, [
+    ["copy", `evidence/${ref}`, `expiring/${ref}`],
+    ["remove", `evidence/${ref}`],
+    ["copy", `expiring/${ref}`, `evidence/${ref}`],
+    ["remove", `expiring/${ref}`],
+  ]);
+  assert.equal(result.moved, 1);
+  assert.equal(result.restored, 1);
+  // The photo row the staff gallery reads follows the file.
+  assert.ok(app.queries.some((q) => q.sql.startsWith("UPDATE report_image_storage") && q.values[0] === `expiring/${ref}`));
+});
+
+test("day 30 deletes every file first, then anonymizes the report in one transaction", async () => {
+  const app = retentionFixture({ reports: [7], columns: [{ name: "reporter_phone", nullable: "NO", type: "varchar" }] });
+  const result = await app.run();
+  assert.equal(result.anonymized, 1);
+  const due = app.queries.find((q) => q.sql.startsWith("SELECT r.id FROM reports r"));
+  assert.match(due.sql, /r\.status='Resolved' AND r\.resolved_at <= UTC_TIMESTAMP\(\) - INTERVAL 30 DAY/);
+  assert.match(due.sql, /r\.resolved_at >= s\.started_at OR s\.backfill_approved_at IS NOT NULL/);
+  assert.deepEqual(app.storage, [
+    ["remove", "evidence/" + "a".repeat(32)],
+    ["remove", "reports/old-upload/photo.jpg"],
+    ["remove", "reports/legacy/one.jpg"],
+  ]);
+  const anonymize = app.queries.find((q) => q.sql.startsWith("UPDATE reports SET reporter_email"));
+  for (const part of ["reporter_email=NULL", "description=''", "admin_note=NULL", "tracking_key=UUID()", "anonymized_at=UTC_TIMESTAMP()", "reporter_phone=''"])
+    assert.ok(anonymize.sql.includes(part), part);
+  const statements = app.queries.map((q) => q.sql);
+  for (const prefix of [
+    "UPDATE report_audit_log SET note=''",
+    "UPDATE report_reviews SET note=''",
+    "DELETE FROM report_notifications",
+    "DELETE FROM report_status_notifications",
+    "DELETE FROM municipality_report_tokens",
+    "DELETE FROM push_outbox",
+    "DELETE FROM push_report_follows",
+    "UPDATE attachments SET state='deleted',object_key=NULL",
+    "DELETE FROM report_images",
+    "DELETE s FROM push_subscriptions",
+  ])
+    assert.ok(statements.some((sql) => sql.startsWith(prefix)), prefix);
+  assert.deepEqual(app.events, ["begin", "commit"]);
+});
+
+test("a failed anonymization rolls back and the report is tried again on the next run", async () => {
+  const app = retentionFixture({ reports: [7], failAnonymize: true });
+  const result = await app.run();
+  assert.equal(result.anonymized, 0);
+  assert.equal(result.failed, 1);
+  assert.deepEqual(app.events, ["begin", "rollback"]);
+});
+
+test("comment photos go 30 days after their issue is resolved; abandoned uploads are forgotten", async () => {
+  const app = retentionFixture({ comments: [{ id: 3, object_key: "comments/9/photo.jpg" }] });
+  const result = await app.run();
+  assert.equal(result.comments, 1);
+  assert.deepEqual(app.storage, [["remove", "comments/9/photo.jpg"]]);
+  const photos = app.queries.find((q) => q.sql.startsWith("SELECT m.id,m.object_key"));
+  assert.match(photos.sql, /i\.status='Resolved' AND i\.resolved_at <= UTC_TIMESTAMP\(\) - INTERVAL 30 DAY/);
+  assert.ok(app.queries.some((q) => q.sql.startsWith("DELETE FROM incident_comment_images") && q.values[0] === 3));
+  assert.ok(app.queries.some((q) => q.sql.startsWith("DELETE FROM attachments WHERE state='signed'")));
+});

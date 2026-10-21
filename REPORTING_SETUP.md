@@ -78,7 +78,20 @@ Browsers upload photos, the 5-second video and PDFs straight to kosova-evidence 
 ]
 ```
 
-Without it, photos still arrive the older way, inside the report, but videos and PDFs can't be sent. A report takes up to 10 photos, 1 video (at most 5 seconds, no sound, 1.6 MB) and 2 PDFs (5 MB each).
+Without it, photos still arrive the older way, inside the report, but videos and PDFs can't be sent.
+
+### Retention: 30 days after a report is resolved
+
+The deploy starts a second PM2 process, **kosova-retention**, which runs `scripts/retention.mjs` every 15 minutes (`pm2 logs kosova-retention` shows a line only when it did something). Thirty days after a report is resolved it permanently deletes the report's photos, video and PDFs from R2 and, in the same run, anonymizes the report: contact email, description, staff notes, notification history, department links and push links are removed, and the private tracking key stops working. Agency, municipality, category, coordinates, status and timestamps stay for the dashboard and map. Comment photos are deleted 30 days after their issue is resolved. Anonymized reports can't be reopened or edited.
+
+Reports resolved **before retention started** (the moment migration 008 first ran) are left alone until the one-time backfill is approved, because it permanently deletes their files and contact data:
+
+```bash
+npm run retention -- --backfill            # counts only, changes nothing
+npm run retention -- --backfill --approve  # the next run deletes and anonymizes them
+```
+
+Backups and MySQL binary logs keep copies of the data from before anonymization. Keep both for at most 30 days (for binary logs: `binlog_expire_logs_seconds = 2592000`), or the deletion is not complete. A report takes up to 10 photos, 1 video (at most 5 seconds, no sound, 1.6 MB) and 2 PDFs (5 MB each).
 
 The image command defaults to a read-only inventory:
 

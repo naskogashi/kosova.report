@@ -365,7 +365,8 @@
     "another": "Find another report",
     "incident": "{count, plural, one {Public issue, reported once} other {Part of a public issue reported # times}}",
     "incidentConfirms": "{count, plural, one {# person sees it too} other {# people see it too}}",
-    "incidentOpen": "Open the public issue"
+    "incidentOpen": "Open the public issue",
+    "anonymized": "This report was resolved on {resolved}. Thirty days later, on {anonymized}, its photos, videos, documents and contact details were permanently deleted. Only anonymous statistics remain."
   },
   "municipality": {
     "heading": "Report for the department",
