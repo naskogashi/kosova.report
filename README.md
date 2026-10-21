@@ -10,6 +10,16 @@ It is live in Prishtina, and more municipalities can be switched on from the sta
 
 ---
 
+## New in October 2026
+
+- **Public transparency map** ([/sq/harta](https://kosova.report/sq/harta), /sr/mapa, /en/map). Every reported problem in the municipality on an OpenStreetMap map, coloured by status, with filters for category, status and period, counts and a list of the latest issues. Places are approximate unless staff published the issue, nothing about reporters is shown, and new reports appear after 12 hours.
+- **Videos and documents as evidence.** Besides photos, a report can carry one video of up to 5 seconds and up to 2 PDFs. Videos can be recorded inside the page or chosen from the phone; they are trimmed to 5 seconds, scaled to 720p and stripped of **all sound** and location data on the phone. PDFs lose their author, dates, scripts and embedded files before upload.
+- **Direct, private uploads.** Files go from the phone straight to a private Cloudflare R2 bucket with a one-time signed link; the server checks every file (type, size, and for videos: one H.264 track, no sound, at most 5 seconds) before it becomes part of a report.
+- **Notifications about your own report.** After sending, a reporter can turn on push notifications on that device and hears when the department opens the report, when it is being handled, resolved or reopened, when it is grouped with other reports, and after 14 days without a response. No account and no tracking key ever travel in a notification.
+- **30-day retention and anonymization.** Thirty days after a report is resolved, its photos, videos and documents are permanently deleted, and the report is anonymized: the contact email, description, staff notes, notification history and links are removed. Agency, municipality, category, location, status and dates stay for statistics and the map.
+- **Delete a report or a staff account, with a log.** Admins can delete a report (confirmed by typing its number) or a staff account (confirmed by typing its email). The new **Deletion log** page shows "*name* deleted this on *date*" for each.
+- **Department emails** now carry the video and PDFs as attachments, and every email comes from **Kosova Report**.
+
 ## Features
 
 ### For residents
@@ -17,10 +27,12 @@ It is live in Prishtina, and more municipalities can be switched on from the sta
 - **Report in about two minutes.** Pick a category, drop a pin, describe the problem, add photos, send.
 - **Seven categories.** Infrastructure, Environment, Public services, Administration, Health, Education, Safety. Each comes with examples and a hint about what to write.
 - **Exact location.** Use the phone's location or tap the map. The pin can be dragged, moved with the keyboard, or entered as coordinates. The official municipal border is drawn on the map, and pins outside it are refused.
-- **Photos made safe.** Up to 10 photos per report. They are shrunk on the phone, and the location, device and time details cameras add are removed before upload.
+- **Photos, a short video and PDFs.** Up to 10 photos, one video of up to 5 seconds and 2 PDFs per report. Photos are shrunk on the phone and lose the location, device and time details cameras add. Videos are recorded in the page or picked from the phone, trimmed to 5 seconds and sent **without sound**. PDFs lose their hidden details.
 - **With or without your name.** Anonymous reports carry no contact details. Named reports share an email with the department and send status emails to the reporter.
 - **Proof of reporting.** Every report gets a number (e.g. `PR-2026-000418`), a private key and a downloadable PDF receipt with a QR code.
 - **Follow progress.** With the number and key, anyone can see the status and a timeline: sent, with the department, being handled, resolved.
+- **Notifications.** Optional push notifications on the reporter's own device when the department opens, handles or resolves the report.
+- **Map of reported problems.** A public map of every visible issue in the municipality, with filters and approximate places.
 - **Drafts and offline sending.** A report in progress is saved on the device. Without a connection it is queued and sends itself when the connection returns.
 - **Install as an app.** It is a Progressive Web App and can be installed on phones and desktops.
 - **Comfortable to use.** Automatic light/dark theme (dark after sunset in Prishtina), a high-contrast mode for sunlight, full keyboard and screen-reader support, and large touch targets.
@@ -40,14 +52,15 @@ It is live in Prishtina, and more municipalities can be switched on from the sta
 
 ### For municipal departments
 
-- **Email for every new report**, with the description, map link, photos and reporter email (if given) inline. It shows "Reported N times" when the report joins an existing issue.
+- **Email for every new report**, with the description, map link, photos inline, the video and PDFs attached, and the reporter email (if given). It shows "Reported N times" when the report joins an existing issue.
 - **A private link to update status** ("being handled", "resolved"), with no account needed. The link expires after 90 days.
 - **Routing per municipality and category.** Each category goes to one department of that municipality.
 
 ### For staff (the staff panel at `/admin`)
 
 - **Report inbox.** Filter by status, search by number or text, page through results, and move with `j`/`k` (`/` searches). Grouped reports carry a ×N badge.
-- **Report view.** Evidence photos, map link, reporter, department, status changes with an internal note, and a full history.
+- **Report view.** Evidence photos, the video and PDFs, map link, reporter, department, status changes with an internal note, and a full history.
+- **Delete a report** for good, confirmed by typing its number. It stops counting in statistics, on the map and in its issue.
 - **Checking workflow.** Assign reports to checkers, who verify them and leave a note.
 - **Issues and duplicates.** See every report of the same problem, review possible duplicates, merge them or mark them as different (this is remembered), and separate a wrongly grouped report.
 - **Publication.** Choose what the public sees for each issue (hidden, listed, public), write the public summary and pick photos.
@@ -58,7 +71,8 @@ It is live in Prishtina, and more municipalities can be switched on from the sta
   - Countries and municipalities: public ID prefix, map centre and zoom, and the official boundary.
   - Turning public reporting on or off per municipality.
   - Departments and their emails, and category routing (with a check for categories nobody receives).
-  - Staff accounts.
+  - Staff accounts, including deleting an account (never your own, never the last admin).
+- **Deletion log.** Every deleted report and staff account, with who deleted it and when.
 - **Roles.** *Admins* manage everything. *Checkers* see and verify only the reports assigned to them.
 - **Staff panel in English or Albanian.**
 
@@ -66,7 +80,9 @@ It is live in Prishtina, and more municipalities can be switched on from the sta
 
 - No advertising or analytics cookies.
 - Private keys travel in the URL fragment, are kept only for the browser tab, and are never written to server logs.
-- All photos are stored in private Cloudflare R2 storage and served only to authorised staff, or on a public page when staff choose them.
+- All photos, videos and documents are stored in private Cloudflare R2 storage and served only to authorised staff, or on a public page when staff choose them. Files are uploaded straight from the phone with one-time signed links and checked by the server.
+- Files are deleted 30 days after a report is resolved, and the report is anonymized at the same time. Backups and database logs should be kept for 30 days at most.
+- Push subscriptions are stored encrypted, are never shown to staff and are removed when the report is anonymized.
 - Staff use one-time first passwords and server-side sessions, and sign-in attempts are rate-limited. Every status change is audited.
 - Thumbs-up and comments are counted per browser with a hashed random cookie, never an IP address or account, and are rate-limited.
 - Database migrations back up the database first and can safely be run again.
@@ -83,6 +99,7 @@ It is live in Prishtina, and more municipalities can be switched on from the sta
 - SMTP2Go for email
 - Leaflet with OpenStreetMap tiles
 - jsPDF and `qrcode` for receipts
+- [Mediabunny](https://mediabunny.dev) (WebCodecs) for video, `pdf-lib` for cleaning PDFs, `web-push` for notifications
 
 ## Getting started
 
@@ -91,7 +108,7 @@ Requires Node.js 22 or newer and a MySQL database.
 ```bash
 npm install --legacy-peer-deps
 cp .env.example .env.local   # fill in MySQL, R2 and SMTP2Go settings
-npm run migrate              # backs up, then applies sql/004–007
+npm run migrate              # backs up, then applies sql/004–010
 npm run dev
 ```
 
@@ -104,21 +121,24 @@ npm run dev
 | `npm run migrate` | Backup and migrations only |
 | `npm run migrate:images -- --apply` | Moves older report images into R2 |
 | `npm run verify:images` | Checks that every stored image really exists in R2 |
+| `npm run retention` | Deletes files and anonymizes reports 30 days after resolution (PM2 runs it every 15 minutes) |
+| `npm run retention -- --backfill` | Counts what the one-time backfill for older reports would delete; add `--approve` to allow it |
+| `npm run r2:lifecycle` | Shows (or with `--apply` sets) the R2 lifecycle rules for evidence |
 
-Deployment, account recovery and image migration are described in [REPORTING_SETUP.md](REPORTING_SETUP.md). The database migrations are explained in [sql/README.md](sql/README.md).
+Deployment, account recovery, image migration, R2 buckets, retention and push setup are described in [REPORTING_SETUP.md](REPORTING_SETUP.md). The design behind uploads, retention and notifications is in [docs/architecture/evidence-retention-push-alerts.md](docs/architecture/evidence-retention-push-alerts.md). The database migrations are explained in [sql/README.md](sql/README.md).
 
 ### Deployment
 
-Every push to `main` deploys to production through GitHub Actions. The deploy installs packages, backs up and migrates the database, builds the site and restarts it. Work on a branch and merge to `main` only when it's ready to go live.
+Every push to `main` deploys to production through GitHub Actions. The deploy installs packages, backs up and migrates the database, builds the site, restarts it and starts the retention job. Work on a branch and merge to `main` only when it's ready to go live.
 
 ## Project layout
 
 ```
-src/app/[locale]/   public pages (report, track, issue, news, privacy)
+src/app/[locale]/   public pages (report, track, issue, map, news, privacy)
 src/app/admin/      staff panel
-src/app/api/        reports, tracking, issues, images, municipality links
+src/app/api/        reports, uploads, tracking, issues, map, push, images, municipality links
 src/components/     report flow, receipt, maps, issue page
-src/lib/            database, matching, notifications, PDF, R2, email
+src/lib/            database, matching, notifications, push, retention, PDF, video, R2, email
 src/messages/       sq / sr / en text
 sql/                repeatable database migrations
 tests/              node:test suites
