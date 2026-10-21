@@ -74,7 +74,7 @@ async function convert(file, { start, onProgress, shortEdge }) {
         ...(portrait ? { width: edge } : { height: edge }),
         frameRate: 24,
         codec: "avc",
-        quality: new Quality(BITRATE),
+        quality: new Quality({ bitrate: BITRATE }),
         forceTranscode: true,
       },
       audio: { discard: true },
