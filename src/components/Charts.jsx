@@ -1,4 +1,4 @@
-import { Icon, categoryStyle } from "../../../components/icons";
+import { Icon, categoryStyle } from "./icons";
 
 // Statistics charts in plain HTML/CSS. Colours come from the validated chart ramp
 // (--color-chart-1..3, one hue light to dark). Every mark has a hover/focus
@@ -172,5 +172,80 @@ export function DepartmentBars({ rows, legend, label }) {
         ))}
       </ul>
     </figure>
+  );
+}
+
+// Two measures per month side by side (received and resolved) from one baseline, with a legend.
+export function MonthlyPairs({ months, legend, label, locale, empty }) {
+  const max = Math.max(0, ...months.flatMap((m) => [m.received, m.resolved]));
+  if (max === 0) return <p className="rounded-sm bg-wash p-4 text-sm text-pencil">{empty}</p>;
+  const top = niceMax(max);
+  const name = (month) => new Date(`${month}-15T12:00:00Z`).toLocaleDateString(locale, { month: "short" });
+  return (
+    <figure className="grid gap-3">
+      <ul className="flex flex-wrap gap-x-6 gap-y-2 text-sm">
+        {legend.map((item) => (
+          <li key={item.label} className="flex items-center gap-2">
+            <span aria-hidden="true" className="size-3 rounded-[3px]" style={{ background: item.color }} />
+            {item.label}
+          </li>
+        ))}
+      </ul>
+      <div className="grid grid-cols-[2rem_1fr] gap-x-2" role="img" aria-label={label}>
+        <div className="tabular relative h-44 text-right text-xs text-pencil" aria-hidden="true">
+          <span className="absolute top-0 right-0 -translate-y-1/2">{top}</span>
+          <span className="absolute right-0 bottom-0 translate-y-1/2">0</span>
+        </div>
+        <div className="relative h-44">
+          <span aria-hidden="true" className="absolute inset-x-0 top-0 h-px bg-rule" />
+          <div className="absolute inset-0 flex items-end gap-1.5 shadow-[inset_0_-1px_0_var(--color-pencil)]">
+            {months.map((month, index) => (
+              <div
+                key={month.month}
+                tabIndex={0}
+                aria-label={`${name(month.month)}: ${legend[0].label} ${month.received}, ${legend[1].label} ${month.resolved}`}
+                className="group relative flex h-full flex-1 items-end justify-center gap-0.5 focus-visible:outline-offset-1"
+              >
+                {[month.received, month.resolved].map((value, i) => (
+                  <div key={i} className="w-full max-w-4 rounded-t-[3px]" style={{ height: `${(value / top) * 100}%`, background: legend[i].color }} />
+                ))}
+                <span className={`${tip} bottom-full mb-1 ${index > months.length - 4 ? "right-0" : "left-0"}`}>
+                  {name(month.month)}: {legend[0].label} {month.received} · {legend[1].label} {month.resolved}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+        <span />
+        <div className="tabular mt-2 flex gap-1.5 text-xs text-pencil" aria-hidden="true">
+          {months.map((month) => (
+            <span key={month.month} className="flex-1 text-center">
+              {name(month.month)}
+            </span>
+          ))}
+        </div>
+      </div>
+    </figure>
+  );
+}
+
+// Plain horizontal bars with a text label, for any short list of counts.
+export function PlainBars({ rows, label }) {
+  const max = Math.max(1, ...rows.map((r) => r.value));
+  return (
+    <ul className="grid gap-2.5" aria-label={label}>
+      {rows.map((row) => (
+        <li key={row.key} className="grid grid-cols-[minmax(8rem,12rem)_1fr] items-center gap-3">
+          <span className="text-sm font-semibold">{row.label}</span>
+          <span className="group relative flex items-center gap-2" tabIndex={0}>
+            <span className="h-5 rounded-r-[4px] bg-chart-2 group-hover:bg-chart-3" style={{ width: `${Math.max(row.value ? 1.5 : 0, (row.value / max) * 85)}%` }} />
+            <b className="tabular text-sm font-bold">{row.value}</b>
+            <span className={`${tip} bottom-7 left-0`}>
+              {row.label}: {row.value}
+            </span>
+          </span>
+        </li>
+      ))}
+    </ul>
   );
 }

@@ -48,6 +48,6 @@ export default function proxy(request) {
 }
 
 export const config = {
-  // Everything except API routes, the staff panel, Next internals and static files.
-  matcher: ["/((?!api|admin|_next|_vercel|.*\\..*).*)"],
+  // Everything except API routes, the staff panel, embeddable widgets, Next internals and static files.
+  matcher: ["/((?!api|admin|embed|_next|_vercel|.*\\..*).*)"],
 };

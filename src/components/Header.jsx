@@ -30,6 +30,7 @@ export default async function Header({ locale }) {
           <ul className="flex items-center gap-1 text-sm font-bold">
             {[
               ["/map", t("map")],
+              ["/performance", t("performance")],
               ["/news", t("news")],
               ["/track", t("track")],
             ].map(([href, label]) => (

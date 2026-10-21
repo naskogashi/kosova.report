@@ -1,4 +1,4 @@
-import { CategoryBars, DailyColumns, DepartmentBars, StatusSplit } from "./Charts";
+import { CategoryBars, DailyColumns, DepartmentBars, StatusSplit } from "../../../components/Charts";
 import { siteTitle } from "../../../lib/site-branding";
 import { adminTranslator, adminLanguage } from "../../../lib/admin-language";
 import { database } from "../../../lib/db";

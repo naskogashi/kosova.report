@@ -36,6 +36,10 @@
     "map": {
       "title": "Mapa prijavljenih problema u Prištini | kosova.report",
       "description": "Svaki problem koji su građani prijavili na kosova.report, na javnoj mapi: gde je, šta je i da li je rešen. Bez imena i kontakt podataka."
+    },
+    "performance": {
+      "title": "Kako institucije odgovaraju u Prištini | kosova.report",
+      "description": "Stopa odgovora, vreme odgovora, stopa rešavanja i ocena za svaku instituciju koja prima prijave na kosova.report. Javno, ažurira se na svakih nekoliko minuta."
     }
   },
   "shell": {
@@ -63,7 +67,8 @@
     },
     "news": "Vesti",
     "privacy": "Privatnost",
-    "map": "Mapa"
+    "map": "Mapa",
+    "performance": "Učinak"
   },
   "footer": {
     "support": "Ovu aktivnost podržava CIVICUS Digital Democracy Initiative (DDI).",
@@ -697,5 +702,70 @@
     "recent": "Najnovije",
     "none": "Nijedan problem ne odgovara ovim filterima.",
     "mapLabel": "Mapa prijavljenih problema"
+  },
+  "performance": {
+    "title": "Kako institucije odgovaraju",
+    "intro": "Za svaku instituciju koja prima prijave na kosova.report: koliko je prijava primila, koliko često i koliko brzo je odgovorila i koliko je problema rešila.",
+    "scope": "{city} · sve prijave od početka platforme · ažurira se na svakih 5 minuta",
+    "municipality": "Opština",
+    "unavailable": "Brojevi nisu mogli da se učitaju. Pokušajte ponovo za trenutak.",
+    "empty": "Još nema prijava.",
+    "days": "{count, plural, one {# dan} few {# dana} other {# dana}}",
+    "tileReports": "Primljene prijave",
+    "tileReportsNote": "{count} u poslednjih 30 dana",
+    "tileReportsCount": "{count, plural, one {# prijava} few {# prijave} other {# prijava}}",
+    "tileResponse": "Dobile odgovor",
+    "tileResponseNote": "Institucija ih je otvorila ili im je promenjen status",
+    "tileResolved": "Rešene",
+    "tileResolvedNote": "{count, plural, one {# prijava} few {# prijave} other {# prijava}}",
+    "tileResponseTime": "Vreme odgovora",
+    "tileResolveTime": "Vreme rešavanja",
+    "tileMedian": "Medijana: polovina prijava je bila brža",
+    "statusTitle": "Gde su prijave",
+    "agenciesTitle": "Ocene institucija",
+    "agenciesSub": "Poređano po oceni. Institucije sa manje od {min} prijava još nemaju ocenu.",
+    "colAgency": "Institucija",
+    "colReports": "Prijave",
+    "colResponse": "Odgovoreno",
+    "colResponseTime": "Vreme odgovora",
+    "colResolved": "Rešeno",
+    "colResolveTime": "Vreme rešavanja",
+    "colScore": "Ocena",
+    "tooFew": "Premalo prijava",
+    "monthsTitle": "Primljeno i rešeno, poslednjih 12 meseci",
+    "received": "Primljeno",
+    "resolvedLegend": "Rešeno",
+    "speedTitle": "Koliko brzo institucije odgovaraju",
+    "speedSub": "Vreme od slanja prijave do prvog odgovora.",
+    "bucket": {
+      "sameDay": "Istog dana",
+      "upTo3": "1 do 3 dana",
+      "upTo7": "4 do 7 dana",
+      "upTo30": "8 do 30 dana",
+      "over30": "Više od 30 dana",
+      "none": "Još bez odgovora"
+    },
+    "categoriesTitle": "Prijave po kategoriji",
+    "resolvedShare": "{percent}% rešeno",
+    "methodTitle": "Kako merimo",
+    "methodResponseTitle": "Odgovor",
+    "methodResponse": "Prijava se računa kao odgovorena kada je institucija otvori preko linka iz mejla ili kada joj se status prvi put promeni.",
+    "methodResolutionTitle": "Rešeno",
+    "methodResolution": "Institucija (ili tim, u njeno ime) označila je prijavu kao rešenu. Ponovo otvorena prijava više se ne računa kao rešena.",
+    "methodTimeTitle": "Vremena",
+    "methodTime": "Medijane: polovina prijava je bila brža, polovina sporija. Na medijanu ne utiče nekoliko veoma starih prijava kao na prosek.",
+    "methodScoreTitle": "Ocena (0 do 100)",
+    "methodScore": "Po trećina: udeo prijava sa odgovorom, udeo rešenih i udeo rešenih u roku od 30 dana. Daje se od {min} prijava naviše.",
+    "methodPrivacyTitle": "Privatnost",
+    "methodPrivacy": "Koriste se samo odeljenje, kategorija, status i datumi. Ništa o osobama koje su prijavile nije deo ovih brojeva.",
+    "methodFreshTitle": "Ažuriranje",
+    "methodFresh": "Ponovo se računa na svakih 5 minuta iz svih prijava, uključujući rešene prijave čiji su podaci u međuvremenu obrisani.",
+    "useTitle": "Koristite ove podatke",
+    "useSub": "Novinari, istraživači i organizacije mogu da koriste ove brojeve uz navođenje kosova.report. Preuzmite ocene ili postavite živi vidžet na svoj sajt.",
+    "csv": "Preuzmi ocene (CSV)",
+    "mapLink": "Mapa prijavljenih problema",
+    "embedLabel": "Postavite živi vidžet na svoj sajt",
+    "embedHint": "Kopirajte ovaj kod na svoju stranicu. Vidžet prikazuje ključne brojeve i prvih pet institucija i sam se ažurira.",
+    "embedMore": "Ceo pregled za {city} na kosova.report"
   }
 }

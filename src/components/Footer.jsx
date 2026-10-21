@@ -16,6 +16,7 @@ export default async function Footer({ locale, staff = false }) {
     ? null
     : [
         ["/map", ts("map")],
+        ["/performance", ts("performance")],
         ["/news", ts("news")],
         ["/track", ts("track")],
         ["/privacy", ts("privacy")],

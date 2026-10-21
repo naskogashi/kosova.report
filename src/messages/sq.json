@@ -36,6 +36,10 @@
     "map": {
       "title": "Harta e problemeve të raportuara në Prishtinë | kosova.report",
       "description": "Çdo problem që qytetarët e kanë raportuar në kosova.report, në një hartë publike: ku është, çfarë është dhe nëse është rregulluar. Pa emra apo të dhëna kontakti."
+    },
+    "performance": {
+      "title": "Si përgjigjen institucionet në Prishtinë | kosova.report",
+      "description": "Shkalla e përgjigjes, koha e përgjigjes, shkalla e zgjidhjes dhe një pikëzim për çdo institucion që merr raporte në kosova.report. Publike, përditësohet çdo pak minuta."
     }
   },
   "shell": {
@@ -63,7 +67,8 @@
     },
     "news": "Lajme",
     "privacy": "Privatësia",
-    "map": "Harta"
+    "map": "Harta",
+    "performance": "Performanca"
   },
   "footer": {
     "support": "Ky aktivitet mbështetet nga CIVICUS Digital Democracy Initiative (DDI).",
@@ -697,5 +702,70 @@
     "recent": "Më të fundit",
     "none": "Asnjë problem nuk përputhet me këto filtra.",
     "mapLabel": "Harta e problemeve të raportuara"
+  },
+  "performance": {
+    "title": "Si përgjigjen institucionet",
+    "intro": "Për çdo institucion që merr raporte në kosova.report: sa raporte ka marrë, sa shpesh dhe sa shpejt është përgjigjur, dhe sa probleme ka zgjidhur.",
+    "scope": "{city} · të gjitha raportet që nga fillimi i platformës · përditësohet çdo 5 minuta",
+    "municipality": "Komuna",
+    "unavailable": "Numrat nuk u ngarkuan. Provoni përsëri pas pak.",
+    "empty": "Ende nuk ka raporte.",
+    "days": "{count, plural, one {# ditë} other {# ditë}}",
+    "tileReports": "Raporte të pranuara",
+    "tileReportsNote": "{count} në 30 ditët e fundit",
+    "tileReportsCount": "{count, plural, one {# raport} other {# raporte}}",
+    "tileResponse": "Morën përgjigje",
+    "tileResponseNote": "Të hapura nga institucioni ose me status të ndryshuar",
+    "tileResolved": "Të zgjidhura",
+    "tileResolvedNote": "{count, plural, one {# raport} other {# raporte}}",
+    "tileResponseTime": "Koha e përgjigjes",
+    "tileResolveTime": "Koha e zgjidhjes",
+    "tileMedian": "Mediana: gjysma e raporteve ishin më të shpejta",
+    "statusTitle": "Ku janë raportet",
+    "agenciesTitle": "Karta e institucioneve",
+    "agenciesSub": "Renditur sipas pikëzimit. Institucionet me më pak se {min} raporte ende nuk marrin pikëzim.",
+    "colAgency": "Institucioni",
+    "colReports": "Raporte",
+    "colResponse": "U përgjigj",
+    "colResponseTime": "Koha e përgjigjes",
+    "colResolved": "Të zgjidhura",
+    "colResolveTime": "Koha e zgjidhjes",
+    "colScore": "Pikëzimi",
+    "tooFew": "Shumë pak raporte",
+    "monthsTitle": "Të pranuara dhe të zgjidhura, 12 muajt e fundit",
+    "received": "Të pranuara",
+    "resolvedLegend": "Të zgjidhura",
+    "speedTitle": "Sa shpejt përgjigjen institucionet",
+    "speedSub": "Koha nga dërgimi i raportit deri te përgjigjja e parë.",
+    "bucket": {
+      "sameDay": "Të njëjtën ditë",
+      "upTo3": "1 deri 3 ditë",
+      "upTo7": "4 deri 7 ditë",
+      "upTo30": "8 deri 30 ditë",
+      "over30": "Më shumë se 30 ditë",
+      "none": "Ende pa përgjigje"
+    },
+    "categoriesTitle": "Raportet sipas kategorisë",
+    "resolvedShare": "{percent}% të zgjidhura",
+    "methodTitle": "Si matim",
+    "methodResponseTitle": "Përgjigjja",
+    "methodResponse": "Një raport llogaritet si i përgjigjur kur institucioni e hap nga lidhja në email ose kur statusi i tij ndryshon për herë të parë.",
+    "methodResolutionTitle": "E zgjidhur",
+    "methodResolution": "Institucioni (ose ekipi, në emër të tij) e shënoi raportin të zgjidhur. Një raport i rihapur nuk llogaritet më si i zgjidhur.",
+    "methodTimeTitle": "Kohët",
+    "methodTime": "Mediana: gjysma e raporteve ishin më të shpejta, gjysma më të ngadalta. Mediana nuk rritet nga disa raporte shumë të vjetra siç ndodh me mesataren.",
+    "methodScoreTitle": "Pikëzimi (0 deri 100)",
+    "methodScore": "Nga një e treta: pjesa e raporteve me përgjigje, pjesa e të zgjidhurave dhe pjesa e të zgjidhurave brenda 30 ditëve. Jepet nga {min} raporte e lart.",
+    "methodPrivacyTitle": "Privatësia",
+    "methodPrivacy": "Përdoren vetëm departamenti, kategoria, statusi dhe datat. Asgjë për personat që raportuan nuk është pjesë e këtyre numrave.",
+    "methodFreshTitle": "Përditësimi",
+    "methodFresh": "Rillogaritet çdo 5 minuta nga të gjitha raportet, përfshirë raportet e zgjidhura, të dhënat e të cilave janë fshirë më pas.",
+    "useTitle": "Përdorni këto të dhëna",
+    "useSub": "Gazetarët, studiuesit dhe organizatat mund t’i përdorin këta numra duke përmendur kosova.report. Shkarkoni kartën ose vendosni widget-in e drejtpërdrejtë në faqen tuaj.",
+    "csv": "Shkarko kartën (CSV)",
+    "mapLink": "Harta e problemeve të raportuara",
+    "embedLabel": "Vendosni widget-in në faqen tuaj",
+    "embedHint": "Kopjoni këtë kod në faqen tuaj. Widget-i shfaq numrat kryesorë dhe pesë institucionet e para, dhe përditësohet vetë.",
+    "embedMore": "Paneli i plotë për {city} në kosova.report"
   }
 }

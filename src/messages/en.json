@@ -36,6 +36,10 @@
     "map": {
       "title": "Map of reported problems in Prishtina | kosova.report",
       "description": "Every problem citizens reported on kosova.report, on a public map: where it is, what it is, and whether it has been fixed. No names or contact details."
+    },
+    "performance": {
+      "title": "How institutions respond in Prishtina | kosova.report",
+      "description": "Response rates, time to respond, resolution rates and a score for every institution that receives reports on kosova.report. Public, updated every few minutes."
     }
   },
   "shell": {
@@ -63,7 +67,8 @@
     },
     "news": "News",
     "privacy": "Privacy",
-    "map": "Map"
+    "map": "Map",
+    "performance": "Performance"
   },
   "footer": {
     "support": "This activity is supported by the CIVICUS Digital Democracy Initiative (DDI).",
@@ -697,5 +702,70 @@
     "recent": "Most recent",
     "none": "No problems match these filters.",
     "mapLabel": "Map of reported problems"
+  },
+  "performance": {
+    "title": "How institutions respond",
+    "intro": "For every institution that receives reports on kosova.report: how many reports it got, how often and how quickly it responded, and how many problems it resolved.",
+    "scope": "{city} · all reports since the platform started · updated every 5 minutes",
+    "municipality": "Municipality",
+    "unavailable": "The numbers couldn't be loaded. Try again in a moment.",
+    "empty": "No reports yet.",
+    "days": "{count, plural, one {# day} other {# days}}",
+    "tileReports": "Reports received",
+    "tileReportsNote": "{count} in the last 30 days",
+    "tileReportsCount": "{count, plural, one {# report} other {# reports}}",
+    "tileResponse": "Got a response",
+    "tileResponseNote": "Opened by the institution or status changed",
+    "tileResolved": "Resolved",
+    "tileResolvedNote": "{count, plural, one {# report} other {# reports}}",
+    "tileResponseTime": "Time to respond",
+    "tileResolveTime": "Time to resolve",
+    "tileMedian": "Median: half of reports were faster",
+    "statusTitle": "Where reports stand",
+    "agenciesTitle": "Institution scorecard",
+    "agenciesSub": "Sorted by score. Institutions with fewer than {min} reports get no score yet.",
+    "colAgency": "Institution",
+    "colReports": "Reports",
+    "colResponse": "Responded",
+    "colResponseTime": "Time to respond",
+    "colResolved": "Resolved",
+    "colResolveTime": "Time to resolve",
+    "colScore": "Score",
+    "tooFew": "Too few reports",
+    "monthsTitle": "Received and resolved, last 12 months",
+    "received": "Received",
+    "resolvedLegend": "Resolved",
+    "speedTitle": "How quickly institutions respond",
+    "speedSub": "Time from sending a report to the first response.",
+    "bucket": {
+      "sameDay": "Same day",
+      "upTo3": "1 to 3 days",
+      "upTo7": "4 to 7 days",
+      "upTo30": "8 to 30 days",
+      "over30": "More than 30 days",
+      "none": "No response yet"
+    },
+    "categoriesTitle": "Reports by category",
+    "resolvedShare": "{percent}% resolved",
+    "methodTitle": "How we measure",
+    "methodResponseTitle": "Response",
+    "methodResponse": "A report counts as responded to when the institution opens it from its email link or its status changes for the first time.",
+    "methodResolutionTitle": "Resolved",
+    "methodResolution": "The institution (or the team, on its behalf) marked the report resolved. A report that is reopened stops counting as resolved.",
+    "methodTimeTitle": "Times",
+    "methodTime": "Medians: half of the reports were faster, half slower. Medians are not pulled up by a few very old reports the way averages are.",
+    "methodScoreTitle": "Score (0 to 100)",
+    "methodScore": "A third each: the share of reports with a response, the share resolved, and the share resolved within 30 days. Given from {min} reports up.",
+    "methodPrivacyTitle": "Privacy",
+    "methodPrivacy": "Only department, category, status and dates are used. Nothing about the people who reported is part of these numbers.",
+    "methodFreshTitle": "Updates",
+    "methodFresh": "Recalculated every 5 minutes from every report, including resolved reports whose details have since been deleted.",
+    "useTitle": "Use this data",
+    "useSub": "Journalists, researchers and organisations may use these numbers with credit to kosova.report. Download the scorecard or put the live widget on your website.",
+    "csv": "Download the scorecard (CSV)",
+    "mapLink": "Map of reported problems",
+    "embedLabel": "Embed the live widget on your website",
+    "embedHint": "Copy this code into your page. The widget shows the key numbers and the top five institutions, and updates itself.",
+    "embedMore": "Full dashboard for {city} on kosova.report"
   }
 }
