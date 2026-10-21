@@ -68,7 +68,9 @@
     "news": "Lajme",
     "privacy": "Privatësia",
     "map": "Harta",
-    "performance": "Performanca"
+    "performance": "Performanca",
+    "menu": "Menyja",
+    "menuClose": "Mbyll menynë"
   },
   "footer": {
     "support": "Ky aktivitet mbështetet nga CIVICUS Digital Democracy Initiative (DDI).",
@@ -766,6 +768,10 @@
     "mapLink": "Harta e problemeve të raportuara",
     "embedLabel": "Vendosni widget-in në faqen tuaj",
     "embedHint": "Kopjoni këtë kod në faqen tuaj. Widget-i shfaq numrat kryesorë dhe pesë institucionet e para, dhe përditësohet vetë.",
-    "embedMore": "Paneli i plotë për {city} në kosova.report"
+    "embedMore": "Paneli i plotë për {city} në kosova.report",
+    "underDay": "Më pak se një ditë",
+    "noResponseYet": "Ende pa përgjigje",
+    "noneResolvedYet": "Ende asnjë e zgjidhur",
+    "earlyDays": "Ende ka pak raporte, prandaj këta numra do të tregojnë më shumë kur të vijnë raporte të tjera."
   }
 }

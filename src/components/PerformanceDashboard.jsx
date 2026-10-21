@@ -14,18 +14,22 @@ export default async function PerformanceDashboard({ data, locale, compact = fal
   const ts = await getTranslations({ locale, namespace: "track" });
   const { overall } = data;
   const value = (number, suffix = "") => (number === null || number === undefined ? dash : `${number}${suffix}`);
-  const daysText = (number) => (number === null ? dash : t("days", { count: number }));
+  // Under a day reads better than "0 days"; no value yet gets a word, not just a dash.
+  const daysText = (number) => (number === null ? dash : number < 1 ? t("underDay") : t("days", { count: number }));
   const tiles = [
     [t("tileReports"), value(overall.total), t("tileReportsNote", { count: overall.last30 })],
     [t("tileResponse"), value(overall.responseRate, "%"), t("tileResponseNote")],
     [t("tileResolved"), value(overall.resolutionRate, "%"), t("tileResolvedNote", { count: overall.resolved })],
-    [t("tileResponseTime"), daysText(overall.medianResponseDays), t("tileMedian")],
-    [t("tileResolveTime"), daysText(overall.medianResolveDays), t("tileMedian")],
+    [t("tileResponseTime"), daysText(overall.medianResponseDays), overall.medianResponseDays === null ? t("noResponseYet") : t("tileMedian")],
+    [t("tileResolveTime"), daysText(overall.medianResolveDays), overall.medianResolveDays === null ? t("noneResolvedYet") : t("tileMedian")],
   ];
   const agencies = compact ? data.agencies.slice(0, 5) : data.agencies;
 
   return (
     <div className="grid gap-6">
+      {!compact && overall.total < MIN_REPORTS && (
+        <p className="rounded-md bg-wash p-4 text-sm font-semibold">{t("earlyDays")}</p>
+      )}
       <ul className={`grid gap-3 ${compact ? "grid-cols-2 sm:grid-cols-3" : "sm:grid-cols-3 lg:grid-cols-5"}`}>
         {tiles.slice(0, compact ? 3 : 5).map(([label, number, note]) => (
           <li key={label} className={card}>

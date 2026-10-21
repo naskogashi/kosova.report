@@ -68,7 +68,9 @@
     "news": "Vesti",
     "privacy": "Privatnost",
     "map": "Mapa",
-    "performance": "Učinak"
+    "performance": "Učinak",
+    "menu": "Meni",
+    "menuClose": "Zatvori meni"
   },
   "footer": {
     "support": "Ovu aktivnost podržava CIVICUS Digital Democracy Initiative (DDI).",
@@ -766,6 +768,10 @@
     "mapLink": "Mapa prijavljenih problema",
     "embedLabel": "Postavite živi vidžet na svoj sajt",
     "embedHint": "Kopirajte ovaj kod na svoju stranicu. Vidžet prikazuje ključne brojeve i prvih pet institucija i sam se ažurira.",
-    "embedMore": "Ceo pregled za {city} na kosova.report"
+    "embedMore": "Ceo pregled za {city} na kosova.report",
+    "underDay": "Manje od jednog dana",
+    "noResponseYet": "Još bez odgovora",
+    "noneResolvedYet": "Još nijedna rešena",
+    "earlyDays": "Za sada ima malo prijava, pa će ovi brojevi više govoriti kako stižu nove."
   }
 }

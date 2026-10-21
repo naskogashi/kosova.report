@@ -101,6 +101,7 @@ const paths = {
   check: <path d="m5 12.5 4.5 4.5L19 7.5" />,
   back: <path d="M14.5 5.5 8 12l6.5 6.5" />,
   close: <path d="M6.5 6.5l11 11M17.5 6.5l-11 11" />,
+  menu: <path d="M4.5 7h15M4.5 12h15M4.5 17h15" />,
   sun: (
     <>
       <circle cx="12" cy="12" r="4" />

@@ -10,7 +10,7 @@ export default function HeaderReport({ label }) {
   return (
     <Link
       href="/report"
-      className={`${btn.primary} ml-2 min-h-11 px-4 text-base max-md:hidden`}
+      className={`${btn.primary} ml-2 min-h-11 px-4 text-base whitespace-nowrap max-md:hidden`}
     >
       {label}
     </Link>

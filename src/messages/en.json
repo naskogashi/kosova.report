@@ -68,7 +68,9 @@
     "news": "News",
     "privacy": "Privacy",
     "map": "Map",
-    "performance": "Performance"
+    "performance": "Performance",
+    "menu": "Menu",
+    "menuClose": "Close the menu"
   },
   "footer": {
     "support": "This activity is supported by the CIVICUS Digital Democracy Initiative (DDI).",
@@ -766,6 +768,10 @@
     "mapLink": "Map of reported problems",
     "embedLabel": "Embed the live widget on your website",
     "embedHint": "Copy this code into your page. The widget shows the key numbers and the top five institutions, and updates itself.",
-    "embedMore": "Full dashboard for {city} on kosova.report"
+    "embedMore": "Full dashboard for {city} on kosova.report",
+    "underDay": "Under a day",
+    "noResponseYet": "No response yet",
+    "noneResolvedYet": "None resolved yet",
+    "earlyDays": "Only a few reports so far, so these numbers will say more as reports come in."
   }
 }
