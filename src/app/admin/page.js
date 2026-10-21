@@ -4,6 +4,7 @@ import { database } from "../../lib/db";
 import { requireAdmin } from "../../lib/admin-session";
 import {
   updateReportAction,
+  deleteReportAction,
   assignCheckerAction,
   reviewReportAction,
 } from "./actions";
@@ -243,7 +244,9 @@ export default async function AdminPage(props) {
         <p role="status" className="mt-5 rounded-md bg-ok-wash p-3 font-semibold text-ok">
           {searchParams.saved === "email_pending"
             ? t("Changes saved. Some notification emails are pending.")
-            : t("Changes saved.")}
+            : searchParams.saved === "deleted"
+              ? t("Report deleted. It is listed in the deletion log.")
+              : t("Changes saved.")}
         </p>
       )}
       {searchParams.error && !issueErrors[searchParams.error] && (
@@ -550,6 +553,27 @@ export default async function AdminPage(props) {
                       ))}
                     </ol>
                   </section>
+                )}
+
+                {owner && (
+                  <details className={`${card} p-5`}>
+                    <summary className="cursor-pointer font-extrabold text-error">{t("Delete report")}</summary>
+                    <form action={deleteReportAction} className="mt-3 grid gap-3">
+                      <input type="hidden" name="id" value={report.id} />
+                      <p className="max-w-[40rem] text-sm">
+                        {t("Deleting removes the report, its photos, video and documents for good. It no longer counts in statistics, on the map or in its issue. The deletion log keeps the report number, who deleted it and when.")}
+                      </p>
+                      <label className={field.label}>
+                        {t("Type the report number to confirm")}
+                        <input name="confirm" required autoComplete="off" spellCheck={false} placeholder={report.public_id} className={`${field.input} tabular max-w-xs`} />
+                      </label>
+                      <div>
+                        <button type="submit" className="inline-flex min-h-11 items-center rounded-full bg-error px-4 text-sm font-bold text-paper">
+                          {t("Delete report for good")}
+                        </button>
+                      </div>
+                    </form>
+                  </details>
                 )}
               </section>
             )}

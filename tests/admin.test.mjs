@@ -59,6 +59,7 @@ async function actions({
     }
     if (sql.startsWith("SELECT status,anonymized_at FROM reports"))
       return [[{ status: "Pending", anonymized_at: anonymized ? new Date() : null }]];
+    if (sql.startsWith("SELECT public_id FROM reports")) return [[{ public_id: "PR-2026-000007" }]];
     if (sql.startsWith("SELECT report_id FROM report_assignments"))
       return [assigned ? [{ report_id: 7 }] : []];
     if (sql.startsWith("SELECT id FROM departments")) return [[]];
@@ -110,6 +111,9 @@ async function actions({
     },
     "../../lib/report-options": { categories: ["infrastructure"] },
     "../../lib/incidents": { syncIncidentStatus: async () => [] },
+    "../../lib/report-deletion": {
+      deleteReport: async (db, id, by) => queries.push({ sql: "DELETE_REPORT", values: [id, by.email] }),
+    },
     "../../lib/push": { deliverPush: async () => queries.push({ sql: "DELIVER_PUSH" }) },
     "../../lib/report-status": {
       setReportStatus: async (connection, reportId, status) =>
@@ -314,4 +318,26 @@ test("database session forces unfinished staff to the account page", async () =>
     (await sessions.requireAdmin({ allowPasswordChange: true })).id,
     1,
   );
+});
+
+test("only an owner who types the report number deletes it, and the log knows who", async () => {
+  const app = await actions();
+  await assert.rejects(
+    app.action.deleteReportAction(form({ id: "7", confirm: "pr-2026-000007" })),
+    (error) => error.url === "/admin?saved=deleted",
+  );
+  assert.deepEqual(app.queries.find((query) => query.sql === "DELETE_REPORT").values, ["7", "owner@kosova.report"]);
+
+  const wrong = await actions();
+  await assert.rejects(
+    wrong.action.deleteReportAction(form({ id: "7", confirm: "PR-2026-000008" })),
+    (error) => error.url === "/admin?report=7&error=delete_confirm",
+  );
+  assert.ok(!wrong.queries.some((query) => query.sql === "DELETE_REPORT"));
+
+  for (const options of [{ role: "checker" }, { origin: "https://other.example" }]) {
+    const denied = await actions(options);
+    await assert.rejects(denied.action.deleteReportAction(form({ id: "7", confirm: "PR-2026-000007" })));
+    assert.ok(!denied.queries.some((query) => query.sql === "DELETE_REPORT"));
+  }
 });

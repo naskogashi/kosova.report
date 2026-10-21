@@ -171,7 +171,7 @@ export async function syncIncidentStatus(connection, reportId, status, actor) {
   });
 }
 
-async function recount(connection, incidentId) {
+export async function recount(connection, incidentId) {
   await connection.execute(
     "UPDATE incidents i SET report_count=(SELECT COUNT(*) FROM reports r WHERE r.incident_id=i.id),upvote_count=(SELECT COUNT(*) FROM incident_votes v WHERE v.incident_id=i.id),comment_count=(SELECT COUNT(*) FROM incident_comments c WHERE c.incident_id=i.id AND c.status='approved'),first_reported_at=COALESCE((SELECT MIN(r.created_at) FROM reports r WHERE r.incident_id=i.id),first_reported_at),last_reported_at=COALESCE((SELECT MAX(r.created_at) FROM reports r WHERE r.incident_id=i.id),last_reported_at) WHERE i.id=?",
     [incidentId],

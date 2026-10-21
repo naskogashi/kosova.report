@@ -16,6 +16,7 @@ export default function AdminNav({ labels, owner = false }) {
           ["/admin/community", labels.community],
           ["/admin/news", labels.news],
           ["/admin/settings", labels.settings],
+          ["/admin/deleted", labels.deleted],
         ]
       : []),
     ["/admin/account", labels.account],

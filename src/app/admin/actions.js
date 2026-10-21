@@ -25,6 +25,7 @@ import { categories } from "../../lib/report-options";
 import { syncIncidentStatus } from "../../lib/incidents";
 import { setReportStatus, closedError } from "../../lib/report-status";
 import { deliverPush } from "../../lib/push";
+import { deleteReport } from "../../lib/report-deletion";
 async function assertOrigin() {
   if ((await headers()).get("origin") !== siteConfig().origin)
     throw new Error("Request origin not allowed");
@@ -381,6 +382,26 @@ export async function updateReportAction(form) {
   redirect(
     `/admin?report=${id}&${failed ? "error=update" : pending ? "saved=email_pending" : "saved=report"}`,
   );
+}
+// Owners only. Typing the report number confirms it; the deletion log keeps who and when.
+export async function deleteReportAction(form) {
+  await assertOrigin();
+  const account = await requireOwner();
+  const id = value(form, "id", 10),
+    confirm = value(form, "confirm", 40).toUpperCase();
+  if (!validId(id)) throw Error("Invalid report");
+  let outcome = "deleted";
+  try {
+    const [rows] = await database().execute("SELECT public_id FROM reports WHERE id=?", [id]);
+    if (!rows.length) outcome = "error=delete";
+    else if (confirm !== rows[0].public_id) outcome = "error=delete_confirm";
+    else await deleteReport(database(), id, account);
+  } catch (error) {
+    outcome = "error=delete";
+    console.error("Report deletion failed", { code: error.code || "DELETE_ERROR" });
+  }
+  revalidatePath("/admin");
+  redirect(outcome === "deleted" ? "/admin?saved=deleted" : `/admin?report=${id}&${outcome}`);
 }
 export async function assignCheckerAction(form) {
   await assertOrigin();

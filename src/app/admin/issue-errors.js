@@ -10,4 +10,6 @@ export const issueErrors = {
   split_database: "Separating failed. Nothing was changed.",
   summary: "Write a public summary of at least 10 characters before making the issue public.",
   comment: "Write the update before posting it.",
+  delete_confirm: "Type the report number exactly as shown to delete it.",
+  delete: "The report could not be deleted. Nothing was changed in the database.",
 };

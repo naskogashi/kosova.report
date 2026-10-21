@@ -43,6 +43,7 @@ export default async function AdminLayout({ children }) {
                     community: t("Community"),
                     news: t("News"),
                     settings: t("Settings"),
+                    deleted: t("Deletion log"),
                     account: t("My account"),
                     signOut: t("Sign out"),
                   }}

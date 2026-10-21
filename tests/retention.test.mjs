@@ -93,7 +93,7 @@ test("migration 008 is applied and its CHECK constraints avoid cascading foreign
   const migrations = readFileSync("scripts/migrate-lib.mjs", "utf8")
     .match(/"sql\/[^"]+"/g)
     .map((name) => name.slice(1, -1));
-  assert.equal(migrations.at(-1), "sql/008_attachments_retention_alerts.sql");
+  assert.deepEqual(migrations.slice(-2), ["sql/008_attachments_retention_alerts.sql", "sql/009_report_deletions.sql"]);
   // MySQL refuses a CHECK on a column whose foreign key has ON DELETE/ON UPDATE actions.
   const sql = readFileSync("sql/008_attachments_retention_alerts.sql", "utf8");
   for (const table of sql.split(/CREATE TABLE IF NOT EXISTS /).slice(1)) {

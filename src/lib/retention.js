@@ -86,7 +86,7 @@ export async function anonymizeReport(connection, reportId, extraColumns = []) {
 }
 
 // Every R2 key a report still points to, including photos from before direct uploads.
-async function reportKeys(db, reportId, imageBase) {
+export async function reportKeys(db, reportId, imageBase) {
   const [stored] = await db.execute(
     "SELECT object_key AS k FROM attachments WHERE report_id=? AND object_key IS NOT NULL UNION SELECT s.object_key FROM report_images i JOIN report_image_storage s ON s.report_image_id=i.id WHERE i.report_id=?",
     [reportId, reportId],
