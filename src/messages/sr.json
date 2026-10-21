@@ -206,7 +206,6 @@
       "moveMapDone": "Gotovo",
       "media": "Video i dokumenti",
       "mediaHint": "Jedan video do 5 sekundi i do 2 PDF dokumenta (do 5 MB svaki).",
-      "addVideo": "Dodaj video od 5 sekundi",
       "addDocument": "Priloži PDF",
       "videoPrivacy": "Pre slanja uklanja se zvuk i brišu se lokacija i podaci o uređaju.",
       "documentPrivacy": "Pre slanja iz PDF-a se uklanjaju autor, datumi i drugi skriveni podaci.",
@@ -222,7 +221,18 @@
       "removeDocument": "Ukloni PDF dokument {n}",
       "documentFailed": "Ova datoteka nije mogla da se pročita. Izaberite PDF do 5 MB.",
       "documentLocked": "Ovaj PDF je zaštićen lozinkom. Uklonite lozinku i pokušajte ponovo.",
-      "videoFormat": "Ovaj telefon je snimio video u formatu koji ovaj pregledač ne može da otvori (često HDR ili „High efficiency“). Isključite to u podešavanjima kamere i snimite ponovo (na iPhone-u: Settings › Camera › Formats › Most Compatible) ili dodajte fotografije."
+      "videoFormat": "Ovaj telefon je snimio video u formatu koji ovaj pregledač ne može da otvori (često HDR ili „High efficiency“). Isključite to u podešavanjima kamere i snimite ponovo (na iPhone-u: Settings › Camera › Formats › Most Compatible) ili dodajte fotografije.",
+      "recordVideo": "Snimi 5 sekundi",
+      "chooseVideo": "Izaberi video",
+      "recorderTitle": "Snimi video",
+      "recorderHint": "Usmerite kameru ka problemu. Snimanje se samo zaustavlja posle 5 sekundi i ne čuva zvuk.",
+      "cameraStarting": "Kamera se pokreće…",
+      "cameraDenied": "Nemamo dozvolu da koristimo kameru. Dozvolite je u podešavanjima pregledača ili izaberite video.",
+      "cameraFailed": "Kamera nije mogla da se pokrene. Izaberite video.",
+      "startRecording": "Počni snimanje",
+      "stopRecording": "Zaustavi",
+      "recordingLeft": "Snimanje… još {seconds} s",
+      "closeRecorder": "Zatvori"
     },
     "review": {
       "heading": "Proverite prijavu",

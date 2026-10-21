@@ -206,7 +206,6 @@
       "moveMapDone": "Mbaro",
       "media": "Video dhe dokumente",
       "mediaHint": "Një video deri në 5 sekonda dhe deri në 2 dokumente PDF (5 MB secili).",
-      "addVideo": "Shto një video 5-sekondëshe",
       "addDocument": "Bashkëngjit një PDF",
       "videoPrivacy": "Para dërgimit, zëri hiqet dhe fshihen vendndodhja dhe të dhënat e pajisjes.",
       "documentPrivacy": "Para dërgimit, nga PDF-të hiqen autori, datat dhe të dhëna të tjera të fshehura.",
@@ -222,7 +221,18 @@
       "removeDocument": "Hiq dokumentin PDF {n}",
       "documentFailed": "Ky skedar nuk u lexua dot. Zgjidhni një PDF deri në 5 MB.",
       "documentLocked": "Ky PDF është i mbrojtur me fjalëkalim. Hiqni fjalëkalimin dhe provoni përsëri.",
-      "videoFormat": "Ky telefon e regjistroi videon në një format që ky shfletues nuk mund ta hapë (shpesh HDR ose “High efficiency”). Çaktivizojeni te cilësimet e kamerës dhe regjistroni përsëri (në iPhone: Settings › Camera › Formats › Most Compatible), ose shtoni foto."
+      "videoFormat": "Ky telefon e regjistroi videon në një format që ky shfletues nuk mund ta hapë (shpesh HDR ose “High efficiency”). Çaktivizojeni te cilësimet e kamerës dhe regjistroni përsëri (në iPhone: Settings › Camera › Formats › Most Compatible), ose shtoni foto.",
+      "recordVideo": "Regjistro 5 sekonda",
+      "chooseVideo": "Zgjidh një video",
+      "recorderTitle": "Regjistro një video",
+      "recorderHint": "Drejtojeni kamerën nga problemi. Regjistrimi ndalet vetë pas 5 sekondash dhe nuk ruan zë.",
+      "cameraStarting": "Po ndizet kamera…",
+      "cameraDenied": "Nuk kemi leje për ta përdorur kamerën. Lejojeni te cilësimet e shfletuesit, ose zgjidhni një video.",
+      "cameraFailed": "Kamera nuk u ndez dot. Zgjidhni një video.",
+      "startRecording": "Fillo regjistrimin",
+      "stopRecording": "Ndalo",
+      "recordingLeft": "Po regjistrohet… edhe {seconds} s",
+      "closeRecorder": "Mbyll"
     },
     "review": {
       "heading": "Kontrollo raportin",

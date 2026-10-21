@@ -206,7 +206,6 @@
       "moveMapDone": "Done",
       "media": "Video and documents",
       "mediaHint": "One video of up to 5 seconds and up to 2 PDF documents (5 MB each).",
-      "addVideo": "Add a 5-second video",
       "addDocument": "Attach a PDF",
       "videoPrivacy": "Before sending, the sound is removed and the location and device details are deleted.",
       "documentPrivacy": "Before sending, the author, dates and other hidden details are removed from PDFs.",
@@ -222,7 +221,18 @@
       "removeDocument": "Remove PDF document {n}",
       "documentFailed": "This file couldn't be read. Choose a PDF of up to 5 MB.",
       "documentLocked": "This PDF is password-protected. Remove the password and try again.",
-      "videoFormat": "This phone recorded the video in a format this browser can't open (often HDR or “High efficiency”). Turn that off in the camera settings and record again (on iPhone: Settings › Camera › Formats › Most Compatible), or add photos instead."
+      "videoFormat": "This phone recorded the video in a format this browser can't open (often HDR or “High efficiency”). Turn that off in the camera settings and record again (on iPhone: Settings › Camera › Formats › Most Compatible), or add photos instead.",
+      "recordVideo": "Record 5 seconds",
+      "chooseVideo": "Choose a video",
+      "recorderTitle": "Record a video",
+      "recorderHint": "Point the camera at the problem. Recording stops by itself after 5 seconds and keeps no sound.",
+      "cameraStarting": "Starting the camera…",
+      "cameraDenied": "We don't have permission to use the camera. Allow it in your browser settings, or choose a video instead.",
+      "cameraFailed": "The camera couldn't be started. Choose a video instead.",
+      "startRecording": "Start recording",
+      "stopRecording": "Stop",
+      "recordingLeft": "Recording… {seconds} s left",
+      "closeRecorder": "Close"
     },
     "review": {
       "heading": "Check your report",

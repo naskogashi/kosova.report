@@ -18,6 +18,7 @@ import { clearDraft, keepReceipt, loadDraft, saveDraft } from "../lib/draft-stor
 import { MAX_SECONDS, prepareVideo, videoDuration, videoSupported } from "../lib/video";
 import { MAX_PDFS, prepareDocument } from "../lib/documents";
 import { uploadAll } from "../lib/uploads";
+import VideoRecorder, { canRecord } from "./VideoRecorder";
 
 const ReportMap = dynamic(() => import("./ReportMap"), {
   ssr: false,
@@ -56,6 +57,8 @@ export default function ReportFlow() {
   // One short video and up to two PDFs, each prepared on the device before anything is sent.
   const [extras, setExtras] = useState([]);
   const [videoOk, setVideoOk] = useState(null);
+  const [recordOk, setRecordOk] = useState(false);
+  const [recorderOpen, setRecorderOpen] = useState(false);
   const [uploading, setUploading] = useState(null);
   const [anonymous, setAnonymous] = useState(true);
   const [email, setEmail] = useState("");
@@ -194,6 +197,7 @@ export default function ReportFlow() {
   useEffect(() => () => photos.forEach((p) => URL.revokeObjectURL(p.url)), []);
   useEffect(() => {
     videoSupported().then(setVideoOk);
+    setRecordOk(canRecord());
   }, []);
 
   const selectedCity = options.cities.find((item) => item.code === city);
@@ -348,6 +352,14 @@ export default function ReportFlow() {
       setNotice(t("details.videoFailed"));
       removeExtra(id);
     }
+  }
+  // A clip recorded in the page is at most 5 seconds already; it only needs converting.
+  function addRecording(file) {
+    setRecorderOpen(false);
+    if (extras.some((x) => x.kind === "video")) return;
+    const id = ++photoId;
+    setExtras((current) => [...current, { id, kind: "video", state: "busy", progress: 0 }]);
+    encodeVideo(id, file, 0);
   }
   async function encodeVideo(id, source, start) {
     updateExtra(id, { state: "busy", progress: 0 });
@@ -907,10 +919,16 @@ export default function ReportFlow() {
                     </h2>
                     <p className={field.hint}>{t("details.mediaHint")}</p>
                     <div className="mt-3 grid gap-2 sm:grid-cols-2">
+                      {videoOk && recordOk && (
+                        <button type="button" onClick={() => setRecorderOpen(true)} disabled={hasVideo} className={`${btn.soft} disabled:opacity-50`}>
+                          <Icon name="video" className="size-5" />
+                          {t("details.recordVideo")}
+                        </button>
+                      )}
                       {videoOk !== false && (
                         <label className={`${btn.soft} ${!videoOk || hasVideo ? "pointer-events-none opacity-50" : ""}`}>
-                          <Icon name="video" className="size-5" />
-                          {t("details.addVideo")}
+                          <Icon name="gallery" className="size-5" />
+                          {t("details.chooseVideo")}
                           <input type="file" accept="video/*" onChange={addVideo} className="sr-only" disabled={!videoOk || hasVideo} />
                         </label>
                       )}
@@ -1180,6 +1198,8 @@ export default function ReportFlow() {
           </button>
         </div>
       </Sheet>
+
+      <VideoRecorder open={recorderOpen} onClose={() => setRecorderOpen(false)} onRecorded={addRecording} />
 
       <Sheet
         open={confirmDiscard}
