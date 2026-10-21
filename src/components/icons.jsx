@@ -67,6 +67,18 @@ const paths = {
       <circle cx="15.5" cy="9.5" r="1.4" />
     </>
   ),
+  video: (
+    <>
+      <rect x="3.5" y="6.5" width="12" height="11" rx="2" />
+      <path d="m15.5 10.5 5-3v9l-5-3" />
+    </>
+  ),
+  document: (
+    <>
+      <path d="M7 3.5h6.5L18 8v11a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 6 19V5a1.5 1.5 0 0 1 1-1.5Z" />
+      <path d="M13.5 3.5V8H18M9 12.5h6M9 16h6" />
+    </>
+  ),
   info: (
     <>
       <circle cx="12" cy="12" r="8.5" />

@@ -79,6 +79,7 @@ export default async function AdminPage(props) {
     pending = 0,
     report = null,
     photos = [],
+    files = [],
     history = [],
     incident = null,
     incidentDetail = { siblings: [], candidates: [], photos: [], events: [] },
@@ -163,9 +164,14 @@ export default async function AdminPage(props) {
             "SELECT actor_email,previous_status,new_status,note,created_at FROM report_audit_log WHERE report_id=? ORDER BY id DESC LIMIT 20",
             [selected],
           ),
+          db.execute(
+            "SELECT id,kind FROM attachments WHERE report_id=? AND kind IN ('video','pdf') AND state<>'deleted' ORDER BY sort_order",
+            [selected],
+          ),
         ]);
         photos = detail[0][0];
         history = detail[1][0];
+        files = detail[2][0];
         const [incidents] = await db.execute(
           "SELECT i.id,i.ref,i.status,i.visibility,i.public_summary,i.report_count,i.upvote_count,i.comment_count FROM incidents i JOIN reports r ON r.incident_id=i.id WHERE r.id=?",
           [selected],
@@ -419,6 +425,23 @@ export default async function AdminPage(props) {
                           <li key={photo.id}>
                             <a href={`/api/admin/images/${photo.id}`} target="_blank" rel="noopener noreferrer" className="block overflow-hidden rounded-md">
                               <img src={`/api/admin/images/${photo.id}`} alt={t("Report evidence")} loading="lazy" className="aspect-[4/3] w-full object-cover" />
+                            </a>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                  {files.length > 0 && (
+                    <div className="mt-5">
+                      <h3 className="font-extrabold">
+                        {t("Video and documents ·")} {files.length}
+                      </h3>
+                      <ul className="mt-3 grid gap-2">
+                        {files.map((file, index) => (
+                          <li key={file.id}>
+                            <a href={`/api/admin/attachments/${file.id}`} target="_blank" rel="noopener noreferrer" className={btn.soft}>
+                              <Icon name={file.kind === "video" ? "video" : "document"} className="size-5" />
+                              {file.kind === "video" ? t("Video (5 seconds, no sound)") : `${t("PDF document")} ${index + 1}`}
                             </a>
                           </li>
                         ))}

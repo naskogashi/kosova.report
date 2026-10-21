@@ -11,10 +11,13 @@ PREPARE retention_ddl FROM @ddl;
 EXECUTE retention_ddl;
 DEALLOCATE PREPARE retention_ddl;
 
+-- Every citizen file sent with a report or comment. Photos are also listed in report_images
+-- (report_image_id), so the staff gallery and public issue photos keep working unchanged.
 CREATE TABLE IF NOT EXISTS attachments (
  id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
  report_id INT NULL,
  comment_id INT UNSIGNED NULL,
+ report_image_id INT NULL,
  kind ENUM('photo','video','pdf') NOT NULL,
  mime_type VARCHAR(40) NOT NULL,
  byte_size INT UNSIGNED NOT NULL,
@@ -33,6 +36,7 @@ CREATE TABLE IF NOT EXISTS attachments (
  INDEX attachment_retention (state, expires_at),
  FOREIGN KEY(report_id) REFERENCES reports(id),
  FOREIGN KEY(comment_id) REFERENCES incident_comments(id),
+ FOREIGN KEY(report_image_id) REFERENCES report_images(id),
  CONSTRAINT attachment_scrubbed CHECK (state<>'deleted' OR (object_key IS NULL AND public_key IS NULL AND sha256 IS NULL))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 

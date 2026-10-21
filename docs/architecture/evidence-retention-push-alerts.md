@@ -62,6 +62,8 @@ Signing happens only when the citizen presses Send, so abandoned drafts create n
 queued offline (IndexedDB outbox, Background Sync on Chromium, `online`/app-start retry elsewhere)
 are signed when they are actually sent.
 
+Per report: up to 10 photos, 1 video and 2 PDFs. If a direct upload fails while online and the report has only photos, they are sent the older way, inside the report (`images`), so a CORS or R2 problem never blocks a report. Photos are also written to `report_images`/`report_image_storage` with their `evidence/` key, so the staff gallery and public issue photos keep working; the routes that read them pick the bucket from the key prefix.
+
 Size caps: photo 5 MB, video 1.6 MB, PDF 5 MB. Video target: 720 px short edge, 24 fps, ~1.2 Mbit/s,
 H.264, no audio, no metadata tags (about 750 KB for 5 s). Clips over 5 s get a trim slider instead
 of a rejection. PDF only for documents; staff download with `Content-Disposition: attachment` and
@@ -222,6 +224,7 @@ CREATE TABLE IF NOT EXISTS attachments (
  id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
  report_id INT NULL,
  comment_id INT UNSIGNED NULL,
+ report_image_id INT NULL,
  kind ENUM('photo','video','pdf') NOT NULL,
  mime_type VARCHAR(40) NOT NULL,
  byte_size INT UNSIGNED NOT NULL,
@@ -240,6 +243,7 @@ CREATE TABLE IF NOT EXISTS attachments (
  INDEX attachment_retention (state, expires_at),
  FOREIGN KEY(report_id) REFERENCES reports(id),
  FOREIGN KEY(comment_id) REFERENCES incident_comments(id),
+ FOREIGN KEY(report_image_id) REFERENCES report_images(id),
  CONSTRAINT attachment_scrubbed CHECK (state<>'deleted' OR (object_key IS NULL AND public_key IS NULL AND sha256 IS NULL))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 

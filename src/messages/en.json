@@ -203,7 +203,25 @@
       "mapHelp": "Finding the spot on the map is hard? Let your phone find it for you.",
       "locateMe": "Locate me",
       "moveMap": "Move map",
-      "moveMapDone": "Done"
+      "moveMapDone": "Done",
+      "media": "Video and documents",
+      "mediaHint": "One video of up to 5 seconds and up to 2 PDF documents (5 MB each).",
+      "addVideo": "Add a 5-second video",
+      "addDocument": "Attach a PDF",
+      "videoPrivacy": "Before sending, the sound is removed and the location and device details are deleted.",
+      "documentPrivacy": "Before sending, the author, dates and other hidden details are removed from PDFs.",
+      "videoUnsupported": "This browser can't prepare videos. You can still add photos.",
+      "videoTrim": "The video is longer than 5 seconds. Choose where your 5 seconds start.",
+      "videoStart": "Starts at {seconds} s",
+      "videoUse": "Use these 5 seconds",
+      "videoPreparing": "Preparing the video… {percent}%",
+      "videoReady": "Video, 5 seconds, no sound",
+      "videoFailed": "This video couldn't be prepared. Try another one.",
+      "removeVideo": "Remove the video",
+      "document": "PDF document {n}",
+      "removeDocument": "Remove PDF document {n}",
+      "documentFailed": "This file couldn't be read. Choose a PDF of up to 5 MB.",
+      "documentLocked": "This PDF is password-protected. Remove the password and try again."
     },
     "review": {
       "heading": "Check your report",
@@ -222,7 +240,8 @@
       "consent": "I agree that my email is given to the department handling this report.",
       "disclaimer": "This platform is not an emergency service. In an emergency, call 112.",
       "submit": "Send report",
-      "sending": "Sending…"
+      "sending": "Sending…",
+      "uploading": "Sending files… {done} of {total}"
     },
     "errors": {
       "summary": "Fix these before you continue:",
@@ -236,7 +255,8 @@
       "consent": "Tick the consent box, or choose “Without my name”.",
       "photos": "Up to 10 photos, JPEG, PNG or WebP, each up to 5 MB.",
       "submit": "The report wasn't sent. Check the details and try again.",
-      "server": "The report wasn't sent because the service isn't responding. Your draft is saved. Try again in a moment."
+      "server": "The report wasn't sent because the service isn't responding. Your draft is saved. Try again in a moment.",
+      "attachments": "The video or documents couldn't be sent. Try again, or remove them and send the report."
     },
     "draft": {
       "restored": "We picked up the report you started on this device.",

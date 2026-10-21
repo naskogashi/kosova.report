@@ -19,6 +19,12 @@ import { categories } from "../../../../lib/report-options";
 import { pinInsideCity } from "../../../../lib/city-boundary";
 import { attachReport } from "../../../../lib/incidents";
 import { validRef } from "../../../../lib/incident-matching";
+import {
+  claimUploads,
+  promoteUploads,
+  bindUploads,
+  deleteKeys,
+} from "../../../../lib/attachments";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 const MAX_BODY = 51 * 1024 * 1024;
@@ -55,12 +61,12 @@ function incidentRow(incident) {
   if (!incident?.joined) return "";
   return `<tr><td style="padding:16px 24px 0"><p style="margin:0;padding:12px 16px;background:#fff6e0;border-radius:12px;font-size:14px;line-height:1.5"><strong>Raportuar ${incident.report_count} herë / Prijavljeno ${incident.report_count} puta / Reported ${incident.report_count} times.</strong><br>Qytetari tha se ky është i njëjti problem si raportet e mëparshme. / Građanin je rekao da je ovo isti problem kao ranije prijave. / The citizen said this is the same problem as earlier reports. #${escapeHTML(incident.ref)}</p></td></tr>`;
 }
-function departmentEmail({ publicId, city, category, description, latitude, longitude, reporter, link, imageHTML, attached, total, incident }) {
+function departmentEmail({ publicId, city, category, description, latitude, longitude, reporter, link, imageHTML, attached, total, files = 0, incident }) {
   const [sq, sr, en, color] = categoryNames[category] || [category, category, category, "#06244d"];
   const row = (label, value) =>
     `<tr><td style="padding:8px 12px 8px 0;color:#515e72;font-size:13px;vertical-align:top;white-space:nowrap">${label}</td><td style="padding:8px 0;color:#06244d;font-size:15px;font-weight:bold">${value}</td></tr>`;
   const map = `https://www.openstreetmap.org/?mlat=${latitude}&mlon=${longitude}#map=17/${latitude}/${longitude}`;
-  return `<div style="background:#f6f9fd;padding:24px 12px;font-family:'Segoe UI',Arial,sans-serif;color:#06244d"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:600px;margin:auto;background:#ffffff;border-radius:18px;border:1px solid #d8e1ec"><tr><td style="padding:24px 24px 0"><span style="font-size:22px;font-weight:800;letter-spacing:-0.5px">kosova<span style="color:#e4b756">&#9679;</span>report</span><p style="margin:18px 0 0;color:#515e72;font-size:13px">Raport i ri qytetar / Nova prijava / New report</p><h1 style="margin:4px 0 0;font-size:28px;letter-spacing:-0.5px">${escapeHTML(publicId)}</h1><p style="margin:14px 0 0"><span style="display:inline-block;padding:6px 12px;border:2px solid ${color};border-radius:10px;color:${color};font-weight:800">${escapeHTML(sq)}</span> <span style="color:#515e72;font-size:13px">${escapeHTML(sr)} / ${escapeHTML(en)}</span></p></td></tr><tr><td style="padding:16px 24px 0"><table role="presentation" cellpadding="0" cellspacing="0">${row("Komuna / Opština / Municipality", escapeHTML(city))}${row("Vendi / Mesto / Place", `${latitude}, ${longitude}<br><a href="${map}" style="color:#154fc3;font-weight:normal;font-size:13px">OpenStreetMap</a>`)}${row("Raportuesi / Podnosilac / Reporter", reporter ? escapeHTML(reporter) : "Pa emër / Anonimno / Without name")}</table></td></tr>${incidentRow(incident)}<tr><td style="padding:16px 24px 0"><p style="margin:0 0 6px;color:#515e72;font-size:13px">Përshkrimi / Opis / Description</p><p style="margin:0;padding:14px 16px;background:#f6f9fd;border-radius:12px;font-size:16px;line-height:1.6;white-space:pre-wrap">${escapeHTML(description)}</p></td></tr><tr><td style="padding:20px 24px 0"><a href="${escapeHTML(link)}" style="display:inline-block;background:#154fc3;color:#ffffff;padding:15px 22px;border-radius:14px;font-weight:bold;text-decoration:none">Hap raportin dhe përditëso statusin</a><p style="margin:8px 0 0;color:#515e72;font-size:13px">Otvorite prijavu i ažurirajte status / Open the report and update its status</p></td></tr><tr><td style="padding:12px 24px 0">${imageHTML}<p style="margin:12px 0 0;color:#515e72;font-size:13px">${attached} / ${total} foto të bashkangjitura. Të gjitha fotot janë në panelin administrativ. / ${attached} of ${total} photos attached. All photos are in the staff panel.</p></td></tr><tr><td style="padding:4px 24px 0">${stageFooter("Pending")}</td></tr><tr><td style="padding:20px 24px 24px"><p style="margin:0;padding-top:16px;border-top:1px solid #d8e1ec;color:#515e72;font-size:12px">Lidhja është private dhe skadon pas 90 ditësh. Mos e përcillni. / The link is private and expires after 90 days. Do not forward it.<br><br>in co-operation with CODON a part of Progon LLC.</p></td></tr></table></div>`;
+  return `<div style="background:#f6f9fd;padding:24px 12px;font-family:'Segoe UI',Arial,sans-serif;color:#06244d"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:600px;margin:auto;background:#ffffff;border-radius:18px;border:1px solid #d8e1ec"><tr><td style="padding:24px 24px 0"><span style="font-size:22px;font-weight:800;letter-spacing:-0.5px">kosova<span style="color:#e4b756">&#9679;</span>report</span><p style="margin:18px 0 0;color:#515e72;font-size:13px">Raport i ri qytetar / Nova prijava / New report</p><h1 style="margin:4px 0 0;font-size:28px;letter-spacing:-0.5px">${escapeHTML(publicId)}</h1><p style="margin:14px 0 0"><span style="display:inline-block;padding:6px 12px;border:2px solid ${color};border-radius:10px;color:${color};font-weight:800">${escapeHTML(sq)}</span> <span style="color:#515e72;font-size:13px">${escapeHTML(sr)} / ${escapeHTML(en)}</span></p></td></tr><tr><td style="padding:16px 24px 0"><table role="presentation" cellpadding="0" cellspacing="0">${row("Komuna / Opština / Municipality", escapeHTML(city))}${row("Vendi / Mesto / Place", `${latitude}, ${longitude}<br><a href="${map}" style="color:#154fc3;font-weight:normal;font-size:13px">OpenStreetMap</a>`)}${row("Raportuesi / Podnosilac / Reporter", reporter ? escapeHTML(reporter) : "Pa emër / Anonimno / Without name")}</table></td></tr>${incidentRow(incident)}<tr><td style="padding:16px 24px 0"><p style="margin:0 0 6px;color:#515e72;font-size:13px">Përshkrimi / Opis / Description</p><p style="margin:0;padding:14px 16px;background:#f6f9fd;border-radius:12px;font-size:16px;line-height:1.6;white-space:pre-wrap">${escapeHTML(description)}</p></td></tr><tr><td style="padding:20px 24px 0"><a href="${escapeHTML(link)}" style="display:inline-block;background:#154fc3;color:#ffffff;padding:15px 22px;border-radius:14px;font-weight:bold;text-decoration:none">Hap raportin dhe përditëso statusin</a><p style="margin:8px 0 0;color:#515e72;font-size:13px">Otvorite prijavu i ažurirajte status / Open the report and update its status</p></td></tr><tr><td style="padding:12px 24px 0">${imageHTML}<p style="margin:12px 0 0;color:#515e72;font-size:13px">${attached} / ${total} foto të bashkangjitura. Të gjitha fotot janë në panelin administrativ. / ${attached} of ${total} photos attached. All photos are in the staff panel.</p>${files ? `<p style="margin:6px 0 0;color:#515e72;font-size:13px">Video dhe dokumente të bashkangjitura / Video i dokumenti u prilogu / Video and documents attached: ${files}</p>` : ""}</td></tr><tr><td style="padding:4px 24px 0">${stageFooter("Pending")}</td></tr><tr><td style="padding:20px 24px 24px"><p style="margin:0;padding-top:16px;border-top:1px solid #d8e1ec;color:#515e72;font-size:12px">Lidhja është private dhe skadon pas 90 ditësh. Mos e përcillni. / The link is private and expires after 90 days. Do not forward it.<br><br>in co-operation with CODON a part of Progon LLC.</p></td></tr></table></div>`;
 }
 function imageType(buffer) {
   if (buffer.subarray(0, 3).equals(Buffer.from([255, 216, 255])))
@@ -80,8 +86,10 @@ export async function POST(request) {
   let connection,
     s3,
     bucket,
-    committed = false;
-  const uploaded = [];
+    committed = false,
+    claimed = [];
+  const uploaded = [],
+    promoted = [];
   try {
     const appOrigin = new URL(required("APP_URL")).origin;
     if (
@@ -169,6 +177,10 @@ export async function POST(request) {
       throw invalid("Valid contact email required");
     const images = form.getAll("images");
     if (images.length > 10) throw invalid("Maximum 10 images");
+    // New clients upload straight to R2 and name the uploads here; older ones still send photos.
+    const uploadRefs = text("attachments", 500).split(",").filter(Boolean);
+    if (uploadRefs.length > 13 || (uploadRefs.length && images.length))
+      throw invalid("Invalid attachments");
     const validated = [];
     for (const file of images) {
       if (typeof file === "string" || !file.size || file.size > 5 * 1024 * 1024)
@@ -229,6 +241,8 @@ export async function POST(request) {
     const department = departments[0],
       tracking_key = randomUUID(),
       uploadId = randomUUID();
+    claimed = await claimUploads(connection, uploadRefs);
+    promoted.push(...(await promoteUploads(claimed)));
     for (const { body, type } of validated) {
       const key = `reports/${uploadId}/${randomUUID()}.${type[1]}`;
       uploaded.push(key);
@@ -329,13 +343,26 @@ export async function POST(request) {
         ],
       );
     }
+    await bindUploads(connection, reportId, claimed);
     // Leave room under SMTP2Go's 50 MB encoded-message limit. Originals stay in R2.
+    const photos = validated.length
+      ? validated
+      : claimed
+          .filter((upload) => upload.kind === "photo")
+          .map((upload) => ({ body: upload.body, type: ["image/jpeg", "jpg"] }));
     const inlineImages = [];
     let inlineBytes = 0;
-    for (const image of validated) {
+    for (const image of photos) {
       if (inlineBytes + image.body.length > 30 * 1024 * 1024) break;
       inlineImages.push(image);
       inlineBytes += image.body.length;
+    }
+    // Videos and documents go along as ordinary attachments while they fit.
+    const files = [];
+    for (const upload of claimed.filter((item) => item.kind !== "photo")) {
+      if (inlineBytes + upload.body.length > 30 * 1024 * 1024) break;
+      files.push(upload);
+      inlineBytes += upload.body.length;
     }
     const imageHTML = inlineImages
       .map(
@@ -354,7 +381,8 @@ export async function POST(request) {
       link: progressLink,
       imageHTML,
       attached: inlineImages.length,
-      total: validated.length,
+      total: photos.length,
+      files: claimed.filter((upload) => upload.kind !== "photo").length,
       incident,
     });
     const subject = incident.joined
@@ -368,17 +396,26 @@ export async function POST(request) {
     committed = true;
     connection.release();
     connection = null;
+    // The copies in evidence/ are the ones kept; incoming/ would expire within a day anyway.
+    deleteKeys(claimed.map((upload) => upload.object_key)).catch(() => {});
     let notification = "pending";
     try {
       await sendDepartmentEmail(
         {
-          attachments: inlineImages.map((image, index) => ({
-            filename: `photo-${index + 1}.${image.type[1]}`,
-            content: image.body,
-            contentType: image.type[0],
-            cid: `image-${index}@kosova.report`,
-            contentDisposition: "inline",
-          })),
+          attachments: [
+            ...inlineImages.map((image, index) => ({
+              filename: `photo-${index + 1}.${image.type[1]}`,
+              content: image.body,
+              contentType: image.type[0],
+              cid: `image-${index}@kosova.report`,
+              contentDisposition: "inline",
+            })),
+            ...files.map((file, index) => ({
+              filename: `${file.kind === "video" ? "video" : "document"}-${index + 1}.${file.kind === "video" ? "mp4" : "pdf"}`,
+              content: file.body,
+              contentType: file.mime_type,
+            })),
+          ],
           to: department.notification_email,
           subject,
           html,
@@ -426,6 +463,7 @@ export async function POST(request) {
         console.error("Report rollback failed");
       }
     }
+    if (!committed) await deleteKeys(promoted);
     if (!committed && s3 && bucket)
       await Promise.allSettled(
         uploaded.map((Key) =>

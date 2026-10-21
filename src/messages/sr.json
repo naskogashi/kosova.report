@@ -203,7 +203,25 @@
       "mapHelp": "Teško vam je da pronađete mesto na mapi? Neka ga telefon pronađe umesto vas.",
       "locateMe": "Pronađi moju lokaciju",
       "moveMap": "Pomeri mapu",
-      "moveMapDone": "Gotovo"
+      "moveMapDone": "Gotovo",
+      "media": "Video i dokumenti",
+      "mediaHint": "Jedan video do 5 sekundi i do 2 PDF dokumenta (do 5 MB svaki).",
+      "addVideo": "Dodaj video od 5 sekundi",
+      "addDocument": "Priloži PDF",
+      "videoPrivacy": "Pre slanja uklanja se zvuk i brišu se lokacija i podaci o uređaju.",
+      "documentPrivacy": "Pre slanja iz PDF-a se uklanjaju autor, datumi i drugi skriveni podaci.",
+      "videoUnsupported": "Ovaj pregledač ne može da pripremi video. I dalje možete da dodate fotografije.",
+      "videoTrim": "Video je duži od 5 sekundi. Izaberite odakle počinje vaših 5 sekundi.",
+      "videoStart": "Počinje od {seconds} s",
+      "videoUse": "Koristi ovih 5 sekundi",
+      "videoPreparing": "Video se priprema… {percent}%",
+      "videoReady": "Video, 5 sekundi, bez zvuka",
+      "videoFailed": "Ovaj video nije mogao da se pripremi. Pokušajte sa drugim.",
+      "removeVideo": "Ukloni video",
+      "document": "PDF dokument {n}",
+      "removeDocument": "Ukloni PDF dokument {n}",
+      "documentFailed": "Ova datoteka nije mogla da se pročita. Izaberite PDF do 5 MB.",
+      "documentLocked": "Ovaj PDF je zaštićen lozinkom. Uklonite lozinku i pokušajte ponovo."
     },
     "review": {
       "heading": "Proverite prijavu",
@@ -222,7 +240,8 @@
       "consent": "Slažem se da se moj email da odeljenju koje obrađuje prijavu.",
       "disclaimer": "Ova platforma nije služba za hitne slučajeve. Za hitne slučajeve pozovite 112.",
       "submit": "Pošaljite prijavu",
-      "sending": "Slanje…"
+      "sending": "Slanje…",
+      "uploading": "Datoteke se šalju… {done} od {total}"
     },
     "errors": {
       "summary": "Ispravite sledeće pre nego što nastavite:",
@@ -236,7 +255,8 @@
       "consent": "Označite saglasnost ili izaberite „Anonimno”.",
       "photos": "Do 10 fotografija, JPEG, PNG ili WebP, svaka do 5 MB.",
       "submit": "Prijava nije poslata. Proverite podatke i pokušajte ponovo.",
-      "server": "Prijava nije poslata jer servis ne odgovara. Nacrt je sačuvan. Pokušajte ponovo za koji trenutak."
+      "server": "Prijava nije poslata jer servis ne odgovara. Nacrt je sačuvan. Pokušajte ponovo za koji trenutak.",
+      "attachments": "Video ili dokumenti nisu poslati. Pokušajte ponovo ili ih uklonite i pošaljite prijavu."
     },
     "draft": {
       "restored": "Nastavili smo prijavu koju ste započeli na ovom uređaju.",

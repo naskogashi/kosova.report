@@ -24,12 +24,15 @@ async function loadRoute(
     counterSequence = 41,
     routeMissing = false,
     groupingFails = false,
+    uploads = [],
+    bindFails = false,
   } = {},
 ) {
   const events = [],
     queries = [],
     objectCommands = [],
-    attached = [];
+    attached = [],
+    removed = [];
   let mail;
   const execute = async (sql, values) => {
     queries.push({ sql, values });
@@ -119,6 +122,26 @@ async function loadRoute(
       },
     },
     "../../../../lib/incident-matching": { validRef: (value) => /^[0-9a-f]{10}$/.test(value || "") },
+    "../../../../lib/attachments": {
+      claimUploads: async (connection, refs) => {
+        if (!refs.length) return [];
+        events.push("claim");
+        return uploads;
+      },
+      promoteUploads: async (claimed) => {
+        if (claimed.length) events.push("promote");
+        return claimed.map((upload) => upload.key);
+      },
+      bindUploads: async (connection, reportId, claimed) => {
+        if (bindFails) throw Error("bind failed");
+        if (claimed.length) events.push("bind");
+      },
+      deleteKeys: async (keys) => {
+        if (!keys.length) return;
+        removed.push(...keys);
+        events.push("drop");
+      },
+    },
   };
   const module = new SourceTextModule(readFileSync(file, "utf8"));
   await module.link(async (name) => {
@@ -136,6 +159,7 @@ async function loadRoute(
     queries,
     objectCommands,
     attached,
+    removed,
     get mail() {
       return mail;
     },
@@ -325,4 +349,44 @@ test("a grouping failure still saves and sends the report", async () => {
   assert.equal((await response.json()).incident, null);
   assert.ok(app.events.includes("commit"));
   assert.ok(app.events.includes("send"));
+});
+
+const jpeg = Buffer.from([255, 216, 255, 224, 0, 16]);
+const directUploads = [
+  { id: 1, kind: "photo", mime_type: "image/jpeg", byte_size: 6, object_key: "incoming/" + "a".repeat(32), key: "evidence/" + "a".repeat(32), body: jpeg },
+  { id: 2, kind: "video", mime_type: "video/mp4", byte_size: 8, object_key: "incoming/" + "b".repeat(32), key: "evidence/" + "b".repeat(32), body: Buffer.alloc(8) },
+];
+const refs = { attachments: `${"a".repeat(32)},${"b".repeat(32)}` };
+test("direct uploads are checked and copied before the transaction, linked inside it and sent to the department", async () => {
+  const app = await loadRoute(submitFile, { uploads: directUploads });
+  const response = await app.route.POST(request({ count: 0, extra: refs }));
+  assert.equal(response.status, 201);
+  const order = ["claim", "promote", "begin", "bind", "commit", "send"].map((event) => app.events.indexOf(event));
+  assert.deepEqual([...order].sort((a, b) => a - b), order);
+  assert.ok(!order.includes(-1));
+  // Nothing goes to the original bucket.
+  assert.ok(!app.events.includes("upload"));
+  assert.deepEqual(
+    app.mail.attachments.map((file) => [file.filename, file.contentType, Boolean(file.cid)]),
+    [
+      ["photo-1.jpg", "image/jpeg", true],
+      ["video-1.mp4", "video/mp4", false],
+    ],
+  );
+  assert.ok(app.mail.html.includes("1 of 1 photos attached"));
+  assert.ok(app.mail.html.includes("Video and documents attached: 1"));
+  // The incoming/ copies are dropped once the report is saved.
+  assert.deepEqual(app.removed, directUploads.map((upload) => upload.object_key));
+});
+test("a report that fails after copying removes the evidence copies and sends nothing", async () => {
+  const app = await loadRoute(submitFile, { uploads: directUploads, bindFails: true });
+  assert.equal((await app.route.POST(request({ count: 0, extra: refs }))).status, 500);
+  assert.ok(app.events.includes("rollback"));
+  assert.deepEqual(app.removed, directUploads.map((upload) => upload.key));
+  assert.ok(!app.events.includes("send"));
+});
+test("photos inside the report and upload references cannot be mixed", async () => {
+  const app = await loadRoute(submitFile, { uploads: directUploads });
+  assert.equal((await app.route.POST(request({ count: 1, extra: refs }))).status, 400);
+  assert.equal(app.events.length, 0);
 });

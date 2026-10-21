@@ -203,7 +203,25 @@
       "mapHelp": "E ke të vështirë ta gjesh vendin në hartë? Lëre telefonin ta gjejë për ty.",
       "locateMe": "Gjej vendndodhjen time",
       "moveMap": "Lëviz hartën",
-      "moveMapDone": "Mbaro"
+      "moveMapDone": "Mbaro",
+      "media": "Video dhe dokumente",
+      "mediaHint": "Një video deri në 5 sekonda dhe deri në 2 dokumente PDF (5 MB secili).",
+      "addVideo": "Shto një video 5-sekondëshe",
+      "addDocument": "Bashkëngjit një PDF",
+      "videoPrivacy": "Para dërgimit, zëri hiqet dhe fshihen vendndodhja dhe të dhënat e pajisjes.",
+      "documentPrivacy": "Para dërgimit, nga PDF-të hiqen autori, datat dhe të dhëna të tjera të fshehura.",
+      "videoUnsupported": "Ky shfletues nuk mund të përgatisë video. Mund të shtoni ende foto.",
+      "videoTrim": "Videoja është më e gjatë se 5 sekonda. Zgjidhni ku fillojnë 5 sekondat tuaja.",
+      "videoStart": "Fillon në {seconds} s",
+      "videoUse": "Përdor këto 5 sekonda",
+      "videoPreparing": "Po përgatitet videoja… {percent}%",
+      "videoReady": "Video, 5 sekonda, pa zë",
+      "videoFailed": "Kjo video nuk u përgatit dot. Provoni një tjetër.",
+      "removeVideo": "Hiq videon",
+      "document": "Dokumenti PDF {n}",
+      "removeDocument": "Hiq dokumentin PDF {n}",
+      "documentFailed": "Ky skedar nuk u lexua dot. Zgjidhni një PDF deri në 5 MB.",
+      "documentLocked": "Ky PDF është i mbrojtur me fjalëkalim. Hiqni fjalëkalimin dhe provoni përsëri."
     },
     "review": {
       "heading": "Kontrollo raportin",
@@ -222,7 +240,8 @@
       "consent": "Pajtohem që emaili im t’i jepet departamentit që e trajton raportin.",
       "disclaimer": "Kjo platformë nuk është shërbim emergjence. Për urgjenca thirr 112.",
       "submit": "Dërgo raportin",
-      "sending": "Duke dërguar…"
+      "sending": "Duke dërguar…",
+      "uploading": "Po dërgohen skedarët… {done} nga {total}"
     },
     "errors": {
       "summary": "Rregullo këto para se të vazhdosh:",
@@ -236,7 +255,8 @@
       "consent": "Shëno pëlqimin, ose zgjidh “Pa emër”.",
       "photos": "Deri në 10 foto, JPEG, PNG ose WebP, secila deri në 5 MB.",
       "submit": "Raporti nuk u dërgua. Kontrollo të dhënat dhe provo përsëri.",
-      "server": "Raporti nuk u dërgua sepse shërbimi nuk po përgjigjet. Drafti yt është ruajtur. Provo përsëri pas pak."
+      "server": "Raporti nuk u dërgua sepse shërbimi nuk po përgjigjet. Drafti yt është ruajtur. Provo përsëri pas pak.",
+      "attachments": "Videoja ose dokumentet nuk u dërguan. Provoni përsëri, ose hiqini dhe dërgoni raportin."
     },
     "draft": {
       "restored": "Vazhduam raportin që kishe filluar në këtë pajisje.",

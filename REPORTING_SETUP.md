@@ -65,6 +65,21 @@ The existing GitHub workflow forwards R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY, SM
 
 Citizen evidence lives in two more buckets with the same account and token: **kosova-evidence** (private) and **kosova-public** (staff-published copies), set by `R2_EVIDENCE_BUCKET` and `R2_PUBLIC_BUCKET` (GitHub Actions variables; defaults match). Their lifecycle rules are set in the Cloudflare dashboard under each bucket's Settings → Object lifecycle rules: on kosova-evidence, `incoming/` deleted after 1 day and `expiring/` after 30 days; on kosova-public, `expiring/` after 30 days. Never add a rule without a prefix, and none to kosova-report-images. See `docs/architecture/evidence-retention-push-alerts.md`.
 
+Browsers upload photos, the 5-second video and PDFs straight to kosova-evidence with a signed URL, so that bucket needs a CORS policy (Settings → CORS policy):
+
+```json
+[
+  {
+    "AllowedOrigins": ["https://kosova.report"],
+    "AllowedMethods": ["PUT"],
+    "AllowedHeaders": ["content-type"],
+    "MaxAgeSeconds": 3600
+  }
+]
+```
+
+Without it, photos still arrive the older way, inside the report, but videos and PDFs can't be sent. A report takes up to 10 photos, 1 video (at most 5 seconds, no sound, 1.6 MB) and 2 PDFs (5 MB each).
+
 The image command defaults to a read-only inventory:
 
 ```bash

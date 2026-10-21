@@ -1,6 +1,6 @@
 import { GetObjectCommand } from "@aws-sdk/client-s3";
 import { database } from "../../../../../../lib/db";
-import { r2, bucketName } from "../../../../../../lib/r2";
+import { r2, bucketFor } from "../../../../../../lib/r2";
 import { validRef } from "../../../../../../lib/incident-matching";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -25,7 +25,7 @@ export async function GET(request, props) {
     const image = rows[0];
     if (!image) return new Response("Not found", { status: 404, headers: { "Cache-Control": "no-store" } });
     if (!/^image\/(png|jpeg|webp)$/.test(image.mime_type)) throw new Error("Unsupported type");
-    const object = await r2().send(new GetObjectCommand({ Bucket: bucketName(), Key: image.object_key }), {
+    const object = await r2().send(new GetObjectCommand({ Bucket: bucketFor(image.object_key), Key: image.object_key }), {
       abortSignal: AbortSignal.timeout(5000),
     });
     return new Response(await object.Body.transformToByteArray(), {

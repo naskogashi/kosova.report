@@ -15,6 +15,9 @@ import { formatCoords } from "../lib/city-map";
 import { boundaryOutline, insideBoundary } from "../lib/boundary-geometry";
 import { ACCEPTED, MAX_BYTES, MAX_PHOTOS, preparePhoto } from "../lib/photos";
 import { clearDraft, keepReceipt, loadDraft, saveDraft } from "../lib/draft-store";
+import { MAX_SECONDS, prepareVideo, videoDuration, videoSupported } from "../lib/video";
+import { MAX_PDFS, prepareDocument } from "../lib/documents";
+import { uploadAll } from "../lib/uploads";
 
 const ReportMap = dynamic(() => import("./ReportMap"), {
   ssr: false,
@@ -50,6 +53,10 @@ export default function ReportFlow() {
   const [position, setPosition] = useState(null);
   const [description, setDescription] = useState("");
   const [photos, setPhotos] = useState([]);
+  // One short video and up to two PDFs, each prepared on the device before anything is sent.
+  const [extras, setExtras] = useState([]);
+  const [videoOk, setVideoOk] = useState(null);
+  const [uploading, setUploading] = useState(null);
   const [anonymous, setAnonymous] = useState(true);
   const [email, setEmail] = useState("");
   const [consent, setConsent] = useState(false);
@@ -105,6 +112,15 @@ export default function ReportFlow() {
             state: "ready",
           })),
         );
+        setExtras(
+          (draft.extras || []).map(({ kind, file }) => ({
+            id: ++photoId,
+            kind,
+            file,
+            url: kind === "video" ? URL.createObjectURL(file) : "",
+            state: "ready",
+          })),
+        );
         setStep(Math.min(draft.step || 0, 2));
         setQueued(Boolean(draft.queued));
         if (draft.match?.declined) setMatch(draft.match);
@@ -135,12 +151,13 @@ export default function ReportFlow() {
         queued,
         match,
         photos: photos.filter((p) => p.state === "ready").map((p) => p.file),
+        extras: extras.filter((x) => x.state === "ready").map(({ kind, file }) => ({ kind, file })),
       });
     }, 400);
     return () => clearTimeout(timer);
-  }, [ready, step, category, city, position, description, anonymous, email, queued, photos, match]);
+  }, [ready, step, category, city, position, description, anonymous, email, queued, photos, extras, match]);
 
-  const dirty = Boolean(category || description || photos.length || position);
+  const dirty = Boolean(category || description || photos.length || extras.length || position);
   useEffect(() => {
     const warn = (event) => {
       if (dirty && !sent.current) event.preventDefault();
@@ -175,6 +192,9 @@ export default function ReportFlow() {
   }, []);
 
   useEffect(() => () => photos.forEach((p) => URL.revokeObjectURL(p.url)), []);
+  useEffect(() => {
+    videoSupported().then(setVideoOk);
+  }, []);
 
   const selectedCity = options.cities.find((item) => item.code === city);
   const cityName = selectedCity ? localizedCityName(selectedCity.name, locale) : "";
@@ -302,6 +322,65 @@ export default function ReportFlow() {
       return current.filter((p) => p.id !== id);
     });
   }
+  const updateExtra = (id, values) =>
+    setExtras((current) => current.map((x) => (x.id === id ? { ...x, ...values } : x)));
+  function removeExtra(id) {
+    setExtras((current) => {
+      const gone = current.find((x) => x.id === id);
+      if (gone?.url) URL.revokeObjectURL(gone.url);
+      if (gone?.sourceUrl) URL.revokeObjectURL(gone.sourceUrl);
+      return current.filter((x) => x.id !== id);
+    });
+  }
+  async function addVideo(event) {
+    const source = event.target.files?.[0];
+    event.target.value = "";
+    if (!source || extras.some((x) => x.kind === "video")) return;
+    const id = ++photoId;
+    setExtras((current) => [...current, { id, kind: "video", state: "busy", progress: 0 }]);
+    try {
+      const duration = await videoDuration(source);
+      // Longer clips: the citizen picks which 5 seconds to keep.
+      if (duration > MAX_SECONDS + 0.1)
+        updateExtra(id, { state: "trim", source, sourceUrl: URL.createObjectURL(source), duration, start: 0 });
+      else await encodeVideo(id, source, 0);
+    } catch {
+      setNotice(t("details.videoFailed"));
+      removeExtra(id);
+    }
+  }
+  async function encodeVideo(id, source, start) {
+    updateExtra(id, { state: "busy", progress: 0 });
+    try {
+      const file = await prepareVideo(source, {
+        start,
+        onProgress: (progress) => updateExtra(id, { progress: Math.round(progress * 100) }),
+      });
+      setExtras((current) =>
+        current.map((x) => {
+          if (x.id !== id) return x;
+          if (x.sourceUrl) URL.revokeObjectURL(x.sourceUrl);
+          return { id, kind: "video", file, url: URL.createObjectURL(file), state: "ready" };
+        }),
+      );
+    } catch (error) {
+      setNotice(t(error.message === "unsupported" ? "details.videoUnsupported" : "details.videoFailed"));
+      removeExtra(id);
+    }
+  }
+  async function addDocument(event) {
+    const source = event.target.files?.[0];
+    event.target.value = "";
+    if (!source || extras.filter((x) => x.kind === "pdf").length >= MAX_PDFS) return;
+    const id = ++photoId;
+    setExtras((current) => [...current, { id, kind: "pdf", state: "busy" }]);
+    try {
+      updateExtra(id, { file: await prepareDocument(source), state: "ready" });
+    } catch (error) {
+      setNotice(t(error.message === "locked" ? "details.documentLocked" : "details.documentFailed"));
+      removeExtra(id);
+    }
+  }
   function movePhoto(index, delta) {
     setPhotos((current) => {
       const next = [...current];
@@ -335,8 +414,29 @@ export default function ReportFlow() {
     if (match.incident) form.set("incident", match.incident);
     if (match.declined.length) form.set("declined", match.declined.slice(0, 5).join(","));
     if (accuracy) form.set("accuracy", String(Math.round(accuracy)));
-    photos.filter((p) => p.state === "ready").forEach((p) => form.append("images", p.file));
+    const files = [
+      ...photos.filter((p) => p.state === "ready").map((p) => ({ kind: "photo", file: p.file })),
+      ...extras.filter((x) => x.state === "ready").map(({ kind, file }) => ({ kind, file })),
+    ];
     try {
+      // Files go straight to storage first and the report only names them. If that fails while
+      // online and there are only photos, they travel the older way, inside the report.
+      if (files.length) {
+        try {
+          setUploading({ done: 0, total: files.length });
+          const refs = await uploadAll(files, (done, total) => setUploading({ done, total }));
+          form.set("attachments", refs.join(","));
+        } catch (error) {
+          if (!navigator.onLine) throw error;
+          if (files.some((item) => item.kind !== "photo")) {
+            setNotice(t("errors.attachments"));
+            return;
+          }
+          files.forEach((item) => form.append("images", item.file));
+        } finally {
+          setUploading(null);
+        }
+      }
       const response = await fetch("/api/reports/submit", { method: "POST", body: form });
       const data = await response.json().catch(() => ({}));
       if (!response.ok) {
@@ -381,6 +481,7 @@ export default function ReportFlow() {
     setPosition(null);
     setDescription("");
     setPhotos([]);
+    extras.forEach((x) => removeExtra(x.id));
     setAnonymous(true);
     setEmail("");
     setConsent(false);
@@ -402,6 +503,8 @@ export default function ReportFlow() {
     Boolean,
   ).length;
   const readyPhotos = photos.filter((p) => p.state === "ready");
+  const hasVideo = extras.some((x) => x.kind === "video");
+  const pdfCount = extras.filter((x) => x.kind === "pdf").length;
   const receipt = (
     <Receipt
       category={category}
@@ -795,6 +898,110 @@ export default function ReportFlow() {
                       </ol>
                     )}
                   </section>
+
+                  <section aria-labelledby="media-label" id="field-media">
+                    <h2 id="media-label" className="text-xl font-extrabold">
+                      {t("details.media")}{" "}
+                      <span className="text-base font-semibold text-pencil">({t("details.optional")})</span>
+                    </h2>
+                    <p className={field.hint}>{t("details.mediaHint")}</p>
+                    <div className="mt-3 grid gap-2 sm:grid-cols-2">
+                      {videoOk !== false && (
+                        <label className={`${btn.soft} ${!videoOk || hasVideo ? "pointer-events-none opacity-50" : ""}`}>
+                          <Icon name="video" className="size-5" />
+                          {t("details.addVideo")}
+                          <input type="file" accept="video/*" onChange={addVideo} className="sr-only" disabled={!videoOk || hasVideo} />
+                        </label>
+                      )}
+                      <label className={`${btn.soft} ${pdfCount >= MAX_PDFS ? "pointer-events-none opacity-50" : ""}`}>
+                        <Icon name="document" className="size-5" />
+                        {t("details.addDocument")}
+                        <input
+                          type="file"
+                          accept="application/pdf,.pdf"
+                          onChange={addDocument}
+                          className="sr-only"
+                          disabled={pdfCount >= MAX_PDFS}
+                        />
+                      </label>
+                    </div>
+                    {videoOk === false && <p className={`${field.hint} mt-3`}>{t("details.videoUnsupported")}</p>}
+                    <p className="mt-3 flex items-start gap-2 text-sm text-pencil">
+                      <Icon name="key" className="mt-0.5 size-4 shrink-0" />
+                      <span>
+                        {t("details.videoPrivacy")} {t("details.documentPrivacy")}
+                      </span>
+                    </p>
+                    {extras.length > 0 && (
+                      <ul className="mt-4 grid gap-3">
+                        {extras.map((item) => {
+                          const number = extras.filter((x) => x.kind === "pdf").indexOf(item) + 1;
+                          return (
+                            <li key={item.id} className="clip-in overflow-hidden rounded-md bg-card shadow-[0_0_0_1px_var(--color-rule)]">
+                              {item.state === "trim" ? (
+                                <div className="grid gap-3 p-3">
+                                  <p className="text-sm font-semibold">{t("details.videoTrim")}</p>
+                                  <video src={item.sourceUrl} muted playsInline preload="metadata" className="aspect-video w-full rounded-sm bg-wash object-contain" />
+                                  <label className="grid gap-1 text-sm font-semibold">
+                                    {t("details.videoStart", { seconds: item.start.toFixed(1) })}
+                                    <input
+                                      type="range"
+                                      min="0"
+                                      max={Math.max(0, item.duration - MAX_SECONDS).toFixed(1)}
+                                      step="0.1"
+                                      value={item.start}
+                                      onChange={(event) => {
+                                        const start = Number(event.target.value);
+                                        const preview = event.target.closest("li")?.querySelector("video");
+                                        if (preview) preview.currentTime = start;
+                                        updateExtra(item.id, { start });
+                                      }}
+                                      className="w-full accent-blue"
+                                    />
+                                  </label>
+                                  <div className="flex flex-wrap gap-2">
+                                    <button type="button" className={btn.primary} onClick={() => encodeVideo(item.id, item.source, item.start)}>
+                                      {t("details.videoUse")}
+                                    </button>
+                                    <button type="button" className={btn.link} onClick={() => removeExtra(item.id)}>
+                                      {t("details.removeVideo")}
+                                    </button>
+                                  </div>
+                                </div>
+                              ) : (
+                                <div className="flex items-center gap-3 p-2 pl-3">
+                                  {item.kind === "video" && item.state === "ready" ? (
+                                    <video src={item.url} muted playsInline preload="metadata" className="aspect-video w-28 shrink-0 rounded-sm bg-wash object-cover" />
+                                  ) : (
+                                    <Icon name={item.kind === "video" ? "video" : "document"} className="size-6 shrink-0 text-pencil" />
+                                  )}
+                                  <span className="flex-1 text-sm font-semibold" role={item.state === "busy" ? "status" : undefined}>
+                                    {item.state === "busy"
+                                      ? item.kind === "video"
+                                        ? t("details.videoPreparing", { percent: item.progress || 0 })
+                                        : t("details.preparing")
+                                      : item.kind === "video"
+                                        ? t("details.videoReady")
+                                        : `${t("details.document", { n: number })} · ${(item.file.size / 1048576).toFixed(1)} MB`}
+                                  </span>
+                                  {item.state === "ready" && (
+                                    <button
+                                      type="button"
+                                      onClick={() => removeExtra(item.id)}
+                                      className="inline-flex size-11 items-center justify-center text-error"
+                                      aria-label={item.kind === "video" ? t("details.removeVideo") : t("details.removeDocument", { n: number })}
+                                    >
+                                      <Icon name="close" className="size-5" />
+                                    </button>
+                                  )}
+                                </div>
+                              )}
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    )}
+                  </section>
                 </div>
               )}
 
@@ -934,7 +1141,13 @@ export default function ReportFlow() {
                 <span />
               )}
               <button type="submit" className={btn.primary} disabled={busy || !ready}>
-                {step < 2 ? t("next") : busy ? t("review.sending") : t("review.submit")}
+                {step < 2
+                  ? t("next")
+                  : uploading
+                    ? t("review.uploading", uploading)
+                    : busy
+                      ? t("review.sending")
+                      : t("review.submit")}
               </button>
             </div>
           </div>
