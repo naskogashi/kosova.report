@@ -44,10 +44,12 @@ export default async function LocaleLayout({ children, params }) {
       { source: "list", urls: [localizedPath("/report", locale)], eagerness: "moderate" },
     ],
   };
+  // The scrollbar gutter stays reserved on short pages too, so the centred header doesn't
+  // jump sideways when moving between pages that scroll and pages that don't.
   return (
     <html
       lang={locale === "sr" ? "sr-Latn" : locale}
-      className={`${sofia.variable} ${sofiaNarrow.variable}`}
+      className={`${sofia.variable} ${sofiaNarrow.variable} [scrollbar-gutter:stable]`}
       suppressHydrationWarning
     >
       <head>
