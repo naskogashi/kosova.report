@@ -1,10 +1,10 @@
 import { getTranslations } from "next-intl/server";
-import { Link } from "../i18n/navigation";
 import LanguageSwitch from "./LanguageSwitch";
 import ThemeMenu from "./ThemeMenu";
 import HeaderReport from "./HeaderReport";
 import HeaderBrand from "./HeaderBrand";
 import HeaderMenu from "./HeaderMenu";
+import HeaderNav from "./HeaderNav";
 import { Icon } from "./icons";
 import { wrap } from "./ui";
 
@@ -34,17 +34,7 @@ export default async function Header({ locale }) {
           <Icon name="pin" className="size-4 text-blue" />
           {t("city")}
         </p>
-        <nav aria-label={t("home")} className="ml-auto hidden xl:block">
-          <ul className="flex items-center gap-1 text-sm font-bold">
-            {links.map(([href, label]) => (
-              <li key={href}>
-                <Link href={href} className="inline-flex min-h-11 items-center rounded-full px-3 whitespace-nowrap text-ink hover:bg-wash">
-                  {label}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </nav>
+        <HeaderNav label={t("home")} links={links} />
         <div className="ml-auto flex items-center gap-0.5 sm:gap-1 xl:ml-2">
           <HeaderMenu label={t("menu")} closeLabel={t("menuClose")} links={links} extras={<>{language}{theme}</>} />
           <div className="flex items-center gap-0.5 max-sm:hidden sm:gap-1">
