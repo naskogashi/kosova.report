@@ -321,6 +321,8 @@
       "confirmedBody": "The department sees that one more person has this problem. You don't need to send a report. If you have new details or photos, you can still send yours.",
       "finish": "Done, delete my draft",
       "keepWriting": "Send my report too",
+      "onMap": "{count, plural, one {A similar problem is already reported nearby} other {# similar problems are already reported nearby}}",
+      "onMapAction": "See",
       "publicNotice": "So others don't report it twice, the site shows that a problem of this category was reported in this area, with the date and status. Your text, photos and email are not shown."
     }
   },

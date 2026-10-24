@@ -17,7 +17,7 @@ const IncidentMap = dynamic(() => import("./IncidentMap"), {
 //     or they only give it a thumbs-up and send nothing new;
 //   - "No, mine is different": a new issue, and staff are told which nearby ones the reporter ruled out.
 // Ignoring the panel is fine too; staff still see possible duplicates.
-export default function NearbyIncidents({ city, category, position, accuracy, choice, onChoice, onConfirmed }) {
+export default function NearbyIncidents({ city, category, position, accuracy, choice, onChoice, onConfirmed, onPending }) {
   const t = useTranslations("report.nearby");
   const tc = useTranslations("categories");
   const ti = useTranslations("incident");
@@ -56,6 +56,14 @@ export default function NearbyIncidents({ city, category, position, accuracy, ch
     if (state.status !== "ready" || !choice.incident) return;
     if (!incidents.some((item) => item.ref === choice.incident && item.joinable)) onChoice({ incident: "", declined: [] });
   }, [state.status, incidents, choice.incident]);
+
+  // How many matches still wait for an answer, for the callout on the report map.
+  const pending =
+    state.status === "ready" && !choice.incident ? incidents.filter((item) => !choice.declined.includes(item.ref)).length : 0;
+  useEffect(() => {
+    if (state.status !== "loading") onPending?.(pending);
+  }, [state.status, pending]);
+  useEffect(() => () => onPending?.(0), []);
 
   if (state.status === "idle" || (state.status === "ready" && !incidents.length) || state.status === "error") return null;
   if (state.status === "loading" && !incidents.length)
@@ -97,7 +105,7 @@ export default function NearbyIncidents({ city, category, position, accuracy, ch
 
   return (
     <section aria-labelledby="nearby-title" className="rounded-lg bg-card p-4 shadow-[0_0_0_1.5px_var(--color-gold)] sm:p-5">
-      <h2 id="nearby-title" className="flex items-start gap-2 text-xl font-extrabold">
+      <h2 id="nearby-title" tabIndex={-1} className="flex scroll-mt-24 items-start gap-2 text-xl font-extrabold outline-none">
         <Icon name="info" className="mt-1 size-5 shrink-0 text-blue" />
         {t("heading", { count: incidents.length })}
       </h2>

@@ -321,6 +321,8 @@
       "confirmedBody": "Odeljenje vidi da još jedna osoba ima ovaj problem. Ne morate da šaljete prijavu. Ako imate nove detalje ili fotografije, ipak možete poslati svoju.",
       "finish": "Gotovo, obriši nacrt",
       "keepWriting": "Pošalji i moju prijavu",
+      "onMap": "{count, plural, one {Sličan problem je već prijavljen u blizini} few {# slična problema su već prijavljena u blizini} other {# sličnih problema je već prijavljeno u blizini}}",
+      "onMapAction": "Pogledaj",
       "publicNotice": "Da drugi ne bi prijavili isto dva puta, sajt prikazuje da je u ovoj oblasti prijavljen problem ove kategorije, sa datumom i statusom. Vaš tekst, fotografije i email se ne prikazuju."
     }
   },

@@ -78,6 +78,7 @@ export default function ReportFlow() {
   const [match, setMatch] = useState({ incident: "", declined: [] });
   const [accuracy, setAccuracy] = useState();
   const [confirmedOnly, setConfirmedOnly] = useState("");
+  const [nearbyPending, setNearbyPending] = useState(0);
   const heading = useRef(null);
   const sending = useRef(false);
   const sent = useRef(false);
@@ -266,6 +267,14 @@ export default function ReportFlow() {
   function editAt(target, fieldId) {
     go(target);
     setTimeout(() => document.getElementById(fieldId)?.focus(), 450);
+  }
+  // From the callout on the map down to the "already reported nearby" panel under it.
+  function showNearby() {
+    const target = document.getElementById("nearby-title");
+    if (!target) return;
+    const smooth = !matchMedia("(prefers-reduced-motion: reduce)").matches;
+    target.scrollIntoView({ behavior: smooth ? "smooth" : "auto", block: "start" });
+    target.focus({ preventScroll: true });
   }
 
   function placePin(point) {
@@ -747,7 +756,7 @@ export default function ReportFlow() {
                         {locating === "denied" ? t("details.locationDenied") : t("details.locationUnavailable")}
                       </p>
                     )}
-                    <div className="-mx-[max(1rem,env(safe-area-inset-left))] mt-4 overflow-hidden sm:mx-0 sm:rounded-md sm:shadow-[0_0_0_1px_var(--color-rule)]">
+                    <div className="relative -mx-[max(1rem,env(safe-area-inset-left))] mt-4 overflow-hidden sm:mx-0 sm:rounded-md sm:shadow-[0_0_0_1px_var(--color-rule)]">
                       <ReportMap
                         center={center}
                         zoom={selectedCity?.zoom || 13}
@@ -763,6 +772,18 @@ export default function ReportFlow() {
                         moveLabel={t("details.moveMap")}
                         doneLabel={t("details.moveMapDone")}
                       />
+                      {/* The nearby panel sits further down; on a phone it's easy to miss, so say so on the map. */}
+                      {nearbyPending > 0 && (
+                        <button
+                          type="button"
+                          onClick={showNearby}
+                          className="absolute inset-x-3 bottom-7 z-[500] mx-auto flex min-h-12 max-w-md items-center gap-2 rounded-full bg-card px-4 py-2 text-left text-sm font-bold text-ink shadow-lift ring-[1.5px] ring-gold"
+                        >
+                          <Icon name="info" className="size-5 shrink-0 text-blue" />
+                          <span className="flex-1">{t("nearby.onMap", { count: nearbyPending })}</span>
+                          <span className="shrink-0 text-blue underline underline-offset-4">{t("nearby.onMapAction")}</span>
+                        </button>
+                      )}
                     </div>
                     {/* For anyone who finds pointing at a map hard: one big button under it. */}
                     <div className="mt-3 flex flex-col gap-3 rounded-md bg-wash p-4 sm:flex-row sm:items-center">
@@ -817,6 +838,7 @@ export default function ReportFlow() {
                       choice={match}
                       onChoice={setMatch}
                       onConfirmed={setConfirmedOnly}
+                      onPending={setNearbyPending}
                     />
                   )}
 

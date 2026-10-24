@@ -321,6 +321,8 @@
       "confirmedBody": "Departamenti sheh që edhe një person e ka këtë problem. Nuk ke nevojë të dërgosh raport. Nëse ke detaje ose foto të reja, mund ta dërgosh prapë tëndin.",
       "finish": "Mbaro, fshi draftin",
       "keepWriting": "Dërgo edhe raportin tim",
+      "onMap": "{count, plural, one {Një problem i ngjashëm është raportuar afër} other {# probleme të ngjashme janë raportuar afër}}",
+      "onMapAction": "Shiko",
       "publicNotice": "Që të tjerët të mos e raportojnë dy herë, faqja tregon se në këtë zonë është raportuar një problem i kësaj kategorie, me datën dhe statusin. Teksti, fotot dhe emaili yt nuk shfaqen."
     }
   },
