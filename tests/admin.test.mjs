@@ -36,6 +36,7 @@ async function actions({
   assigned = true,
   attempts = 1,
   anonymized = false,
+  approval = "sent",
 } = {}) {
   const queries = [],
     sessions = [];
@@ -112,6 +113,17 @@ async function actions({
     },
     "../../lib/report-options": { categories: ["infrastructure"] },
     "../../lib/incidents": { syncIncidentStatus: async () => [] },
+    "../../lib/report-approval": {
+      approveReport: async (account, id) => {
+        queries.push({ sql: "APPROVE", values: [account.id, id] });
+        if (approval === "fails") throw Object.assign(Error("not_assigned"), { code: "not_assigned" });
+        return { sent: approval !== "pending" };
+      },
+      rejectReport: async (account, id) => {
+        queries.push({ sql: "REJECT", values: [account.id, id] });
+        if (approval === "fails") throw Object.assign(Error("already_sent"), { code: "already_sent" });
+      },
+    },
     "../../lib/account-deletion": {
       AccountDeletionError: class extends Error {},
       deleteAccount: async (db, id, by) => queries.push({ sql: "DELETE_ACCOUNT", values: [id, by.email] }),
@@ -363,4 +375,33 @@ test("only an owner who types the account's email deletes it", async () => {
   const checker = await actions({ role: "checker" });
   await assert.rejects(checker.action.deleteAccountAction(form({ id: "9", confirm: "besa@kosova.report" })));
   assert.ok(!checker.queries.some((query) => query.sql === "DELETE_ACCOUNT"));
+});
+test("a checker approves a report and the inbox says whether the department email went out", async () => {
+  for (const [approval, outcome] of [
+    ["sent", "saved=approved"],
+    ["pending", "saved=approved_pending"],
+    ["fails", "error=approval_assigned"],
+  ]) {
+    const app = await actions({ role: "checker", approval });
+    await assert.rejects(
+      app.action.approveReportAction(form({ report_id: "7" })),
+      (error) => error.url === `/admin?report=7&${outcome}`,
+    );
+    assert.ok(app.queries.some((query) => query.sql === "APPROVE" && query.values[1] === "7"));
+  }
+});
+test("rejecting a report keeps it from the department, and an already sent one says so", async () => {
+  const app = await actions({ role: "checker" });
+  await assert.rejects(
+    app.action.rejectReportAction(form({ report_id: "7" })),
+    (error) => error.url === "/admin?report=7&saved=rejected",
+  );
+  const sent = await actions({ approval: "fails" });
+  await assert.rejects(
+    sent.action.rejectReportAction(form({ report_id: "7" })),
+    (error) => error.url === "/admin?report=7&error=approval_sent",
+  );
+  const crossOrigin = await actions({ origin: "https://evil.example" });
+  await assert.rejects(crossOrigin.action.approveReportAction(form({ report_id: "7" })), /origin/);
+  assert.ok(!crossOrigin.queries.some((query) => query.sql === "APPROVE"));
 });

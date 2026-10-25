@@ -25,7 +25,7 @@ const sha256 = (value) => createHash("sha256").update(value).digest("hex");
 export async function findCandidates(db, { cityId, category, point, accuracy, publicOnly = true, excludeId = 0 }) {
   const box = boundingBox(point, MAX_RADIUS_M);
   const [rows] = await db.execute(
-    `SELECT id,ref,category,status,visibility,lat,lng,report_count,upvote_count,comment_count,public_summary,first_reported_at,last_reported_at,resolved_at FROM incidents WHERE city_id=? AND merged_into IS NULL AND id<>? ${publicOnly ? "AND visibility<>'hidden'" : ""} AND lat BETWEEN ? AND ? AND lng BETWEEN ? AND ? AND (status<>'Resolved' OR resolved_at>UTC_TIMESTAMP()-INTERVAL 14 DAY) LIMIT 200`,
+    `SELECT id,ref,category,status,visibility,lat,lng,report_count,upvote_count,comment_count,public_summary,first_reported_at,last_reported_at,resolved_at FROM incidents WHERE city_id=? AND merged_into IS NULL AND id<>? ${publicOnly ? "AND visibility<>'hidden' AND EXISTS(SELECT 1 FROM reports r WHERE r.incident_id=incidents.id AND r.review_state='approved')" : ""} AND lat BETWEEN ? AND ? AND lng BETWEEN ? AND ? AND (status<>'Resolved' OR resolved_at>UTC_TIMESTAMP()-INTERVAL 14 DAY) LIMIT 200`,
     [cityId, excludeId, box.minLat, box.maxLat, box.minLng, box.maxLng],
   );
   return rankCandidates(point, category, rows, { accuracy });

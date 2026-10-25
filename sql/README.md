@@ -10,6 +10,8 @@ For the existing production kosova database, run `npm run setup:server -- --emai
 
 **010** adds `account_deletions`, the log of staff accounts an admin deleted: whose account, its role, who deleted it and when.
 
+**011** adds `reports.review_state` (`pending`, `approved`, `rejected`), `reviewed_by` and `reviewed_at`. A new report's department is emailed only after an admin or the assigned checker approves it, and the problem stays off the public map until then. Every report already in the database counts as approved, since it was emailed on arrival.
+
 Files 001–003 describe a superseded draft schema. Do not run them against production. Existing integer report IDs, core tables, statuses and the original admins table remain intact.
 
 See REPORTING_SETUP.md for account recovery, image migration and deployment details.

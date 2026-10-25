@@ -92,7 +92,7 @@ export async function loadPerformance(db, cityCode) {
   if (!city) return { cities: [], city: null };
   const [[rows], [departments]] = await Promise.all([
     db.execute(
-      "SELECT r.department_id,r.category,r.status,r.created_at,r.resolved_at,r.first_opened_at,(SELECT MIN(a.created_at) FROM report_audit_log a WHERE a.report_id=r.id AND a.new_status<>a.previous_status) AS first_change_at FROM reports r WHERE r.city_id=?",
+      "SELECT r.department_id,r.category,r.status,COALESCE(r.reviewed_at,r.created_at) AS created_at,r.resolved_at,r.first_opened_at,(SELECT MIN(a.created_at) FROM report_audit_log a WHERE a.report_id=r.id AND a.new_status<>a.previous_status) AS first_change_at FROM reports r WHERE r.city_id=? AND r.review_state='approved'",
       [city.id],
     ),
     db.execute("SELECT id,name FROM departments WHERE city_id=? ORDER BY name", [city.id]),

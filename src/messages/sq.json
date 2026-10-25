@@ -345,6 +345,7 @@
     "pdfLoading": "Duke përgatitur PDF-në…",
     "pdfError": "PDF-ja nuk u shkarkua. Provo përsëri.",
     "pending": "Raporti u ruajt. Njoftimi te departamenti do të dërgohet sa më shpejt.",
+    "reviewing": "Raporti u ruajt. Një anëtar i stafit të kosova.report e kontrollon së pari, pastaj ia dërgon departamentit.",
     "next": "Çfarë tani?",
     "another": "Raporto një problem tjetër",
     "track": "Shiko ecurinë e raportit",

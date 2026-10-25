@@ -27,6 +27,7 @@ import { setReportStatus, closedError } from "../../lib/report-status";
 import { deliverPush } from "../../lib/push";
 import { deleteReport } from "../../lib/report-deletion";
 import { AccountDeletionError, deleteAccount } from "../../lib/account-deletion";
+import { approveReport, rejectReport } from "../../lib/report-approval";
 async function assertOrigin() {
   if ((await headers()).get("origin") !== siteConfig().origin)
     throw new Error("Request origin not allowed");
@@ -463,6 +464,45 @@ export async function reviewReportAction(form) {
   );
   revalidatePath("/admin");
   redirect(`/admin?report=${reportId}&saved=checked`);
+}
+// Owners and the assigned checker approve a report before its department is emailed.
+const approvalOutcome = (error) =>
+  ({
+    not_assigned: "error=approval_assigned",
+    already_sent: "error=approval_sent",
+    closed: "error=approval_closed",
+  })[error.code] || "error=approval";
+export async function approveReportAction(form) {
+  await assertOrigin();
+  const account = await requireAdmin();
+  const reportId = value(form, "report_id", 10);
+  if (!validId(reportId)) throw Error("Invalid report");
+  let outcome;
+  try {
+    outcome = (await approveReport(account, reportId)).sent
+      ? "saved=approved"
+      : "saved=approved_pending";
+  } catch (error) {
+    outcome = approvalOutcome(error);
+    if (!error.code) console.error("Report approval failed", { reportId });
+  }
+  revalidatePath("/admin");
+  redirect(`/admin?report=${reportId}&${outcome}`);
+}
+export async function rejectReportAction(form) {
+  await assertOrigin();
+  const account = await requireAdmin();
+  const reportId = value(form, "report_id", 10);
+  if (!validId(reportId)) throw Error("Invalid report");
+  let outcome = "saved=rejected";
+  try {
+    await rejectReport(account, reportId);
+  } catch (error) {
+    outcome = approvalOutcome(error);
+    if (!error.code) console.error("Report rejection failed", { reportId });
+  }
+  revalidatePath("/admin");
+  redirect(`/admin?report=${reportId}&${outcome}`);
 }
 export async function saveDepartmentAction(form) {
   await assertOrigin();

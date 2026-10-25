@@ -345,6 +345,7 @@
     "pdfLoading": "Preparing the PDF…",
     "pdfError": "The PDF didn't download. Try again.",
     "pending": "Your report is saved. The department will be notified as soon as possible.",
+    "reviewing": "Your report is saved. A kosova.report staff member checks it first, then sends it to the department.",
     "next": "What now?",
     "another": "Report another problem",
     "track": "Check report progress",

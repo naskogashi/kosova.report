@@ -202,14 +202,19 @@ function request({
   });
 }
 const submitFile = "src/app/api/reports/submit/route.js";
-test("submission stores relational URLs, commits before SMTP, escapes HTML and discards anonymous contact", async () => {
+test("submission stores relational URLs, waits for staff approval and discards anonymous contact", async () => {
   const app = await loadRoute(submitFile);
   const response = await app.route.POST(request());
   const data = await response.json();
   assert.equal(response.status, 201);
   assert.match(data.public_id, /^PR-\d{4}-000042$/);
   assert.match(data.tracking_key, /^[0-9a-f-]{36}$/);
-  assert.equal(data.notification, "sent");
+  // Nothing goes to the department until staff approve the report.
+  assert.equal(data.notification, "review");
+  assert.equal(app.mail, undefined);
+  assert.ok(!app.events.includes("send"));
+  assert.ok(!app.queries.some((q) => q.sql.startsWith("INSERT INTO report_notifications")));
+  assert.match(app.queries.find((q) => q.sql.startsWith("INSERT INTO reports")).sql, /'pending'\)$/);
   assert.equal(app.objectCommands[0].Bucket, "kosova-report-images");
   const report = app.queries.find((q) =>
     q.sql.startsWith("INSERT INTO reports"),
@@ -222,11 +227,7 @@ test("submission stores relational URLs, commits before SMTP, escapes HTML and d
     image.values[1],
     /^https:\/\/images\.kosova\.report\/reports\//,
   );
-  assert.ok(app.events.indexOf("commit") < app.events.indexOf("send"));
-  assert.equal(app.mail.attachments.length, 1);
-  assert.ok(app.mail.html.includes("cid:image-0@kosova.report"));
-  assert.ok(!app.mail.html.includes("<script>"));
-  assert.ok(!app.mail.html.includes(data.tracking_key));
+  assert.ok(app.events.includes("commit"));
 });
 test("contact reports preserve email", async () => {
   const app = await loadRoute(submitFile);
@@ -246,13 +247,6 @@ test("image insert failure rolls back and removes R2 upload without sending mail
   assert.ok(app.events.includes("delete"));
   assert.ok(!app.events.includes("commit"));
   assert.ok(!app.events.includes("send"));
-});
-test("SMTP2Go API failure returns saved receipt and retains notification for retry", async () => {
-  const app = await loadRoute(submitFile, { smtpFails: true });
-  const response = await app.route.POST(request());
-  assert.equal(response.status, 201);
-  assert.equal((await response.json()).notification, "pending");
-  assert.ok(!app.events.includes("delete"));
 });
 test("rejects spoofed MIME, excess images and cross-origin requests before uploads", async () => {
   for (const options of [
@@ -322,7 +316,7 @@ test("a new report starts its own issue and the receipt names it", async () => {
   assert.deepEqual(app.attached[0].point, [42.66, 21.16]);
   assert.ok(app.events.indexOf("commit") > -1);
 });
-test("a report the citizen says is the same problem joins that issue and the department is told", async () => {
+test("a report the citizen says is the same problem joins that issue", async () => {
   const app = await loadRoute(submitFile);
   const response = await app.route.POST(
     request({ extra: { incident: "abcdef0123", declined: "1111111111,2222222222", accuracy: "35" } }),
@@ -332,8 +326,7 @@ test("a report the citizen says is the same problem joins that issue and the dep
   assert.equal(app.attached[0].chosenRef, "abcdef0123");
   assert.deepEqual(app.attached[0].declinedRefs, ["1111111111", "2222222222"]);
   assert.equal(app.attached[0].accuracy, 35);
-  assert.match(app.mail.subject, /reported 4 times/);
-  assert.ok(app.mail.html.includes("Reported 4 times"));
+  assert.ok(!app.events.includes("send"));
 });
 test("malformed issue references are rejected before any upload", async () => {
   for (const extra of [{ incident: "../../etc" }, { declined: "1,2,3,4,5,6" }]) {
@@ -342,13 +335,12 @@ test("malformed issue references are rejected before any upload", async () => {
     assert.ok(!app.events.includes("upload"));
   }
 });
-test("a grouping failure still saves and sends the report", async () => {
+test("a grouping failure still saves the report", async () => {
   const app = await loadRoute(submitFile, { groupingFails: true });
   const response = await app.route.POST(request());
   assert.equal(response.status, 201);
   assert.equal((await response.json()).incident, null);
   assert.ok(app.events.includes("commit"));
-  assert.ok(app.events.includes("send"));
 });
 
 const jpeg = Buffer.from([255, 216, 255, 224, 0, 16]);
@@ -357,24 +349,15 @@ const directUploads = [
   { id: 2, kind: "video", mime_type: "video/mp4", byte_size: 8, object_key: "incoming/" + "b".repeat(32), key: "evidence/" + "b".repeat(32), body: Buffer.alloc(8) },
 ];
 const refs = { attachments: `${"a".repeat(32)},${"b".repeat(32)}` };
-test("direct uploads are checked and copied before the transaction, linked inside it and sent to the department", async () => {
+test("direct uploads are checked and copied before the transaction and linked inside it", async () => {
   const app = await loadRoute(submitFile, { uploads: directUploads });
   const response = await app.route.POST(request({ count: 0, extra: refs }));
   assert.equal(response.status, 201);
-  const order = ["claim", "promote", "begin", "bind", "commit", "send"].map((event) => app.events.indexOf(event));
+  const order = ["claim", "promote", "begin", "bind", "commit"].map((event) => app.events.indexOf(event));
   assert.deepEqual([...order].sort((a, b) => a - b), order);
   assert.ok(!order.includes(-1));
   // Nothing goes to the original bucket.
   assert.ok(!app.events.includes("upload"));
-  assert.deepEqual(
-    app.mail.attachments.map((file) => [file.filename, file.contentType, Boolean(file.cid)]),
-    [
-      ["photo-1.jpg", "image/jpeg", true],
-      ["video-1.mp4", "video/mp4", false],
-    ],
-  );
-  assert.ok(app.mail.html.includes("1 of 1 photos attached"));
-  assert.ok(app.mail.html.includes("Video and documents attached: 1"));
   // The incoming/ copies are dropped once the report is saved.
   assert.deepEqual(app.removed, directUploads.map((upload) => upload.object_key));
 });

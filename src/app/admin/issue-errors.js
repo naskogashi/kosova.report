@@ -12,4 +12,8 @@ export const issueErrors = {
   comment: "Write the update before posting it.",
   delete_confirm: "Type the report number exactly as shown to delete it.",
   delete: "The report could not be deleted. Nothing was changed in the database.",
+  approval: "The report could not be approved or rejected. Nothing was sent.",
+  approval_assigned: "Only an admin or the checker assigned to this report can approve or reject it.",
+  approval_sent: "The department already has this report, so it can no longer be rejected.",
+  approval_closed: "This report was anonymized and can no longer be sent.",
 };

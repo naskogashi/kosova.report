@@ -345,6 +345,7 @@
     "pdfLoading": "Pripremam PDF…",
     "pdfError": "PDF nije preuzet. Pokušajte ponovo.",
     "pending": "Prijava je sačuvana. Obaveštenje odeljenju biće poslato što pre.",
+    "reviewing": "Prijava je sačuvana. Član tima kosova.report je prvo proverava, a zatim je šalje odeljenju.",
     "next": "Šta sada?",
     "another": "Prijavite drugi problem",
     "track": "Pogledaj status prijave",

@@ -57,7 +57,7 @@ export async function queueStatusEmails(
   audiences = ["department", "reporter"],
 ) {
   const [rows] = await connection.execute(
-    "SELECT r.id,r.public_id,r.tracking_key,r.status,r.department_id,r.is_anonymous,r.reporter_email,d.notification_email FROM reports r JOIN departments d ON d.id=r.department_id WHERE r.id=?",
+    "SELECT r.id,r.public_id,r.tracking_key,r.status,r.department_id,r.is_anonymous,r.reporter_email,r.review_state,d.notification_email FROM reports r JOIN departments d ON d.id=r.department_id WHERE r.id=?",
     [reportId],
   );
   const report = rows[0];
@@ -67,6 +67,9 @@ export async function queueStatusEmails(
       audience === "reporter" &&
       (report.is_anonymous || !report.reporter_email)
     )
+      continue;
+    // A department hears nothing about a report until staff approve it.
+    if (audience === "department" && report.review_state !== "approved")
       continue;
     const recipient =
       audience === "department"

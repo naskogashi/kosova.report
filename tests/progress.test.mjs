@@ -107,7 +107,7 @@ const tracking = await import(
 const auth = await import(
   `data:text/javascript;base64,${Buffer.from(readFileSync("src/lib/admin-auth.js", "utf8")).toString("base64")}`
 );
-async function notificationFixture(anonymous = false) {
+async function notificationFixture(anonymous = false, reviewState = "approved") {
   const queries = [],
     mail = [];
   const report = {
@@ -118,6 +118,7 @@ async function notificationFixture(anonymous = false) {
     department_id: 3,
     is_anonymous: anonymous,
     reporter_email: "citizen@example.com",
+    review_state: reviewState,
     notification_email: "municipality@example.com",
   };
   const execute = async (sql, values) => {
@@ -170,6 +171,18 @@ test("anonymous reports do not queue citizen email", async () => {
   assert.ok(
     !app.queries.some((query) => query.values?.includes("citizen@example.com")),
   );
+});
+test("a department hears nothing about a report staff have not approved", async () => {
+  for (const state of ["pending", "rejected"]) {
+    const app = await notificationFixture(false, state);
+    await app.helper.queueStatusEmails(app.connection, 7, "audit:1");
+    const queued = app.queries.filter((query) =>
+      query.sql.startsWith("INSERT IGNORE INTO report_status_notifications"),
+    );
+    assert.deepEqual(queued.map((query) => query.values[1]), ["reporter"]);
+    // No private department link is even made.
+    assert.ok(!app.queries.some((query) => query.sql.startsWith("INSERT INTO municipality_report_tokens")));
+  }
 });
 async function municipality({ found = true, initial = "Pending" } = {}) {
   const queries = [];

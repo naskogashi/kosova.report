@@ -13,6 +13,7 @@ export const migrations = [
   "sql/008_attachments_retention_alerts.sql",
   "sql/009_report_deletions.sql",
   "sql/010_account_deletions.sql",
+  "sql/011_report_approval.sql",
 ];
 
 // Backs the database up with mysqldump, then applies every migration.

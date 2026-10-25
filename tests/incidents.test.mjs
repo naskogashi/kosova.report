@@ -434,7 +434,9 @@ test("the public map shows only visible issues, approximate unless published, af
   // Nothing beyond the issue itself.
   assert.ok(!JSON.stringify(data).includes("secret"));
   const issues = queries.find((sql) => sql.includes("FROM incidents"));
-  assert.match(issues, /i\.visibility<>'hidden' AND i\.merged_into IS NULL AND i\.report_count>0/);
+  assert.match(issues, /i\.visibility<>'hidden' AND i\.merged_into IS NULL AND EXISTS\(SELECT 1 FROM reports r WHERE r\.incident_id=i\.id AND r\.review_state='approved'\) AND i\.report_count>0/);
+  // Issues no staff member has approved yet are not counted as waiting either.
+  assert.match(queries.find((sql) => sql.startsWith("SELECT COUNT(*) AS total FROM incidents")), /r\.review_state='approved'/);
   assert.match(issues, /first_reported_at <= UTC_TIMESTAMP\(\) - INTERVAL 6 HOUR/);
   assert.equal(data.waiting, 2);
   assert.equal(data.delayHours, 6);

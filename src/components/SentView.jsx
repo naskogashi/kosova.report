@@ -146,9 +146,9 @@ export default function SentView() {
             </button>
           </div>
         </div>
-        {receipt.notification === "pending" && (
+        {(receipt.notification === "pending" || receipt.notification === "review") && (
           <p role="status" className="mt-4 rounded-md bg-wash p-3 text-sm font-semibold">
-            {t("pending")}
+            {t(receipt.notification === "review" ? "reviewing" : "pending")}
           </p>
         )}
         {receipt.incident?.ref && (

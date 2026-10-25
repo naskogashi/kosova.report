@@ -7,6 +7,8 @@ import {
   deleteReportAction,
   assignCheckerAction,
   reviewReportAction,
+  approveReportAction,
+  rejectReportAction,
 } from "./actions";
 import AdminSubmit from "./AdminSubmit";
 import AdminShortcuts from "./AdminShortcuts";
@@ -62,6 +64,8 @@ export default async function AdminPage(props) {
     Object.hasOwn(statuses, searchParams.status)
       ? searchParams.status
       : "";
+  // Reports waiting for a staff member to approve them for the department.
+  const awaiting = searchParams.review === "pending";
   const page = Math.max(
     1,
     Math.min(100000, Number.parseInt(searchParams.page, 10) || 1),
@@ -78,6 +82,7 @@ export default async function AdminPage(props) {
     summary = [],
     total = 0,
     pending = 0,
+    awaitingTotal = 0,
     report = null,
     photos = [],
     files = [],
@@ -98,6 +103,7 @@ export default async function AdminPage(props) {
       conditions.push("r.status=?");
       values.push(status);
     }
+    if (awaiting) conditions.push("r.review_state='pending'");
     if (query) {
       conditions.push("(r.public_id LIKE ? OR r.description LIKE ?)");
       values.push(`%${query}%`, `%${query}%`);
@@ -106,7 +112,7 @@ export default async function AdminPage(props) {
     const db = database();
     const results = await Promise.all([
       db.execute(
-        `SELECT r.id,r.public_id,r.category,c.code AS city_code,r.status,r.created_at,i.report_count FROM reports r JOIN cities c ON c.id=r.city_id LEFT JOIN incidents i ON i.id=r.incident_id ${where} ORDER BY r.created_at DESC,r.id DESC LIMIT 25 OFFSET ${(page - 1) * 25}`,
+        `SELECT r.id,r.public_id,r.category,c.code AS city_code,r.status,r.review_state,r.created_at,i.report_count FROM reports r JOIN cities c ON c.id=r.city_id LEFT JOIN incidents i ON i.id=r.incident_id ${where} ORDER BY r.created_at DESC,r.id DESC LIMIT 25 OFFSET ${(page - 1) * 25}`,
         values,
       ),
       db.execute(`SELECT COUNT(*) AS total FROM reports r ${where}`, values),
@@ -123,11 +129,16 @@ export default async function AdminPage(props) {
       ),
       db.execute("SELECT id,code,name FROM cities ORDER BY name"),
       db.execute(
+        `SELECT COUNT(*) AS total FROM reports r WHERE r.review_state='pending' ${owner ? "" : "AND r.id IN (SELECT report_id FROM report_assignments WHERE account_id=?)"}`,
+        owner ? [] : [admin.id],
+      ),
+      db.execute(
         "SELECT routing.city_id,routing.category,routing.department_id,routing.active,c.code AS city_code FROM department_routes routing JOIN cities c ON c.id=routing.city_id ORDER BY c.name,routing.category",
       ),
     ]);
     municipalities = results[5][0];
-    routes = results[6][0];
+    awaitingTotal = Number(results[6][0][0].total);
+    routes = results[7][0];
     reports = results[0][0];
     total = Number(results[1][0][0].total);
     summary = results[2][0];
@@ -141,7 +152,7 @@ export default async function AdminPage(props) {
     }
     if (selected) {
       const [rows] = await db.execute(
-        "SELECT r.id,r.public_id,c.code AS city_code,r.category,r.status,r.description,r.lat AS latitude,r.lng AS longitude,r.created_at,r.is_anonymous AS anonymous,r.reporter_email AS contact_email,r.admin_note,d.notification_email FROM reports r JOIN departments d ON d.id=r.department_id JOIN cities c ON c.id=r.city_id WHERE r.id=? AND (?=1 OR EXISTS(SELECT 1 FROM report_assignments a WHERE a.report_id=r.id AND a.account_id=?)) LIMIT 1",
+        "SELECT r.id,r.public_id,c.code AS city_code,r.category,r.status,r.description,r.lat AS latitude,r.lng AS longitude,r.created_at,r.is_anonymous AS anonymous,r.reporter_email AS contact_email,r.admin_note,r.review_state,r.reviewed_at,reviewer.name AS reviewer_name,n.sent_at AS notified_at,d.notification_email FROM reports r JOIN departments d ON d.id=r.department_id JOIN cities c ON c.id=r.city_id LEFT JOIN staff_accounts reviewer ON reviewer.id=r.reviewed_by LEFT JOIN report_notifications n ON n.report_id=r.id WHERE r.id=? AND (?=1 OR EXISTS(SELECT 1 FROM report_assignments a WHERE a.report_id=r.id AND a.account_id=?)) LIMIT 1",
         [selected, owner ? 1 : 0, admin.id],
       );
       report = rows[0] || null;
@@ -211,6 +222,7 @@ export default async function AdminPage(props) {
     const params = new URLSearchParams();
     if (query) params.set("q", query);
     if (status) params.set("status", status);
+    if (awaiting) params.set("review", "pending");
     params.set("page", String(nextPage));
     if (reportId) params.set("report", reportId);
     return `/admin?${params}`;
@@ -246,7 +258,13 @@ export default async function AdminPage(props) {
             ? t("Changes saved. Some notification emails are pending.")
             : searchParams.saved === "deleted"
               ? t("Report deleted. It is listed in the deletion log.")
-              : t("Changes saved.")}
+              : searchParams.saved === "approved"
+                ? t("Report approved and sent to the department.")
+                : searchParams.saved === "approved_pending"
+                  ? t("Report approved, but the email to the department did not go out. Try sending it again.")
+                  : searchParams.saved === "rejected"
+                    ? t("Report rejected. The department was not emailed and it stays off the public map.")
+                    : t("Changes saved.")}
         </p>
       )}
       {searchParams.error && !issueErrors[searchParams.error] && (
@@ -265,7 +283,7 @@ export default async function AdminPage(props) {
         <>
           {/* Status filters as chips, with counts; the search sits beside them. */}
           <div className="mt-6 flex flex-wrap items-center gap-2">
-            <a href="/admin" aria-current={!status ? "true" : undefined} className={`${chip} bg-card text-ink shadow-[0_0_0_1px_var(--color-rule)] aria-[current=true]:bg-ink aria-[current=true]:text-paper aria-[current=true]:shadow-none`}>
+            <a href="/admin" aria-current={!status && !awaiting ? "true" : undefined} className={`${chip} bg-card text-ink shadow-[0_0_0_1px_var(--color-rule)] aria-[current=true]:bg-ink aria-[current=true]:text-paper aria-[current=true]:shadow-none`}>
               {t("All statuses")}
             </a>
             {Object.entries(statuses).map(([key, label]) => (
@@ -281,6 +299,14 @@ export default async function AdminPage(props) {
                 </span>
               </a>
             ))}
+            <a
+              href="/admin?review=pending"
+              aria-current={awaiting ? "true" : undefined}
+              className={`${chip} bg-card text-ink shadow-[0_0_0_1px_var(--color-rule)] aria-[current=true]:bg-ink aria-[current=true]:text-paper aria-[current=true]:shadow-none`}
+            >
+              {t("Awaiting approval")}
+              <span className={`tabular rounded-full px-2 text-xs bg-wash ${awaitingTotal > 0 ? "font-extrabold text-stamp" : "text-blue"}`}>{awaitingTotal}</span>
+            </a>
             {pending > 0 && (
               <span className={`${chip} bg-wash text-stamp`}>
                 {t("Pending email alerts")}
@@ -289,6 +315,7 @@ export default async function AdminPage(props) {
             )}
             <form method="GET" action="/admin" className="ml-auto flex w-full gap-2 sm:w-auto">
               {status && <input type="hidden" name="status" value={status} />}
+              {awaiting && <input type="hidden" name="review" value="pending" />}
               <label className="flex-1 sm:w-72">
                 <span className="sr-only">{t("Search reports")}</span>
                 <input
@@ -346,6 +373,11 @@ export default async function AdminPage(props) {
                             </span>
                           </span>
                           <span className="text-right text-xs">
+                            {row.review_state !== "approved" && (
+                              <span className={`mb-1 block rounded-full px-2 py-0.5 font-bold ${row.review_state === "rejected" ? "bg-error-wash text-error" : "bg-wash text-stamp"}`}>
+                                {row.review_state === "rejected" ? t("Rejected") : t("Awaiting approval")}
+                              </span>
+                            )}
                             <span className={`inline-block rounded-full px-2 py-0.5 font-bold ${row.status === "Resolved" ? "bg-ok-wash text-ok" : row.status === "In Progress" ? "bg-wash text-blue" : "bg-paper text-pencil"}`}>
                               {t(statuses[row.status] || row.status)}
                             </span>
@@ -452,6 +484,55 @@ export default async function AdminPage(props) {
                     </div>
                   )}
                 </article>
+
+                {/* Nothing reaches the department until a staff member approves the report. */}
+                <section
+                  className={`${card} p-5 ${report.review_state === "pending" ? "shadow-[0_0_0_2px_var(--color-gold)]" : ""}`}
+                  aria-labelledby="approval-title"
+                >
+                  <h3 id="approval-title" className="font-extrabold">{t("Department email")}</h3>
+                  {report.review_state === "pending" ? (
+                    <p className="mt-1 text-pencil">
+                      {t("Not sent yet. Check that this is a real problem, then approve it to email the department. Reject spam, jokes and abuse.")}
+                    </p>
+                  ) : report.review_state === "rejected" ? (
+                    <p className="mt-1 text-error">
+                      {t("Rejected by")} {report.reviewer_name || t("No name")}, <span className="tabular">{formatDate(report.reviewed_at, t)}</span>.{" "}
+                      {t("The department was not emailed and it stays off the public map.")}
+                    </p>
+                  ) : report.notified_at ? (
+                    <p className="mt-1 text-ok">
+                      {t("Sent to the department")} <span className="tabular">{formatDate(report.notified_at, t)}</span>
+                      {report.reviewer_name && (
+                        <>
+                          {", "}
+                          {t("approved by")} {report.reviewer_name}
+                        </>
+                      )}
+                      .
+                    </p>
+                  ) : (
+                    <p className="mt-1 text-stamp">
+                      {t("Approved, but the email to the department did not go out yet. Try sending it again.")}
+                    </p>
+                  )}
+                  {!report.notified_at && (
+                    <div className="mt-4 flex flex-wrap gap-2">
+                      <form action={approveReportAction}>
+                        <input type="hidden" name="report_id" value={report.id} />
+                        <AdminSubmit>
+                          {report.review_state === "approved" ? t("Send to the department again") : t("Approve and send to the department")}
+                        </AdminSubmit>
+                      </form>
+                      {report.review_state !== "rejected" && (
+                        <form action={rejectReportAction}>
+                          <input type="hidden" name="report_id" value={report.id} />
+                          <button className={`${btn.soft} min-h-11 px-4 text-sm text-error`}>{t("Reject as spam")}</button>
+                        </form>
+                      )}
+                    </div>
+                  )}
+                </section>
 
                 {incident && (
                   <IncidentPanel
