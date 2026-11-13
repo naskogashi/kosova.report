@@ -407,10 +407,13 @@
   }
 }
 
-/* Theme picker popover, anchored under the header on the right. */
+/* Theme picker popover: drops straight under the button that opened it. A popover's
+   invoker is its implicit anchor, so `position-area` needs no explicit anchor-name —
+   which also keeps the two ThemeMenu instances (header + phone menu) from colliding. */
 .theme-pop {
   position: fixed;
-  inset: 4.25rem max(1rem, env(safe-area-inset-right)) auto auto;
+  position-area: bottom span-left;
+  margin: 0.5rem 0 0;
   opacity: 1;
   translate: 0 0;
   transition:
